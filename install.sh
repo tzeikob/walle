@@ -51,7 +51,7 @@ installConky () {
   log "Downloading the latest conky executable file" "\U1F4AC"
 
   # Extract the URL to the conky executable file
-  local executableURL=$(cat conky-latest.info | jq --raw-output '.assets[0] | .browser_download_url')
+  local executableURL=$(cat $TEMP/conky-latest.info | jq --raw-output '.assets[0] | .browser_download_url')
 
   wget --no-show-progress -P $TEMP -O $TEMP/conky-x86_64.AppImage $executableURL >> $LOG_FILE 2>&1
 
