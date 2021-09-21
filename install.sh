@@ -114,7 +114,7 @@ installConky
 installWalle
 
 # Start walle service
-walle
+sudo walle
 
 log "\nInstallation has been completed successfully" "\U1F389"
 log "Have a nice conky time, $USER!\n"
