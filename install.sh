@@ -58,7 +58,7 @@ installConky () {
   log "Conky executable file has been downloaded"
 
   sudo mv $TEMP/conky-x86_64.AppImage $INSTALLATION_HOME/conky-x86_64.AppImage
-  sudo chmod +x ./conky-x86_64.AppImage
+  sudo chmod +x $INSTALLATION_HOME/conky-x86_64.AppImage
 
   log "Conky executable has been installed ($INSTALLATION_HOME/conky-x86_64.AppImage)"
 }
@@ -73,12 +73,12 @@ installWalle () {
 
   log "Walle executable file has been downloaded"
 
-  sudo mv $TEMP/walle.sh $INSTALLATION_HOME
-  sudo chmod +x ./walle.sh
+  sudo mv $TEMP/walle.sh $INSTALLATION_HOME/walle.sh
+  sudo chmod +x $INSTALLATION_HOME/walle.sh
 
   local symlink="/usr/local/bin/walle"
 
-  sudo ln -s /opt/walle.sh $symlink
+  sudo ln -s $INSTALLATION_HOME/walle.sh $symlink
 
   log "Executable symbolic link has been created ($symlink)"
 
