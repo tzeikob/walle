@@ -24,7 +24,11 @@ abort () {
 start () {
   log "Starting the conky service" "\U1F4AC"
 
-  $INSTALLATION_HOME/conky-x86_64.AppImage -C > $INSTALLATION_HOME/.conkyrc &
+  $INSTALLATION_HOME/conky-x86_64.AppImage -C > $INSTALLATION_HOME/.conkyrc >> $LOG_FILE 2>&1
+
+  log "Conky set to default configuration ($INSTALLATION_HOME/.conkyrc)"
+
+  $INSTALLATION_HOME/conky-x86_64.AppImage >> $LOG_FILE &
 
   log "Conky is up and running"
 }
