@@ -40,13 +40,13 @@ installDependencies () {
 
 # Installs the latest version of the conky
 installConky () {
-  log "Downloading the release information of the conky" "\U1F4AC"
+  log "Downloading conky release info" "\U1F4AC"
 
   local releaseInfoURL='https://api.github.com/repos/brndnmtthws/conky/releases/latest'
 
   wget --no-show-progress -P $TEMP -O $TEMP/conky-latest.info $releaseInfoURL >> $LOG_FILE 2>&1
 
-  log "Conky's release information has been downloaded"
+  log "Conky's release info has been downloaded"
 
   log "Downloading the latest conky executable file" "\U1F4AC"
 
