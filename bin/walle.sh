@@ -1,7 +1,7 @@
 #!/bin/bash
 # A script to start the conky service
 
-INSTALLATION_HOME="/opt/walle"
+INSTALLATION_HOME="/home/$USER/.walle"
 LOG_FILE="$INSTALLATION_HOME/stdout.log"
 
 # Logs a normal info message, <message> <emoji>
@@ -24,7 +24,7 @@ abort () {
 start () {
   log "Starting the conky service" "\U1F4AC"
 
-  sudo $INSTALLATION_HOME/conky-x86_64.AppImage -C > $INSTALLATION_HOME/.conkyrc &
+  $INSTALLATION_HOME/conky-x86_64.AppImage -C > $INSTALLATION_HOME/.conkyrc &
 
   log "Conky is up and running"
 }

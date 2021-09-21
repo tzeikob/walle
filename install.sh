@@ -2,7 +2,7 @@
 # A script to install walle and conky executables
 
 VERSION="0.1.0"
-INSTALLATION_HOME="/opt/walle"
+INSTALLATION_HOME="/home/$USER/.walle"
 TEMP="/tmp/walle.$(date +%s)"
 LOG_FILE="$TEMP/stdout.log"
 
@@ -57,8 +57,8 @@ installConky () {
 
   log "Conky executable file has been downloaded"
 
-  sudo mv $TEMP/conky-x86_64.AppImage $INSTALLATION_HOME/conky-x86_64.AppImage
-  sudo chmod +x $INSTALLATION_HOME/conky-x86_64.AppImage
+  mv $TEMP/conky-x86_64.AppImage $INSTALLATION_HOME/conky-x86_64.AppImage
+  chmod +x $INSTALLATION_HOME/conky-x86_64.AppImage
 
   log "Conky executable has been installed ($INSTALLATION_HOME/conky-x86_64.AppImage)"
 }
@@ -73,8 +73,8 @@ installWalle () {
 
   log "Walle executable file has been downloaded"
 
-  sudo mv $TEMP/walle.sh $INSTALLATION_HOME/walle.sh
-  sudo chmod +x $INSTALLATION_HOME/walle.sh
+  mv $TEMP/walle.sh $INSTALLATION_HOME/walle.sh
+  chmod +x $INSTALLATION_HOME/walle.sh
 
   local symlink="/usr/local/bin/walle"
 
@@ -106,7 +106,7 @@ log "Script initialization hase been completed\n"
 
 installDependencies
 
-sudo mkdir -p $INSTALLATION_HOME
+mkdir -p $INSTALLATION_HOME
 
 log "Walle installation folder has been created ($INSTALLATION_HOME)"
 
@@ -114,7 +114,7 @@ installConky
 installWalle
 
 # Start walle service
-sudo walle
+walle
 
 log "\nInstallation has been completed successfully" "\U1F389"
 log "Have a nice conky time, $USER!\n"
