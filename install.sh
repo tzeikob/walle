@@ -57,7 +57,7 @@ installConky () {
 
   log "Conky executable file has been downloaded"
 
-  sudo mv $TEMP/conky-x86_64.AppImage $INSTALLATION_HOME
+  sudo mv $TEMP/conky-x86_64.AppImage $INSTALLATION_HOME/conky-x86_64.AppImage
   sudo chmod +x ./conky-x86_64.AppImage
 
   log "Conky executable has been installed ($INSTALLATION_HOME/conky-x86_64.AppImage)"
