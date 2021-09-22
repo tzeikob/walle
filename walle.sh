@@ -56,6 +56,13 @@ startConky () {
   log "Conky is up and running"
 }
 
+# Stops and kills any conky running process
+stopConky () {
+  pkill -f conky
+
+  log "Conky process is shut down"
+}
+
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
   abort "Error: Do not run this script as root or using sudo"
@@ -106,6 +113,9 @@ case $cmd in
 
     # Start conky service with the given opts
     startConky $config
+    exit;;
+  "stop")
+    stopConky
     exit;;
   *)
     abort "Error: Command operation $cmd is not supported"
