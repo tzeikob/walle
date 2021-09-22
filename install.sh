@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# A script to install walle executable
+# A script to install walle
 
 VERSION="0.1.0"
 INSTALLATION_HOME="/home/$USER/.tzkb/walle"
+DEFAULT_CONFIG="$INSTALLATION_HOME/.conkyrc"
 TEMP="/tmp/tzkb/walle.$(date +%s)"
 LOG_FILE="$TEMP/stdout.log"
 
@@ -60,6 +61,10 @@ installConky () {
   mv $TEMP/conky-x86_64.AppImage $INSTALLATION_HOME/conky-x86_64.AppImage
   chmod +x $INSTALLATION_HOME/conky-x86_64.AppImage
 
+  $INSTALLATION_HOME/conky-x86_64.AppImage -C > $DEFAULT_CONFIG >> $LOG_FILE 2>&1
+
+  log "Default conky configuration file has been created ($DEFAULT_CONFIG)"
+
   log "Conky executable has been installed ($INSTALLATION_HOME/conky-x86_64.AppImage)"
 }
 
@@ -99,7 +104,6 @@ log "Logs have been routed to $LOG_FILE"
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
   abort "Error: Do not run this script as root or using sudo"
-  exit 1
 fi
 
 log "Script initialization hase been completed\n"
@@ -113,8 +117,6 @@ log "Walle installation folder has been created ($INSTALLATION_HOME)"
 installConky
 installWalle
 
-# Start walle service
-walle
-
 log "\nInstallation has been completed successfully" "\U1F389"
+log "Execute `walle --help` to get start"
 log "Have a nice conky time, $USER!\n"
