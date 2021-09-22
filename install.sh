@@ -61,7 +61,7 @@ installConky () {
   mv $TEMP/conky-x86_64.AppImage $INSTALLATION_HOME/conky-x86_64.AppImage
   chmod +x $INSTALLATION_HOME/conky-x86_64.AppImage
 
-  $INSTALLATION_HOME/conky-x86_64.AppImage -C > $DEFAULT_CONFIG >> $LOG_FILE 2>&1
+  $INSTALLATION_HOME/conky-x86_64.AppImage -C > $DEFAULT_CONFIG
 
   log "Default conky configuration file has been created ($DEFAULT_CONFIG)"
 
