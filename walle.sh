@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # A script to start the conky service
 
-INSTALLATION_HOME="/home/$USER/.walle"
+INSTALLATION_HOME="/home/$USER/.tzkb/walle"
 LOG_FILE="$INSTALLATION_HOME/stdout.log"
 
 # Logs a normal info message, <message> <emoji>

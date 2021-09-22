@@ -2,8 +2,8 @@
 # A script to install walle executable
 
 VERSION="0.1.0"
-INSTALLATION_HOME="/home/$USER/.walle"
-TEMP="/tmp/walle.$(date +%s)"
+INSTALLATION_HOME="/home/$USER/.tzkb/walle"
+TEMP="/tmp/tzkb/walle.$(date +%s)"
 LOG_FILE="$TEMP/stdout.log"
 
 # Logs a normal info message, <message> <emoji>
@@ -25,7 +25,7 @@ abort () {
 
 # Installs third-party dependencies
 installDependencies () {
-  log "Updating the apt repositories" "\U1F4AC"
+  log "Updating apt repositories" "\U1F4AC"
 
   sudo apt-get -y update >> $LOG_FILE 2>&1
 
@@ -44,14 +44,14 @@ installConky () {
 
   local releaseInfoURL='https://api.github.com/repos/brndnmtthws/conky/releases/latest'
 
-  wget --no-show-progress -P $TEMP -O $TEMP/conky-latest.info $releaseInfoURL >> $LOG_FILE 2>&1
+  wget --no-show-progress -P $TEMP -O $TEMP/conky-release.info $releaseInfoURL >> $LOG_FILE 2>&1
 
   log "Conky's release info has been downloaded"
 
   log "Downloading the latest conky executable file" "\U1F4AC"
 
   # Extract the URL to the conky executable file
-  local executableURL=$(cat $TEMP/conky-latest.info | jq --raw-output '.assets[0] | .browser_download_url')
+  local executableURL=$(cat $TEMP/conky-release.info | jq --raw-output '.assets[0] | .browser_download_url')
 
   wget --no-show-progress -P $TEMP -O $TEMP/conky-x86_64.AppImage $executableURL >> $LOG_FILE 2>&1
 
