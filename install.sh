@@ -118,5 +118,5 @@ installConky
 installWalle
 
 log "\nInstallation has been completed successfully" "\U1F389"
-log "Execute `walle --help` to get start"
+log "Try walle --help to start using it"
 log "Have a nice conky time, $USER!\n"
