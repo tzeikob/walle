@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # A script to start the conky service
 
 INSTALLATION_HOME="/home/$USER/.walle"

@@ -1,5 +1,5 @@
-#!/bin/bash
-# A script to install walle and conky executables
+#!/usr/bin/env bash
+# A script to install walle executable
 
 VERSION="0.1.0"
 INSTALLATION_HOME="/home/$USER/.walle"
@@ -67,7 +67,7 @@ installConky () {
 installWalle () {
   log "Downloading the latest version of the walle executable" "\U1F4AC"
 
-  local executableURL="https://raw.githubusercontent.com/tzeikob/walle/master/bin/walle.sh"
+  local executableURL="https://raw.githubusercontent.com/tzeikob/walle/master/walle.sh"
 
   wget --no-show-progress -P $TEMP -O $TEMP/walle.sh $executableURL >> $LOG_FILE 2>&1
 
