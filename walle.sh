@@ -51,7 +51,7 @@ version () {
 startConky () {
   local config=$1
 
-  $INSTALLATION_HOME/conky-x86_64.AppImage -b -c $config >> $LOG_FILE &
+  $INSTALLATION_HOME/conky-x86_64.AppImage -b -c $config >> $LOG_FILE 2>&1 &
 
   log "Conky is up and running"
 }
