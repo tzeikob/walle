@@ -3,24 +3,23 @@
 
 VERSION="0.1.0"
 INSTALLATION_HOME="/home/$USER/.tzkb/walle"
-DEFAULT_CONFIG="$INSTALLATION_HOME/.conkyrc"
 LOG_FILE="$INSTALLATION_HOME/stdout.log"
 
-# Logs a normal info message, <message> <emoji>
+# Logs a message to console & stdout/err: <message> <emoji>
 log () {
-  echo -e "\e[97m$1\e[0m $2"
+  echo -e "$1 $2"
   echo -e "$1" >> $LOG_FILE
 }
 
-# Logs an error and exit the process, <message>
+# Aborts process on fatal errors: <message>
 abort () {
-  echo -e "\e[97m$1\e[0m \U1F480"
-  echo -e "$1" >> $LOG_FILE
+  local errcode=$?
+  local message=$1
 
-  echo -e "Process exited with code: 1"
-  echo -e "Process exited with code: 1" >> $LOG_FILE
+  log "Error: $message" "\U1F480"
+  log "\nProcess exited with code: $errcode"
 
-  exit 1
+  exit $errcode
 }
 
 # Prints a short help report
@@ -51,27 +50,30 @@ version () {
 startConky () {
   local config=$1
 
-  $INSTALLATION_HOME/conky-x86_64.AppImage -b -c $config >> $LOG_FILE 2>&1 &
+  $INSTALLATION_HOME/conky-x86_64.AppImage -b >> $LOG_FILE 2>&1 & ||
+    abort "failed to start conky service"
 
   log "Conky is up and running"
 }
 
 # Stops and kills any conky running process
 stopConky () {
-  pkill -f conky
+  pkill -f conky ||
+    abort "failed to stop conky service"
 
-  log "Conky process is shut down"
+  log "Conky process has been shut down"
 }
 
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
-  abort "Error: Do not run this script as root or using sudo"
+  echo "Error: Do not run this script as root or using sudo"
+  exit 1
 fi
 
 # Print help if script called without arguments
 if [ "$#" -lt 1 ]; then
   help
-  exit 1
+  exit 0
 fi
 
 # Give priority to print help or version and exit
@@ -79,10 +81,10 @@ for arg in "$@"; do
   case $arg in
     "-h" | "--help")
       help
-      exit;;
+      exit 0;;
     "-v" | "--version")
       version
-      exit;;
+      exit 0;;
   esac
 done
 
@@ -105,7 +107,8 @@ case $cmd in
           shift
           config="${1-}";;
         *)
-          abort "Error: Option $opt is not supported";;
+          log "Error: Option $opt is not supported"
+          exit 1;;
       esac
 
       shift
@@ -113,13 +116,13 @@ case $cmd in
 
     # Start conky service with the given opts
     startConky $config
-    exit;;
+    exit 0;;
   "stop")
     stopConky
-    exit;;
+    exit 0;;
   *)
-    abort "Error: Command operation $cmd is not supported"
-    exit;;
+    log "Error: Command $cmd is not supported"
+    exit 1;;
 esac
 
 exit 0

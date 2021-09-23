@@ -7,24 +7,35 @@ DEFAULT_CONFIG="$INSTALLATION_HOME/.conkyrc"
 TEMP="/tmp/tzkb/walle.$(date +%s)"
 LOG_FILE="$TEMP/stdout.log"
 
-# Logs a normal info message, <message> <emoji>
+# Logs a message to console & stdout/err: <message> <emoji>
 log () {
-  echo -e "\e[97m$1\e[0m $2"
+  echo -e "$1 $2"
   echo -e "$1" >> $LOG_FILE
 }
 
-# Logs an error and exit the process, <message>
+# Aborts process on fatal errors: <message>
 abort () {
-  echo -e "\n\e[97m$1\e[0m \U1F480"
-  echo -e "\n$1" >> $LOG_FILE
+  local errcode=$?
+  local message=$1
 
-  echo -e "Process exited with code: 1"
-  echo -e "Process exited with code: 1" >> $LOG_FILE
+  log "Error: $message" "\U1F480"
+  log "Cleaning up installation files" "\U1F4AC"
 
-  exit 1
+  rollback
+
+  log "Installation has been rolled back"
+  log "\nProcess exited with code: $errcode"
+
+  exit $errcode
 }
 
-# Downloads the given url, <url> <prefix> <filename>
+# Cleans any installation files up
+rollback () {
+  rm -rf $INSTALLATION_HOME
+  sudo rm -f /usr/local/bin/walle
+}
+
+# Downloads the given url: <url> <prefix> <filename>
 wg () {
   local url=$1
   local prefix=$2
@@ -44,13 +55,15 @@ wg () {
 installDependencies () {
   log "Updating apt repositories" "\U1F4AC"
 
-  sudo apt-get -y update >> $LOG_FILE 2>&1
+  sudo apt-get -y update >> $LOG_FILE 2>&1 ||
+    abort "failed to update repositories"
 
   log "Repositories have been updated"
 
   log "Installing third-party dependencies" "\U1F4AC"
 
-  sudo apt-get -y install wget jq >> $LOG_FILE 2>&1
+  sudo apt-get -y install wget jq >> $LOG_FILE 2>&1 ||
+    abort "failed to install dependencies"
 
   log "Dependencies have been installed"
 }
@@ -61,7 +74,8 @@ installConky () {
 
   local releaseInfoURL='https://api.github.com/repos/brndnmtthws/conky/releases/latest'
 
-  wg $releaseInfoURL $TEMP "conky-release.info"
+  wg $releaseInfoURL $TEMP conky-release.info ||
+    abort "failed to download conky release info"
 
   log "Conky's release info has been downloaded"
 
@@ -70,18 +84,21 @@ installConky () {
   # Extract the URL to the conky executable file
   local executableURL=$(cat $TEMP/conky-release.info | jq --raw-output '.assets[0] | .browser_download_url')
 
-  wg $executableURL $TEMP "conky-x86_64.AppImage"
+  wg $executableURL $TEMP conky-x86_64.AppImage ||
+    abort "failed to download conky executable file"
 
   log "Conky executable file has been downloaded"
 
   mv $TEMP/conky-x86_64.AppImage $INSTALLATION_HOME/conky-x86_64.AppImage
   chmod +x $INSTALLATION_HOME/conky-x86_64.AppImage
 
-  $INSTALLATION_HOME/conky-x86_64.AppImage -C > $DEFAULT_CONFIG
+  # Print the default configuration in logs
+  $INSTALLATION_HOME/conky-x86_64.AppImage -C >> $LOG_FILE 2>&1 ||
+    abort "failed to print the default configuration"
 
-  log "Default conky configuration file has been created ($DEFAULT_CONFIG)"
+  log "Conky set to use default configuration"
 
-  log "Conky executable has been installed ($INSTALLATION_HOME/conky-x86_64.AppImage)"
+  log "Conky has been installed ($INSTALLATION_HOME/conky-x86_64.AppImage)"
 }
 
 # Installs the latest version of the walle
@@ -90,7 +107,8 @@ installWalle () {
 
   local executableURL="https://raw.githubusercontent.com/tzeikob/walle/master/walle.sh"
 
-  wg $executableURL $TEMP "walle.sh"
+  wg $executableURL $TEMP "walle.sh" ||
+    abort "failed to download the walle executable file"
 
   log "Walle executable file has been downloaded"
 
@@ -99,11 +117,12 @@ installWalle () {
 
   local symlink="/usr/local/bin/walle"
 
-  sudo ln -s $INSTALLATION_HOME/walle.sh $symlink
+  sudo ln -s $INSTALLATION_HOME/walle.sh $symlink ||
+    abort "failed to create symbolic link to the executable file"
 
   log "Executable symbolic link has been created ($symlink)"
 
-  log "Walle executable has been installed ($INSTALLATION_HOME/walle.sh)"
+  log "Walle has been installed ($INSTALLATION_HOME/walle.sh)"
 }
 
 # Create the temporary folder
@@ -119,16 +138,17 @@ log "Logs have been routed to $LOG_FILE"
 
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
-  abort "Error: Do not run this script as root or using sudo"
+  echo "Error: Do not run this script as root or using sudo"
+  exit 1
 fi
 
-log "Script initialization hase been completed\n"
+log "Script initialization has been completed\n"
 
 installDependencies
 
 mkdir -p $INSTALLATION_HOME
 
-log "Walle installation folder has been created ($INSTALLATION_HOME)"
+log "Installation folder has been created ($INSTALLATION_HOME)"
 
 installConky
 installWalle
