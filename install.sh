@@ -24,6 +24,22 @@ abort () {
   exit 1
 }
 
+# Downloads the given url, <url> <prefix> <filename>
+wg () {
+  local url=$1
+  local prefix=$2
+  local filename=$3
+
+  wget $url \
+    --directory-prefix $prefix \
+    --output-document $prefix/$filename \
+    --no-show-progress \
+    --retry-connrefused \
+    --retry-on-http-error=404,500,503,504,599 \
+    --waitretry=10 \
+    --tries=3 >> $LOG_FILE 2>&1
+}
+
 # Installs third-party dependencies
 installDependencies () {
   log "Updating apt repositories" "\U1F4AC"
@@ -45,7 +61,7 @@ installConky () {
 
   local releaseInfoURL='https://api.github.com/repos/brndnmtthws/conky/releases/latest'
 
-  wget --no-show-progress -P $TEMP -O $TEMP/conky-release.info $releaseInfoURL >> $LOG_FILE 2>&1
+  wg $releaseInfoURL $TEMP "conky-release.info"
 
   log "Conky's release info has been downloaded"
 
@@ -54,7 +70,7 @@ installConky () {
   # Extract the URL to the conky executable file
   local executableURL=$(cat $TEMP/conky-release.info | jq --raw-output '.assets[0] | .browser_download_url')
 
-  wget --no-show-progress -P $TEMP -O $TEMP/conky-x86_64.AppImage $executableURL >> $LOG_FILE 2>&1
+  wg $executableURL $TEMP "conky-x86_64.AppImage"
 
   log "Conky executable file has been downloaded"
 
@@ -74,7 +90,7 @@ installWalle () {
 
   local executableURL="https://raw.githubusercontent.com/tzeikob/walle/master/walle.sh"
 
-  wget --no-show-progress -P $TEMP -O $TEMP/walle.sh $executableURL >> $LOG_FILE 2>&1
+  wg $executableURL $TEMP "walle.sh"
 
   log "Walle executable file has been downloaded"
 
