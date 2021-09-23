@@ -12,7 +12,7 @@ log () {
   echo -e "$1" >> $LOG_FILE
 }
 
-# Aborts process on fatal errors: <message>
+# Aborts process on fatal errors rolling installation back: <message>
 abort () {
   local errcode=$?
   local message=$1
