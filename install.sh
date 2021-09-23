@@ -3,7 +3,6 @@
 
 VERSION="0.1.0"
 INSTALLATION_HOME="/home/$USER/.tzkb/walle"
-DEFAULT_CONFIG="$INSTALLATION_HOME/.conkyrc"
 TEMP="/tmp/tzkb/walle.$(date +%s)"
 LOG_FILE="$TEMP/stdout.log"
 
