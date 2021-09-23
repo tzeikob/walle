@@ -117,7 +117,7 @@ installWalle () {
 
   local symlink="/usr/local/bin/walle"
 
-  sudo ln -s $INSTALLATION_HOME/walle.sh $symlink ||
+  sudo ln -s $INSTALLATION_HOME/walle.sh $symlink >> $LOG_FILE 2>&1 ||
     abort "failed to create symbolic link to the executable file"
 
   log "Executable symbolic link has been created ($symlink)"
