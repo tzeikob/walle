@@ -121,3 +121,5 @@ case $cmd in
     abort "Error: Command operation $cmd is not supported"
     exit;;
 esac
+
+exit 0
