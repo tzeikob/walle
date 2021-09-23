@@ -138,8 +138,8 @@ log "Logs have been routed to $LOG_FILE"
 
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
-  echo "Error: Do not run this script as root or using sudo \U1F480"
-  echo "\nProcess exited with code: 1"
+  echo -e "Error: do not run this script as root or using sudo \U1F480"
+  echo -e "\nProcess exited with code: 1"
   exit 1
 fi
 

@@ -66,7 +66,8 @@ stopConky () {
 
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
-  echo "Error: Do not run this script as root or using sudo"
+  echo -e "Error: do not run this script as root or using sudo \U1F480"
+  echo -e "\nProcess exited with code: 1"
   exit 1
 fi
 
@@ -107,7 +108,8 @@ case $cmd in
           shift
           config="${1-}";;
         *)
-          log "Error: Option $opt is not supported"
+          log "Error: option $opt is not supported" "\U1F480"
+          log "\nProcess exited with code: 1"
           exit 1;;
       esac
 
@@ -121,7 +123,8 @@ case $cmd in
     stopConky
     exit 0;;
   *)
-    log "Error: Command $cmd is not supported"
+    log "Error: command $cmd is not supported" "\U1F480"
+    log "\nProcess exited with code: 1"
     exit 1;;
 esac
 
