@@ -11,10 +11,10 @@ log () {
   echo -e "$1" >> $LOG_FILE
 }
 
-# Aborts process on fatal errors: <message>
+# Aborts process on fatal errors: <message> <errcode>
 abort () {
-  local errcode=$?
   local message=$1
+  local errcode=$2
 
   log "Error: $message" "\U1F480"
   log "\nProcess exited with code: $errcode"
@@ -46,22 +46,21 @@ version () {
   echo -e "v$VERSION"
 }
 
-# Starts conky service in background, <config>
+# Starts conky service in background: <config>
 startConky () {
   local config=$1
 
-  $INSTALLATION_HOME/conky-x86_64.AppImage -b >> $LOG_FILE 2>&1 & ||
-    abort "failed to start conky service"
+  $INSTALLATION_HOME/conky-x86_64.AppImage -b >> $LOG_FILE 2>&1 &
 
-  log "Conky is up and running"
+  log "Conky is now up and running"
 }
 
 # Stops and kills any conky running process
 stopConky () {
   pkill -f conky ||
-    abort "failed to stop conky service"
+    abort "failed to stop conky process" $?
 
-  log "Conky process has been shut down"
+  log "Conky has been shut down"
 }
 
 # Disallow to run this script as root or with sudo
