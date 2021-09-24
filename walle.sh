@@ -5,7 +5,7 @@ VERSION="0.1.0"
 ROOT_DIR="/home/$USER/.tzkb/walle"
 BIN_DIR="$ROOT_DIR/bin"
 LOGS_DIR="$ROOT_DIR/logs"
-LOG_FILE="$LOGS_DIR/walle.log"
+LOG_FILE="$LOGS_DIR/all.log"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
 log () {
@@ -59,7 +59,7 @@ startConky () {
 
 # Stops and kills any conky running process
 stopConky () {
-  pkill -f conky ||
+  pkill -f conky >> $LOG_FILE 2>&1 ||
     abort "failed to stop conky process" $?
 
   log "Conky has been shut down"
@@ -71,6 +71,9 @@ if [[ "$UID" == "0" ]]; then
   echo -e "\nProcess exited with code: 1"
   exit 1
 fi
+
+# Create logs folder
+mkdir -p $LOGS_DIR
 
 # Print help if script called without arguments
 if [ "$#" -lt 1 ]; then
