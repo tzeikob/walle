@@ -2,11 +2,13 @@
 # A script to install walle
 
 VERSION="0.1.0"
-INSTALLATION_HOME="/home/$USER/.tzkb/walle"
-TEMP="/tmp/tzkb/walle.$(date +%s)"
-LOG_FILE="$TEMP/stdout.log"
+ROOT_DIR="/home/$USER/.tzkb/walle"
+BIN_DIR="$ROOT_DIR/bin"
+TEMP_DIR="$ROOT_DIR/.tmp"
+LOGS_DIR="$ROOT_DIR/logs"
+LOG_FILE="$LOGS_DIR/install.log"
 
-# Logs a message to console & stdout/err: <message> <emoji>
+# Logs stdout/err message to console and log file: <message> <emoji>
 log () {
   echo -e "$1 $2"
   echo -e "$1" >> $LOG_FILE
@@ -30,7 +32,7 @@ abort () {
 
 # Cleans any installation files up
 rollback () {
-  rm -rf $INSTALLATION_HOME
+  rm -rf $ROOT_DIR
   sudo rm -f /usr/local/bin/walle
 }
 
@@ -73,7 +75,7 @@ installConky () {
 
   local releaseInfoURL='https://api.github.com/repos/brndnmtthws/conky/releases/latest'
 
-  wg $releaseInfoURL $TEMP conky-release.info ||
+  wg $releaseInfoURL $TEMP_DIR conky-release.info ||
     abort "failed to download conky release info"
 
   log "Conky's release info has been downloaded"
@@ -81,23 +83,22 @@ installConky () {
   log "Downloading the latest conky executable file" "\U1F4AC"
 
   # Extract the URL to the conky executable file
-  local executableURL=$(cat $TEMP/conky-release.info | jq --raw-output '.assets[0] | .browser_download_url')
+  local executableURL=$(cat $TEMP_DIR/conky-release.info | jq --raw-output '.assets[0] | .browser_download_url')
 
-  wg $executableURL $TEMP conky-x86_64.AppImage ||
+  wg $executableURL $BIN_DIR conky-x86_64.AppImage ||
     abort "failed to download conky executable file"
 
   log "Conky executable file has been downloaded"
 
-  mv $TEMP/conky-x86_64.AppImage $INSTALLATION_HOME/conky-x86_64.AppImage
-  chmod +x $INSTALLATION_HOME/conky-x86_64.AppImage
+  chmod +x $BIN_DIR/conky-x86_64.AppImage
 
   # Print the default configuration in logs
-  $INSTALLATION_HOME/conky-x86_64.AppImage -C >> $LOG_FILE 2>&1 ||
+  $BIN_DIR/conky-x86_64.AppImage -C >> $LOG_FILE 2>&1 ||
     abort "failed to print the default configuration"
 
   log "Conky set to use default configuration"
 
-  log "Conky has been installed ($INSTALLATION_HOME/conky-x86_64.AppImage)"
+  log "Conky has been installed ($BIN_DIR/conky-x86_64.AppImage)"
 }
 
 # Installs the latest version of the walle
@@ -106,33 +107,36 @@ installWalle () {
 
   local executableURL="https://raw.githubusercontent.com/tzeikob/walle/master/walle.sh"
 
-  wg $executableURL $TEMP "walle.sh" ||
+  wg $executableURL $BIN_DIR "walle.sh" ||
     abort "failed to download the walle executable file"
 
   log "Walle executable file has been downloaded"
 
-  mv $TEMP/walle.sh $INSTALLATION_HOME/walle.sh
-  chmod +x $INSTALLATION_HOME/walle.sh
+  chmod +x $BIN_DIR/walle.sh
 
   local symlink="/usr/local/bin/walle"
 
-  sudo ln -s $INSTALLATION_HOME/walle.sh $symlink >> $LOG_FILE 2>&1 ||
+  sudo ln -s $BIN_DIR/walle.sh $symlink >> $LOG_FILE 2>&1 ||
     abort "failed to create symbolic link to the executable file"
 
   log "Executable symbolic link has been created ($symlink)"
 
-  log "Walle has been installed ($INSTALLATION_HOME/walle.sh)"
+  log "Walle has been installed ($BIN_DIR/walle.sh)"
 }
 
-# Create the temporary folder
-mkdir -p $TEMP
+# Create installation folders
+mkdir -p $ROOT_DIR
+mkdir -p $BIN_DIR
+mkdir -p $LOGS_DIR
+mkdir -p $TEMP_DIR
 
 # Echoing welcome messages
 log "Walle v$VERSION"
 log "Running on $(lsb_release -si) $(lsb_release -sr) $(lsb_release -sc)"
 log "Logged in as $USER@$HOSTNAME with kernel $(uname -r)"
 log "Script spawn process with PID $$"
-log "Temporary folder has been created ($TEMP)"
+log "Installation folder has been created ($INSTALLATION_HOME)"
+log "Temporary folder has been created ($TEMP_DIR)"
 log "Logs have been routed to $LOG_FILE"
 
 # Disallow to run this script as root or with sudo
@@ -145,11 +149,6 @@ fi
 log "Script initialization has been completed\n"
 
 installDependencies
-
-mkdir -p $INSTALLATION_HOME
-
-log "Installation folder has been created ($INSTALLATION_HOME)"
-
 installConky
 installWalle
 

@@ -2,10 +2,12 @@
 # An opinionated tool to manage and configure conky for developers
 
 VERSION="0.1.0"
-INSTALLATION_HOME="/home/$USER/.tzkb/walle"
-LOG_FILE="$INSTALLATION_HOME/stdout.log"
+ROOT_DIR="/home/$USER/.tzkb/walle"
+BIN_DIR="$ROOT_DIR/bin"
+LOGS_DIR="$ROOT_DIR/logs"
+LOG_FILE="$LOGS_DIR/walle.log"
 
-# Logs a message to console & stdout/err: <message> <emoji>
+# Logs stdout/err message to console and log file: <message> <emoji>
 log () {
   echo -e "$1 $2"
   echo -e "$1" >> $LOG_FILE
@@ -38,7 +40,7 @@ help () {
   echo -e "  walle stop                         Stops conky by killing it's running service"
 
   echo -e "\nNote:"
-  echo -e "  to remove, delete or uninstall walle, just remove the folder ~/.tzkb/walle"
+  echo -e "  to remove, delete or uninstall walle, just remove the folder $ROOT_DIR and /usr/local/bin/walle symlink"
 }
 
 # Prints the version number
@@ -50,7 +52,7 @@ version () {
 startConky () {
   local config=$1
 
-  $INSTALLATION_HOME/conky-x86_64.AppImage -b >> $LOG_FILE 2>&1 &
+  $BIN_DIR/conky-x86_64.AppImage -b >> $LOG_FILE 2>&1 &
 
   log "Conky is now up and running"
 }
