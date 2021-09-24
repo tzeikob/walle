@@ -55,7 +55,7 @@ startConky () {
 
   # Try to kill an already running process
   if [ -f "$PID_FILE" ]; then
-    kill $(cat $PID_FILE) > dev/null
+    kill $(cat $PID_FILE) > /dev/null
   fi
 
   # Try to kill any other conky running processes
