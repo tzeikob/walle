@@ -62,7 +62,7 @@ startConky () {
   pkill -f conky > /dev/null
 
   # Start a new conky process
-  $BIN_DIR/conky-x86_64.AppImage -b >> $LOG_FILE 2>&1 &
+  $BIN_DIR/conky-x86_64.AppImage -b -p 3 >> $LOG_FILE 2>&1 &
 
   # Save the process id to the disk
   echo $! > $PID_FILE
