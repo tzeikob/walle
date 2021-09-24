@@ -5,8 +5,7 @@ VERSION="0.1.0"
 ROOT_DIR="/home/$USER/.tzkb/walle"
 BIN_DIR="$ROOT_DIR/bin"
 TEMP_DIR="$ROOT_DIR/.tmp"
-LOGS_DIR="$ROOT_DIR/logs"
-LOG_FILE="$LOGS_DIR/install.log"
+LOG_FILE="./install.log"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
 log () {
@@ -134,7 +133,6 @@ fi
 # Create installation folders
 mkdir -p $ROOT_DIR
 mkdir -p $BIN_DIR
-mkdir -p $LOGS_DIR
 mkdir -p $TEMP_DIR
 
 # Echoing welcome messages
