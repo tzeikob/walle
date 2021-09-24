@@ -5,6 +5,8 @@ VERSION="0.1.0"
 ROOT_DIR="/home/$USER/.tzkb/walle"
 BIN_DIR="$ROOT_DIR/bin"
 LOG_FILE="./install.log"
+SYMLINK="/usr/local/bin/walle"
+AUTOSTART_FILE="/home/$USER/.config/autostart/walle.sh.desktop"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
 log () {
@@ -31,7 +33,8 @@ abort () {
 # Cleans any installation files up
 rollback () {
   rm -rf $ROOT_DIR
-  sudo rm -f /usr/local/bin/walle
+  sudo rm -f $SYMLINK
+  rm -f $AUTOSTART_FILE
 }
 
 # Downloads the given url: <url> <prefix> <filename>
@@ -117,12 +120,25 @@ installWalle () {
 
   chmod +x $BIN_DIR/walle.sh
 
-  local symlink="/usr/local/bin/walle"
-
-  sudo ln -s $BIN_DIR/walle.sh $symlink >> $LOG_FILE 2>&1 ||
+  sudo ln -s $BIN_DIR/walle.sh $SYMLINK >> $LOG_FILE 2>&1 ||
     abort "failed to create symbolic link to the executable file" $?
 
-  log "Executable symlink has been created to $symlink"
+  log "Executable symlink has been created to $SYMLINK"
+
+  # Create autostart folder if not yet exists
+  mkdir -p /home/$USER/.config/autostart
+
+  echo "[Desktop Entry]" >> $AUTOSTART_FILE
+  echo "Type=Application" >> $AUTOSTART_FILE
+  echo "Exec=walle start" >> $AUTOSTART_FILE
+  echo "Hidden=false" >> $AUTOSTART_FILE
+  echo "NoDisplay=false" >> $AUTOSTART_FILE
+  echo "Name[en_US]=Walle" >> $AUTOSTART_FILE
+  echo "Name=Walle" >> $AUTOSTART_FILE
+  echo "Comment[en_US]=Walle Start Up" >> $AUTOSTART_FILE
+  echo "Comment=Walle Start Up" >> $AUTOSTART_FILE
+
+  log "Walle set to autostart at system start-up"
 
   log "Walle has been installed successfully"
 }
@@ -152,7 +168,10 @@ installConky
 installWalle
 
 log "\nInstallation has been completed successfully" "\U1F389"
-log "Try walle --help to start using it"
+
+walle start
+
+log "Try walle --help to get more help"
 log "Have a nice conky time, $USER!\n"
 
 exit 0

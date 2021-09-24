@@ -7,6 +7,8 @@ BIN_DIR="$ROOT_DIR/bin"
 PID_FILE="$ROOT_DIR/pid"
 LOGS_DIR="$ROOT_DIR/logs"
 LOG_FILE="$LOGS_DIR/all.log"
+SYMLINK="/usr/local/bin/walle"
+AUTOSTART_FILE="/home/$USER/.config/autostart/walle.sh.desktop"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
 log () {
@@ -41,7 +43,10 @@ help () {
   echo -e "  walle stop                         Stops conky by killing it's running service"
 
   echo -e "\nNote:"
-  echo -e "  to remove, delete or uninstall walle, just remove the folder $ROOT_DIR and /usr/local/bin/walle symlink"
+  echo -e "  to remove, delete or uninstall walle, just remove:"
+  echo -e "    - the installation folder $ROOT_DIR"
+  echo -e "    - the start up desktop file $AUTOSTART_FILE"
+  echo -e "    - the symlink file $SYMLINK"
 }
 
 # Prints the version number
