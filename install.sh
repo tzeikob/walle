@@ -96,7 +96,7 @@ installConky () {
 
   log "Conky set to use default configuration"
 
-  log "Conky has been installed ($BIN_DIR/conky-x86_64.AppImage)"
+  log "Conky has been installed successfully"
 }
 
 # Installs the latest version of the walle
@@ -117,9 +117,9 @@ installWalle () {
   sudo ln -s $BIN_DIR/walle.sh $symlink >> $LOG_FILE 2>&1 ||
     abort "failed to create symbolic link to the executable file" $?
 
-  log "Executable symbolic link has been created ($symlink)"
+  log "Executable symlink has been created to $symlink"
 
-  log "Walle has been installed ($BIN_DIR/walle.sh)"
+  log "Walle has been installed successfully"
 }
 
 # Disallow to run this script as root or with sudo
@@ -138,7 +138,7 @@ log "Walle v$VERSION"
 log "Running on $(lsb_release -si) $(lsb_release -sr) $(lsb_release -sc)"
 log "Logged in as $USER@$HOSTNAME with kernel $(uname -r)"
 log "Script spawn a process with PID $$"
-log "Installation folder has been created ($ROOT_DIR)"
+log "Installation folder has been created under $ROOT_DIR"
 log "Logs have been redirected to $LOG_FILE"
 log "Script initialization has been completed\n"
 
