@@ -4,6 +4,7 @@
 VERSION="0.1.0"
 ROOT_DIR="/home/$USER/.tzkb/walle"
 BIN_DIR="$ROOT_DIR/bin"
+PID_FILE="$ROOT_DIR/pid"
 LOGS_DIR="$ROOT_DIR/logs"
 LOG_FILE="$LOGS_DIR/all.log"
 
@@ -48,11 +49,23 @@ version () {
   echo -e "v$VERSION"
 }
 
-# Starts conky service in background: <config>
+# Starts or restarts conky service in background: <config>
 startConky () {
   local config=$1
 
+  # Try to kill an already running process
+  if [ -f "$PID_FILE" ]; then
+    kill $(cat $PID_FILE) > dev/null
+  fi
+
+  # Try to kill any other conky running processes
+  pkill -f conky > /dev/null
+
+  # Start a new conky process
   $BIN_DIR/conky-x86_64.AppImage -b >> $LOG_FILE 2>&1 &
+
+  # Save the process id to the disk
+  echo $! > $PID_FILE
 
   log "Conky is now up and running"
 }
@@ -61,6 +74,9 @@ startConky () {
 stopConky () {
   pkill -f conky >> $LOG_FILE 2>&1 ||
     abort "failed to stop conky process" $?
+
+  # Remove process id file
+  rm -f $PID_FILE
 
   log "Conky has been shut down"
 }
