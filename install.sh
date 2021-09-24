@@ -73,7 +73,7 @@ installDependencies () {
 installConky () {
   log "Downloading conky release info" "\U1F4AC"
 
-  local releaseInfoURL='https://api.github.com/repos/brndnmtthws/conky/releases/latest'
+  local releaseInfoURL="https://api.github.com/repos/brndnmtthws/conky/releases/latest"
 
   wg $releaseInfoURL $TEMP_DIR conky-release.info ||
     abort "failed to download conky release info"
@@ -135,7 +135,7 @@ log "Walle v$VERSION"
 log "Running on $(lsb_release -si) $(lsb_release -sr) $(lsb_release -sc)"
 log "Logged in as $USER@$HOSTNAME with kernel $(uname -r)"
 log "Script spawn process with PID $$"
-log "Installation folder has been created ($INSTALLATION_HOME)"
+log "Installation folder has been created ($ROOT_DIR)"
 log "Temporary folder has been created ($TEMP_DIR)"
 log "Logs have been routed to $LOG_FILE"
 
