@@ -82,11 +82,12 @@ installConky () {
 
   # Extract the URL to the conky executable file
   local executableURL=$(cat $ROOT_DIR/conky-release.info | jq --raw-output ".assets[0] | .browser_download_url")
+  local versionNumber=$(cat $ROOT_DIR/conky-release.info | jq --raw-output ".tag_name")
 
   wg $executableURL $BIN_DIR conky-x86_64.AppImage ||
     abort "failed to download conky executable file" $?
 
-  log "Conky executable file has been downloaded"
+  log "Conky $versionNumber executable file has been downloaded"
 
   chmod +x $BIN_DIR/conky-x86_64.AppImage
 
