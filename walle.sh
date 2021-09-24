@@ -98,7 +98,7 @@ case $cmd in
     shift
 
     # Initialize start command options
-    config=$DEFAULT_CONFIG
+    config=""
 
     # Iterate to gather command's option values
     while [ "$#" -gt 0 ]; do
