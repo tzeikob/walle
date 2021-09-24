@@ -81,11 +81,11 @@ installConky () {
   log "Downloading the latest conky executable file" "\U1F4AC"
 
   # Extract the URL to the conky executable file
-  read executableURL < <(cat $ROOT_DIR/conky-release.info | jq --raw-output ".assets[0] | .browser_download_url" >> $LOG_FILE 2>&1) ||
+  read executableURL < <(cat $ROOT_DIR/conky-release.info | jq --raw-output ".assets[0] | .browser_download_url" 2>> $LOG_FILE) ||
     abort "failed to extract the URL to the executable file" $?
 
   # Extract the version number of the latest conky release
-  read versionNumber < <(cat $ROOT_DIR/conky-release.info | jq --raw-output ".tag_name" >> $LOG_FILE 2>&1) ||
+  read versionNumber < <(cat $ROOT_DIR/conky-release.info | jq --raw-output ".tag_name" 2>> $LOG_FILE) ||
     abort "failed to extract the tag name" $?
 
   wg $executableURL $BIN_DIR conky-x86_64.AppImage ||
