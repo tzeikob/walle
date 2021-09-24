@@ -4,7 +4,6 @@
 VERSION="0.1.0"
 ROOT_DIR="/home/$USER/.tzkb/walle"
 BIN_DIR="$ROOT_DIR/bin"
-TEMP_DIR="$ROOT_DIR/.tmp"
 LOG_FILE="./install.log"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
@@ -74,7 +73,7 @@ installConky () {
 
   local releaseInfoURL="https://api.github.com/repos/brndnmtthws/conky/releases/latest"
 
-  wg $releaseInfoURL $TEMP_DIR conky-release.info ||
+  wg $releaseInfoURL $ROOT_DIR conky-release.info ||
     abort "failed to download conky release info" $?
 
   log "Conky's release info has been downloaded"
@@ -82,7 +81,7 @@ installConky () {
   log "Downloading the latest conky executable file" "\U1F4AC"
 
   # Extract the URL to the conky executable file
-  local executableURL=$(cat $TEMP_DIR/conky-release.info | jq --raw-output ".assets[0] | .browser_download_url")
+  local executableURL=$(cat $ROOT_DIR/conky-release.info | jq --raw-output ".assets[0] | .browser_download_url")
 
   wg $executableURL $BIN_DIR conky-x86_64.AppImage ||
     abort "failed to download conky executable file" $?
@@ -133,7 +132,6 @@ fi
 # Create installation folders
 mkdir -p $ROOT_DIR
 mkdir -p $BIN_DIR
-mkdir -p $TEMP_DIR
 
 # Echoing welcome messages
 log "Walle v$VERSION"
