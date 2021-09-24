@@ -14,10 +14,10 @@ log () {
   echo -e "$1" >> $LOG_FILE
 }
 
-# Aborts process on fatal errors rolling installation back: <message>
+# Aborts process on fatal errors rolling installation back: <message> <errcode>
 abort () {
-  local errcode=$?
   local message=$1
+  local errcode=$2
 
   log "Error: $message" "\U1F480"
   log "Cleaning up installation files" "\U1F4AC"
@@ -57,14 +57,14 @@ installDependencies () {
   log "Updating apt repositories" "\U1F4AC"
 
   sudo apt-get -y update >> $LOG_FILE 2>&1 ||
-    abort "failed to update repositories"
+    abort "failed to update repositories" $?
 
   log "Repositories have been updated"
 
   log "Installing third-party dependencies" "\U1F4AC"
 
   sudo apt-get -y install wget jq >> $LOG_FILE 2>&1 ||
-    abort "failed to install dependencies"
+    abort "failed to install dependencies" $?
 
   log "Dependencies have been installed"
 }
@@ -76,7 +76,7 @@ installConky () {
   local releaseInfoURL="https://api.github.com/repos/brndnmtthws/conky/releases/latest"
 
   wg $releaseInfoURL $TEMP_DIR conky-release.info ||
-    abort "failed to download conky release info"
+    abort "failed to download conky release info" $?
 
   log "Conky's release info has been downloaded"
 
@@ -86,7 +86,7 @@ installConky () {
   local executableURL=$(cat $TEMP_DIR/conky-release.info | jq --raw-output "assets[0] | .browser_download_url")
 
   wg $executableURL $BIN_DIR conky-x86_64.AppImage ||
-    abort "failed to download conky executable file"
+    abort "failed to download conky executable file" $?
 
   log "Conky executable file has been downloaded"
 
@@ -94,7 +94,7 @@ installConky () {
 
   # Print the default configuration in logs
   $BIN_DIR/conky-x86_64.AppImage -C >> $LOG_FILE 2>&1 ||
-    abort "failed to print the default configuration"
+    abort "failed to print the default configuration" $?
 
   log "Conky set to use default configuration"
 
@@ -108,7 +108,7 @@ installWalle () {
   local executableURL="https://raw.githubusercontent.com/tzeikob/walle/master/walle.sh"
 
   wg $executableURL $BIN_DIR "walle.sh" ||
-    abort "failed to download the walle executable file"
+    abort "failed to download the walle executable file" $?
 
   log "Walle executable file has been downloaded"
 
@@ -117,7 +117,7 @@ installWalle () {
   local symlink="/usr/local/bin/walle"
 
   sudo ln -s $BIN_DIR/walle.sh $symlink >> $LOG_FILE 2>&1 ||
-    abort "failed to create symbolic link to the executable file"
+    abort "failed to create symbolic link to the executable file" $?
 
   log "Executable symbolic link has been created ($symlink)"
 
