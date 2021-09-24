@@ -84,6 +84,7 @@ installConky () {
   read executableURL < <(cat $ROOT_DIR/conky-release.info | jq --raw-output ".assets[0] | .browser_download_url" >> $LOG_FILE 2>&1) ||
     abort "failed to extract the URL to the executable file" $?
 
+  # Extract the version number of the latest conky release
   read versionNumber < <(cat $ROOT_DIR/conky-release.info | jq --raw-output ".tag_name" >> $LOG_FILE 2>&1) ||
     abort "failed to extract the tag name" $?
 
