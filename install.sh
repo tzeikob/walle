@@ -124,6 +124,13 @@ installWalle () {
   log "Walle has been installed ($BIN_DIR/walle.sh)"
 }
 
+# Disallow to run this script as root or with sudo
+if [[ "$UID" == "0" ]]; then
+  echo -e "Error: don't run this script as root or using sudo \U1F480"
+  echo -e "\nProcess exited with code: 1"
+  exit 1
+fi
+
 # Create installation folders
 mkdir -p $ROOT_DIR
 mkdir -p $BIN_DIR
@@ -134,18 +141,9 @@ mkdir -p $TEMP_DIR
 log "Walle v$VERSION"
 log "Running on $(lsb_release -si) $(lsb_release -sr) $(lsb_release -sc)"
 log "Logged in as $USER@$HOSTNAME with kernel $(uname -r)"
-log "Script spawn process with PID $$"
+log "Script spawn a process with PID $$"
 log "Installation folder has been created ($ROOT_DIR)"
-log "Temporary folder has been created ($TEMP_DIR)"
-log "Logs have been routed to $LOG_FILE"
-
-# Disallow to run this script as root or with sudo
-if [[ "$UID" == "0" ]]; then
-  echo -e "Error: do not run this script as root or using sudo \U1F480"
-  echo -e "\nProcess exited with code: 1"
-  exit 1
-fi
-
+log "Logs have been redirected to $LOG_FILE"
 log "Script initialization has been completed\n"
 
 installDependencies
