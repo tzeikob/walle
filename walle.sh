@@ -72,7 +72,7 @@ if [[ "$UID" == "0" ]]; then
   exit 1
 fi
 
-# Create logs folder
+# Create logs folder if not yet created
 mkdir -p $LOGS_DIR
 
 # Print help if script called without arguments
