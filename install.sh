@@ -6,7 +6,8 @@ ROOT_DIR="/home/$USER/.tzkb/walle"
 BIN_DIR="$ROOT_DIR/bin"
 LOG_FILE="./install.log"
 SYMLINK="/usr/local/bin/walle"
-AUTOSTART_FILE="/home/$USER/.config/autostart/walle.sh.desktop"
+AUTOSTART_DIR="/home/$USER/.config/autostart"
+AUTOSTART_FILE="$AUTOSTART_DIR/walle.sh.desktop"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
 log () {
@@ -126,7 +127,7 @@ installWalle () {
   log "Executable symlink has been created to $SYMLINK"
 
   # Create autostart folder if not yet exists
-  mkdir -p /home/$USER/.config/autostart
+  mkdir -p $AUTOSTART_DIR
 
   echo "[Desktop Entry]" >> $AUTOSTART_FILE
   echo "Type=Application" >> $AUTOSTART_FILE
