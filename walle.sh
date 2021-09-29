@@ -9,6 +9,7 @@ LOGS_DIR="$ROOT_DIR/logs"
 LOG_FILE="$LOGS_DIR/all.log"
 SYMLINK="/usr/local/bin/walle"
 AUTOSTART_FILE="/home/$USER/.config/autostart/walle.sh.desktop"
+CONFIG_FILE="$ROOT_DIR/.conkyrc"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
 log () {
@@ -67,7 +68,7 @@ startConky () {
   pkill -f conky >> $LOG_FILE 2>&1
 
   # Start a new conky process
-  $BIN_DIR/conky-x86_64.AppImage -b -p 3 >> $LOG_FILE 2>&1 &
+  $BIN_DIR/conky-x86_64.AppImage -b -p 3 -c $config >> $LOG_FILE 2>&1 &
 
   # Save the process id to the disk
   echo $! > $PID_FILE
@@ -122,7 +123,7 @@ case $cmd in
     shift
 
     # Initialize start command options
-    config=""
+    config=$CONFIG_FILE
 
     # Iterate to gather command's option values
     while [ "$#" -gt 0 ]; do

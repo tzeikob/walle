@@ -99,11 +99,18 @@ installConky () {
 
   chmod +x $BIN_DIR/conky-x86_64.AppImage
 
-  # Print the default configuration in logs
+  # Print the default built-in configuration in logs
   $BIN_DIR/conky-x86_64.AppImage -C >> $LOG_FILE 2>&1 ||
     abort "failed to print the default configuration" $?
 
-  log "Conky set to use default configuration"
+  log "Downloading the conky config file" "\U1F4AC"
+
+  local configURL="https://raw.githubusercontent.com/tzeikob/walle/master/.conkyrc"
+
+  wg $configURL $ROOT_DIR ".conkyrc" ||
+    abort "failed to download the conky config file" $?
+
+  log "Conky config file has been downloaded"
 
   log "Conky has been installed successfully"
 }
