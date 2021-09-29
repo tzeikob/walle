@@ -60,11 +60,11 @@ startConky () {
 
   # Try to kill an already running process
   if [ -f "$PID_FILE" ]; then
-    kill $(cat $PID_FILE) > /dev/null
+    kill $(cat $PID_FILE) >> $LOG_FILE 2>&1
   fi
 
   # Try to kill any other conky running processes
-  pkill -f conky > /dev/null
+  pkill -f conky >> $LOG_FILE 2>&1
 
   # Start a new conky process
   $BIN_DIR/conky-x86_64.AppImage -b -p 3 >> $LOG_FILE 2>&1 &
