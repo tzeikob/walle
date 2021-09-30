@@ -48,5 +48,5 @@ $alignr Logged as: $nodename
 $alignr Kernel: $kernel
 $alignr Uptime: $uptime
 $alignr Processes: $processes
-$alignr Up: ${upspeed}, Down: ${downspeed}
+$alignr Up: ${upspeed} Down: ${downspeed}
 ]]
