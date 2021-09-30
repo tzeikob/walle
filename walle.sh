@@ -68,7 +68,7 @@ startConky () {
   pkill -f conky >> $LOG_FILE 2>&1
 
   # Start conky process as a child process
-  $BIN_DIR/conky-x86_64.AppImage -b -p 3 -c $config >> $LOG_FILE 2>&1 &
+  $BIN_DIR/conky-x86_64.AppImage -b -p 1 -c $config >> $LOG_FILE 2>&1 &
 
   # Save child process id
   local pid=$!
