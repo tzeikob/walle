@@ -59,15 +59,21 @@ version () {
 startConky () {
   local config=$1
 
-  # Try to kill an already running process
+  # Try to kill process if already running
   if [ -f "$PID_FILE" ]; then
     kill $(cat $PID_FILE) >> $LOG_FILE 2>&1
   fi
 
-  # Try to kill any other conky running processes
-  pkill -f conky >> $LOG_FILE 2>&1
+  # Make sure any other conky processes are killed
+  local conkyPids=($(pgrep -f conky))
 
-  # Start conky process as a child process
+  for id in "${conkyPids[@]}"; do
+    if [[ $id != $$ ]]; then
+      kill "$id" >> $LOG_FILE 2>&1
+    fi
+  done
+
+  # Start a new conky process as child process
   $BIN_DIR/conky-x86_64.AppImage -b -p 1 -c $config >> $LOG_FILE 2>&1 &
 
   # Save child process id
