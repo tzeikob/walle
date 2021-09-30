@@ -77,7 +77,7 @@ installConky () {
 
   local releaseInfoURL="https://api.github.com/repos/brndnmtthws/conky/releases/latest"
 
-  wg $releaseInfoURL $ROOT_DIR conky-release.info ||
+  wg $releaseInfoURL $ROOT_DIR conky.info ||
     abort "failed to download conky release info" $?
 
   log "Conky's release info has been downloaded"
@@ -85,11 +85,11 @@ installConky () {
   log "Downloading the latest conky executable file" "\U1F4AC"
 
   # Extract the URL to the conky executable file
-  read executableURL < <(cat $ROOT_DIR/conky-release.info | jq --raw-output ".assets[0] | .browser_download_url" 2>> $LOG_FILE) ||
+  read executableURL < <(cat $ROOT_DIR/conky.info | jq --raw-output ".assets[0] | .browser_download_url" 2>> $LOG_FILE) ||
     abort "failed to extract the URL to the executable file" $?
 
   # Extract the version number of the latest conky release
-  read versionNumber < <(cat $ROOT_DIR/conky-release.info | jq --raw-output ".tag_name" 2>> $LOG_FILE) ||
+  read versionNumber < <(cat $ROOT_DIR/conky.info | jq --raw-output ".tag_name" 2>> $LOG_FILE) ||
     abort "failed to extract the tag name" $?
 
   wg $executableURL $BIN_DIR conky-x86_64.AppImage ||
@@ -105,9 +105,9 @@ installConky () {
 
   log "Downloading the conky config file" "\U1F4AC"
 
-  local configURL="https://raw.githubusercontent.com/tzeikob/walle/master/.conkyrc"
+  local configURL="https://raw.githubusercontent.com/tzeikob/walle/master/conkyrc"
 
-  wg $configURL $ROOT_DIR ".conkyrc" ||
+  wg $configURL $ROOT_DIR "conkyrc" ||
     abort "failed to download the conky config file" $?
 
   log "Conky config file has been downloaded"
