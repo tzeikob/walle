@@ -28,6 +28,16 @@ abort () {
   exit $errcode
 }
 
+# Resolves and updates the network interface in config file
+resolveAndUpdateNetwork () {
+  # Resolve the network interface currently in use
+  local networkName=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
+
+  # Update the config file with the resolved network
+  sed -i "s/ \${upspeed.*} / \${upspeed $networkName} /" $CONFIG_FILE
+  sed -i "s/\${downspeed.*}/\${downspeed $networkName}/" $CONFIG_FILE
+}
+
 # Prints a short help report
 help () {
   echo -e "Walle v$VERSION"
@@ -72,6 +82,9 @@ startConky () {
       kill "$id" >> $LOG_FILE 2>&1
     fi
   done
+
+  # Resolve and update the network interface currently in use
+  resolveAndUpdateNetwork
 
   # Start a new conky process as child process
   $BIN_DIR/conky-x86_64.AppImage -b -p 1 -c $config >> $LOG_FILE 2>&1 &
