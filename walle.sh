@@ -135,7 +135,7 @@ done
 cmd="${1-}"
 
 case $cmd in
-  "start")
+  "start" | "restart")
     shift
 
     # Initialize start command options
