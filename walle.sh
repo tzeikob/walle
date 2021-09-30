@@ -67,11 +67,21 @@ startConky () {
   # Try to kill any other conky running processes
   pkill -f conky >> $LOG_FILE 2>&1
 
-  # Start a new conky process
-  $BIN_DIR/conky-x86_64.AppImage -b -p 3 -c $config >> $LOG_FILE 2>&1 &
+  # Start conky process as a child process
+  $BIN_DIR/conky-x86_64.AppImage -c $config -b -p 3 >> $LOG_FILE 2>&1 &
 
-  # Save the process id to the disk
-  echo $! > $PID_FILE
+  # Save child process id
+  local pid=$!
+
+  # Give time to child process to spawn
+  sleep 1
+
+  # Check if child process spawn successfully
+  ps -p $pid >> $LOG_FILE 2>&1 ||
+    abort "conky process failed to be spawn $pid" $?
+
+  # Save the child process id to the disk
+  echo $pid > $PID_FILE
 
   log "Conky is now up and running"
 }
