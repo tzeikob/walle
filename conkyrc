@@ -46,4 +46,5 @@ $alignr Up ${upspeedf}KiB Down ${downspeedf}KiB
 $alignr Processes $processes
 $alignr $user_names on $nodename
 $alignr Uptime $uptime_short
+$alignr ${if_up enp0s3}Connected${else}Offline${endif}
 ]]
