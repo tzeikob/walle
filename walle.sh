@@ -87,7 +87,7 @@ startConky () {
   resolveAndUpdateNetwork
 
   # Start a new conky process as child process
-  $BIN_DIR/conky-x86_64.AppImage -b -p 1 -c $config >> $LOG_FILE 2>&1 &
+  conky -b -p 1 -c $config >> $LOG_FILE 2>&1 &
 
   # Save child process id
   local pid=$!

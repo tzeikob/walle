@@ -71,36 +71,17 @@ installDependencies () {
   log "Dependencies have been installed"
 }
 
-# Installs the latest version of the conky
+# Installs the conky along with lua and cairo deps
 installConky () {
-  log "Downloading conky release info" "\U1F4AC"
+  log "Installing conky packages" "\U1F4AC"
 
-  local releaseInfoURL="https://api.github.com/repos/brndnmtthws/conky/releases/latest"
+  sudo apt-get -y install conky conky-all >> $LOG_FILE 2>&1 ||
+    abort "failed to install conky packages" $?
 
-  wg $releaseInfoURL $ROOT_DIR conky.info ||
-    abort "failed to download conky release info" $?
-
-  log "Conky's release info has been downloaded"
-
-  log "Downloading the latest conky executable file" "\U1F4AC"
-
-  # Extract the URL to the conky executable file
-  read executableURL < <(cat $ROOT_DIR/conky.info | jq --raw-output ".assets[0] | .browser_download_url" 2>> $LOG_FILE) ||
-    abort "failed to extract the URL to the executable file" $?
-
-  # Extract the version number of the latest conky release
-  read versionNumber < <(cat $ROOT_DIR/conky.info | jq --raw-output ".tag_name" 2>> $LOG_FILE) ||
-    abort "failed to extract the tag name" $?
-
-  wg $executableURL $BIN_DIR conky-x86_64.AppImage ||
-    abort "failed to download conky executable file" $?
-
-  log "Conky $versionNumber executable file has been downloaded"
-
-  chmod +x $BIN_DIR/conky-x86_64.AppImage
+  log "Conky packages have been installed"
 
   # Print the default built-in configuration in logs
-  $BIN_DIR/conky-x86_64.AppImage -C >> $LOG_FILE 2>&1 ||
+  conky -C >> $LOG_FILE 2>&1 ||
     abort "failed to print the default configuration" $?
 
   log "Downloading the conky config file" "\U1F4AC"
