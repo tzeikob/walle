@@ -36,6 +36,7 @@ resolveAndUpdateNetwork () {
   # Update the config file with the resolved network
   sed -i "s/ \${upspeedf.*}KiB / \${upspeedf $networkName}KiB /" $CONFIG_FILE
   sed -i "s/\${downspeedf.*}/\${downspeedf $networkName}/" $CONFIG_FILE
+  sed -i "s/\${if_up.*}Connected/\${if_up $networkName}Connected/" $CONFIG_FILE
 }
 
 # Prints a short help report
