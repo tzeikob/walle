@@ -34,8 +34,8 @@ resolveAndUpdateNetwork () {
   local networkName=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
 
   # Update the config file with the resolved network
-  sed -i "s/ \${upspeed.*} / \${upspeed $networkName} /" $CONFIG_FILE
-  sed -i "s/\${downspeed.*}/\${downspeed $networkName}/" $CONFIG_FILE
+  sed -i "s/ \${upspeedf.*}KiB / \${upspeedf $networkName}KiB /" $CONFIG_FILE
+  sed -i "s/\${downspeedf.*}/\${downspeedf $networkName}/" $CONFIG_FILE
 }
 
 # Prints a short help report
