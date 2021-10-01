@@ -34,7 +34,7 @@ conky.config = {
     update_interval = 1.0,
     uppercase = false,
     use_spacer = 'none',
-    use_xft = true,
+    use_xft = true
 }
 
 conky.text = [[
