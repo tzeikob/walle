@@ -42,7 +42,7 @@ $alignr ${time %l:%M %p}
 $alignr ${time %B%e, %Y}
 $alignr Drama, Greece
 $alignr CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%
-$alignr Up ${upspeedf enp0s3}KiB Down ${downspeedf enp0s3}KiB
+$alignr Up ${upspeedf}KiB Down ${downspeedf}KiB
 $alignr Processes $processes
 $alignr $user_names on $nodename
 $alignr Uptime $uptime_short
