@@ -39,14 +39,11 @@ conky.config = {
 
 conky.text = [[
 $alignr ${time %l:%M %p}
-$alignr ${time %B %e, %Y}
+$alignr ${time %B%e, %Y}
 $alignr Drama, Greece
-$alignr CPU: $freq_g GHz ($cpu%)
-$alignr Mem: $mem
-$alignr Disk: ${fs_used /}
-$alignr Logged as: $nodename
-$alignr Kernel: $kernel
-$alignr Uptime: $uptime
-$alignr Processes: $processes
-$alignr Up: ${upspeed} Down: ${downspeed}
+$alignr CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%
+$alignr Up ${upspeedf enp0s3}KiB Down ${downspeedf enp0s3}KiB
+$alignr Processes $processes
+$alignr $user_names on $nodename
+$alignr Uptime $uptime_short
 ]]
