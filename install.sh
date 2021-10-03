@@ -109,9 +109,9 @@ installExecutable () {
   # Set global variables in the executable file
   sed -i "s/#NAME#/$NAME/" $BIN_DIR/$NAME.sh
   sed -i "s/#VERSION#/$VERSION/" $BIN_DIR/$NAME.sh
-  sed -i "s/#ROOT_DIR#/$ROOT_DIR/" $BIN_DIR/$NAME.sh
-  sed -i "s/#BIN_DIR#/$BIN_DIR/" $BIN_DIR/$NAME.sh
-  sed -i "s/#LOGS_DIR#/$LOGS_DIR/" $BIN_DIR/$NAME.sh
+  sed -i "s/#ROOT_DIR#/$(echo $ROOT_DIR | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
+  sed -i "s/#BIN_DIR#/$(echo $BIN_DIR | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
+  sed -i "s/#LOGS_DIR#/$(echo $LOGS_DIR | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
 
   log "Global variables have been set"
 
