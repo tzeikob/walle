@@ -15,8 +15,9 @@ bash -c "$(wget -qO- https://git.io/JaJu7)"
 To remove the installation files along with the conky dependencies just execute the following statements:
 
 ```sh
-rm -rf ~/.tzkb/walle \
- rm -f ~/.config/autostart/walle.desktop \
- sudo rm -f /usr/local/bin/walle \
- sudo apt-get purge conky conky-all
+rm -rf ~/.tzkb/walle
+rm -f ~/.config/autostart/walle.desktop
+sudo rm -f /usr/local/bin/walle
+
+sudo apt-get purge conky conky-all
 ```
