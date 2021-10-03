@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # An opinionated tool to manage and configure conky for developers
 
-source release
+source ./release
 
 PID_FILE="$ROOT_DIR/pid"
 CONFIG_FILE="$ROOT_DIR/conkyrc"
