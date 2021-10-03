@@ -1,13 +1,21 @@
 #!/usr/bin/env bash
 # A script to install walle
 
+NAME="walle"
 VERSION="0.1.0"
-ROOT_DIR="/home/$USER/.tzkb/walle"
+ROOT_DIR="/home/$USER/.tzkb/$NAME"
 BIN_DIR="$ROOT_DIR/bin"
-LOG_FILE="./install.log"
-SYMLINK="/usr/local/bin/walle"
+LOGS_DIR="$ROOT_DIR/logs"
+RELEASE_FILE="$ROOT_DIR/release"
+
+SYMLINK="/usr/local/bin/$NAME"
 AUTOSTART_DIR="/home/$USER/.config/autostart"
-AUTOSTART_FILE="$AUTOSTART_DIR/walle.desktop"
+AUTOSTART_FILE="$AUTOSTART_DIR/$NAME.desktop"
+
+INDEX_URL="https://raw.githubusercontent.com/tzeikob/$NAME/master/index.sh"
+CONFIG_URL="https://raw.githubusercontent.com/tzeikob/$NAME/master/conkyrc"
+
+LOG_FILE="./install.log"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
 log () {
@@ -56,14 +64,10 @@ wg () {
 
 # Installs third-party dependencies
 installDependencies () {
-  log "Updating apt repositories" "\U1F4AC"
+  log "Installing third-party dependencies" "\U1F4AC"
 
   sudo apt-get -y update >> $LOG_FILE 2>&1 ||
     abort "failed to update repositories" $?
-
-  log "Repositories have been updated"
-
-  log "Installing third-party dependencies" "\U1F4AC"
 
   sudo apt-get -y install wget jq >> $LOG_FILE 2>&1 ||
     abort "failed to install dependencies" $?
@@ -86,30 +90,26 @@ installConky () {
 
   log "Downloading the conky config file" "\U1F4AC"
 
-  local configURL="https://raw.githubusercontent.com/tzeikob/walle/master/conkyrc"
-
-  wg $configURL $ROOT_DIR "conkyrc" ||
+  wg $CONFIG_URL $ROOT_DIR "conkyrc" ||
     abort "failed to download the conky config file" $?
 
-  log "Conky config file has been downloaded"
+  log "Config file has been downloaded"
 
-  log "Conky has been installed successfully"
+  log "Conky has been installed"
 }
 
-# Installs the latest version of the walle
-installWalle () {
-  log "Downloading the latest version of the walle executable" "\U1F4AC"
+# Installs the executable file
+installExecutable () {
+  log "Installing the $NAME executable file" "\U1F4AC"
 
-  local executableURL="https://raw.githubusercontent.com/tzeikob/walle/master/walle.sh"
+  wg $INDEX_URL $BIN_DIR "$NAME.sh" ||
+    abort "failed to download the executable file" $?
 
-  wg $executableURL $BIN_DIR "walle.sh" ||
-    abort "failed to download the walle executable file" $?
+  log "Executable file has been downloaded"
 
-  log "Walle executable file has been downloaded"
+  chmod +x $BIN_DIR/$NAME.sh
 
-  chmod +x $BIN_DIR/walle.sh
-
-  sudo ln -s $BIN_DIR/walle.sh $SYMLINK >> $LOG_FILE 2>&1 ||
+  sudo ln -s $BIN_DIR/$NAME.sh $SYMLINK >> $LOG_FILE 2>&1 ||
     abort "failed to create symbolic link to the executable file" $?
 
   log "Executable symlink has been created to $SYMLINK"
@@ -119,17 +119,32 @@ installWalle () {
 
   echo "[Desktop Entry]" >> $AUTOSTART_FILE
   echo "Type=Application" >> $AUTOSTART_FILE
-  echo "Exec=walle start" >> $AUTOSTART_FILE
+  echo "Exec=$NAME start" >> $AUTOSTART_FILE
   echo "Hidden=false" >> $AUTOSTART_FILE
   echo "NoDisplay=false" >> $AUTOSTART_FILE
-  echo "Name[en_US]=Walle" >> $AUTOSTART_FILE
-  echo "Name=Walle" >> $AUTOSTART_FILE
-  echo "Comment[en_US]=Walle Start Up" >> $AUTOSTART_FILE
-  echo "Comment=Walle Start Up" >> $AUTOSTART_FILE
+  echo "Name[en_US]=$NAME" >> $AUTOSTART_FILE
+  echo "Name=$NAME" >> $AUTOSTART_FILE
+  echo "Comment[en_US]=$NAME Start Up" >> $AUTOSTART_FILE
+  echo "Comment=$NAME Start Up" >> $AUTOSTART_FILE
 
-  log "Walle set to autostart at system start-up"
+  log "Autostart has been set at system start-up"
 
-  log "Walle has been installed successfully"
+  log "Executable has been installed"
+}
+
+# Create the release source file
+createReleaseFile () {
+  touch $RELEASE_FILE
+
+  echo -e "#!/usr/bin/env bash\n" >> $RELEASE_FILE
+
+  echo -e "NAME=\"$NAME\"" >> $RELEASE_FILE
+  echo -e "VERSION=\"$VERSION\"" >> $RELEASE_FILE
+  echo -e "ROOT_DIR=\"$ROOT_DIR\"" >> $RELEASE_FILE
+  echo -e "BIN_DIR=\"$BIN_DIR\"" >> $RELEASE_FILE
+  echo -e "LOGS_DIR=\"$LOGS_DIR\"" >> $RELEASE_FILE
+
+  log "Release source file has been created"
 }
 
 # Disallow to run this script as root or with sudo
@@ -142,9 +157,10 @@ fi
 # Create installation folders
 mkdir -p $ROOT_DIR
 mkdir -p $BIN_DIR
+mkdir -p $LOGS_DIR
 
 # Echoing welcome messages
-log "Walle v$VERSION"
+log "$NAME v$VERSION"
 log "Running on $(lsb_release -si) $(lsb_release -sr) $(lsb_release -sc)"
 log "Logged in as $USER@$HOSTNAME with kernel $(uname -r)"
 log "Script spawn a process with PID $$"
@@ -154,13 +170,14 @@ log "Script initialization has been completed\n"
 
 installDependencies
 installConky
-installWalle
+installExecutable
+createReleaseFile
 
 log "\nInstallation has been completed successfully" "\U1F389"
 
-walle start
+$NAME start
 
-log "Try walle --help to get more help"
+log "Try $NAME --help to get more help"
 log "Have a nice conky time, $USER!\n"
 
 exit 0

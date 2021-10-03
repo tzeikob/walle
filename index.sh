@@ -1,29 +1,19 @@
 #!/usr/bin/env bash
 # An opinionated tool to manage and configure conky for developers
 
-VERSION="0.1.0"
-ROOT_DIR="/home/$USER/.tzkb/walle"
-BIN_DIR="$ROOT_DIR/bin"
-PID_FILE="$ROOT_DIR/pid"
-LOGS_DIR="$ROOT_DIR/logs"
-LOG_FILE="$LOGS_DIR/all.log"
-SYMLINK="/usr/local/bin/walle"
-AUTOSTART_FILE="/home/$USER/.config/autostart/walle.desktop"
-CONFIG_FILE="$ROOT_DIR/conkyrc"
+source release
 
-# Logs stdout/err message to console and log file: <message> <emoji>
-log () {
-  echo -e "$1 $2"
-  echo -e "$1" >> $LOG_FILE
-}
+PID_FILE="$ROOT_DIR/pid"
+CONFIG_FILE="$ROOT_DIR/conkyrc"
+LOG_FILE="$LOGS_DIR/all.log"
 
 # Aborts process on fatal errors: <message> <errcode>
 abort () {
   local message=$1
   local errcode=$2
 
-  log "Error: $message" "\U1F480"
-  log "\nProcess exited with code: $errcode"
+  echo -e "Error: $message \U1F480" | tee -a $LOG_FILE
+  echo -e "\nProcess exited with code: $errcode" | tee -a $LOG_FILE
 
   exit $errcode
 }
@@ -41,24 +31,21 @@ resolveAndUpdateNetwork () {
 
 # Prints a short help report
 help () {
-  echo -e "Walle v$VERSION"
+  echo -e "$NAME v$VERSION"
   echo -e "An opinionated tool to manage and configure conky for developers\n"
 
   echo -e "Usage:"
-  echo -e "  walle --help                       Print this help message"
-  echo -e "  walle --version                    Print the installed version of walle"
-  echo -e "  walle start [--config <file>]      Start conky with config file, defaults to .conkyrc"
-  echo -e "  walle stop                         Stop conky service"
+  echo -e "  $NAME --help                       Print this help message"
+  echo -e "  $NAME --version                    Print the installed version"
+  echo -e "  $NAME start [--config <file>]      Start conky with the given config file"
+  echo -e "  $NAME stop                         Stop conky service"
 
   echo -e "\n Example:"
-  echo -e "  walle start --config ~/.wallerc    Starts conky with the given config file"
-  echo -e "  walle stop                         Stops conky by killing it's running service"
+  echo -e "  $NAME start --config ~/.conkyrc    Starts conky with the given config file"
+  echo -e "  $NAME stop                         Stops conky by killing it's running service"
 
   echo -e "\nNote:"
-  echo -e "  to remove, delete or uninstall walle, just remove:"
-  echo -e "    - the installation folder $ROOT_DIR"
-  echo -e "    - the start up desktop file $AUTOSTART_FILE"
-  echo -e "    - the symlink file $SYMLINK"
+  echo -e "  to remove or uninstall $NAME, just run the remove.sh script"
 }
 
 # Prints the version number
@@ -103,7 +90,7 @@ startConky () {
   # Save the child process id to the disk
   echo $pid > $PID_FILE
 
-  log "Conky is now up and running"
+  echo -e "Conky is now up and running" | tee -a $LOG_FILE
 }
 
 # Stops and kills any conky running process
@@ -114,7 +101,7 @@ stopConky () {
   # Remove process id file
   rm -f $PID_FILE
 
-  log "Conky has been shut down"
+  echo -e "Conky has been shut down" | tee -a $LOG_FILE
 }
 
 # Disallow to run this script as root or with sudo
@@ -123,9 +110,6 @@ if [[ "$UID" == "0" ]]; then
   echo -e "\nProcess exited with code: 1"
   exit 1
 fi
-
-# Create logs folder if not yet created
-mkdir -p $LOGS_DIR
 
 # Print help if script called without arguments
 if [ "$#" -lt 1 ]; then
@@ -164,9 +148,7 @@ case $cmd in
           shift
           config="${1-}";;
         *)
-          log "Error: option $opt is not supported" "\U1F480"
-          log "\nProcess exited with code: 1"
-          exit 1;;
+          abort "Error: option $opt is not supported \U1F480";;
       esac
 
       shift
@@ -179,9 +161,7 @@ case $cmd in
     stopConky
     exit 0;;
   *)
-    log "Error: command $cmd is not supported" "\U1F480"
-    log "\nProcess exited with code: 1"
-    exit 1;;
+    abort "Error: command $cmd is not supported \U1F480";;
 esac
 
 exit 0
