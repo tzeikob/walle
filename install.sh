@@ -43,6 +43,9 @@ rollback () {
   rm -rf $ROOT_DIR
   sudo rm -f $SYMLINK
   rm -f $AUTOSTART_FILE
+
+  # Remove conky deps as well if already installed
+  sudo apt-get -y purge conky conky-all >> $LOG_FILE 2>&1
 }
 
 # Downloads the given url: <url> <prefix> <filename>
