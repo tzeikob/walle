@@ -6,7 +6,6 @@ VERSION="0.1.0"
 ROOT_DIR="/home/$USER/.tzkb/$NAME"
 BIN_DIR="$ROOT_DIR/bin"
 LOGS_DIR="$ROOT_DIR/logs"
-RELEASE_FILE="$ROOT_DIR/release"
 
 SYMLINK="/usr/local/bin/$NAME"
 AUTOSTART_DIR="/home/$USER/.config/autostart"
@@ -107,6 +106,15 @@ installExecutable () {
 
   log "Executable file has been downloaded"
 
+  # Set global variables in the executable file
+  sed -i "s/#NAME#/$NAME/" $BIN_DIR/$NAME.sh
+  sed -i "s/#VERSION#/$VERSION/" $BIN_DIR/$NAME.sh
+  sed -i "s/#ROOT_DIR#/$ROOT_DIR/" $BIN_DIR/$NAME.sh
+  sed -i "s/#BIN_DIR#/$BIN_DIR/" $BIN_DIR/$NAME.sh
+  sed -i "s/#LOGS_DIR#/$LOGS_DIR/" $BIN_DIR/$NAME.sh
+
+  log "Global variables have been set"
+
   chmod +x $BIN_DIR/$NAME.sh
 
   sudo ln -s $BIN_DIR/$NAME.sh $SYMLINK >> $LOG_FILE 2>&1 ||
@@ -130,21 +138,6 @@ installExecutable () {
   log "Autostart has been set at system start-up"
 
   log "Executable has been installed"
-}
-
-# Create the release source file
-createReleaseFile () {
-  touch $RELEASE_FILE
-
-  echo -e "#!/usr/bin/env bash\n" >> $RELEASE_FILE
-
-  echo -e "NAME=\"$NAME\"" >> $RELEASE_FILE
-  echo -e "VERSION=\"$VERSION\"" >> $RELEASE_FILE
-  echo -e "ROOT_DIR=\"$ROOT_DIR\"" >> $RELEASE_FILE
-  echo -e "BIN_DIR=\"$BIN_DIR\"" >> $RELEASE_FILE
-  echo -e "LOGS_DIR=\"$LOGS_DIR\"" >> $RELEASE_FILE
-
-  log "Release source file has been created"
 }
 
 # Disallow to run this script as root or with sudo
@@ -171,7 +164,6 @@ log "Script initialization has been completed\n"
 installDependencies
 installConky
 installExecutable
-createReleaseFile
 
 log "\nInstallation has been completed successfully" "\U1F389"
 

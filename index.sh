@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 # An opinionated tool to manage and configure conky for developers
 
-source ../release
+# Global variables set by the install script
+NAME="#NAME#"
+VERSION="#VERSION#"
+ROOT_DIR="#ROOT_DIR#"
+BIN_DIR="#BIN_DIR#"
+LOGS_DIR="#LOGS_DIR#"
 
 PID_FILE="$ROOT_DIR/pid"
 CONFIG_FILE="$ROOT_DIR/conkyrc"
