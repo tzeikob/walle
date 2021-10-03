@@ -48,9 +48,6 @@ help () {
   echo -e "\n Example:"
   echo -e "  $NAME start --config ~/.conkyrc    Starts conky with the given config file"
   echo -e "  $NAME stop                         Stops conky by killing it's running service"
-
-  echo -e "\nNote:"
-  echo -e "  to remove or uninstall $NAME, just run the remove.sh script"
 }
 
 # Prints the version number
