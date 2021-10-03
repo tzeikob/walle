@@ -7,7 +7,7 @@ BIN_DIR="$ROOT_DIR/bin"
 LOG_FILE="./install.log"
 SYMLINK="/usr/local/bin/walle"
 AUTOSTART_DIR="/home/$USER/.config/autostart"
-AUTOSTART_FILE="$AUTOSTART_DIR/walle.sh.desktop"
+AUTOSTART_FILE="$AUTOSTART_DIR/walle.desktop"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
 log () {

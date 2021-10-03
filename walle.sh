@@ -8,7 +8,7 @@ PID_FILE="$ROOT_DIR/pid"
 LOGS_DIR="$ROOT_DIR/logs"
 LOG_FILE="$LOGS_DIR/all.log"
 SYMLINK="/usr/local/bin/walle"
-AUTOSTART_FILE="/home/$USER/.config/autostart/walle.sh.desktop"
+AUTOSTART_FILE="/home/$USER/.config/autostart/walle.desktop"
 CONFIG_FILE="$ROOT_DIR/conkyrc"
 
 # Logs stdout/err message to console and log file: <message> <emoji>
