@@ -82,7 +82,7 @@ startConky () {
   done
 
   # Resolve and update the network interface currently in use
-  resolveAndUpdateNetwork
+  resolveNetworkInterface
 
   # Start a new conky process as child process
   conky -b -p 1 -c $config >> $LOG_FILE 2>&1 &
