@@ -39,7 +39,7 @@ resolveNetworkInterface () {
   # Update the config file with the resolved network data
   sed -i "s/ \${upspeedf.*}KiB / \${upspeedf $interface}KiB /" $CONFIG_FILE
   sed -i "s/\${downspeedf.*}/\${downspeedf $interface}/" $CONFIG_FILE
-  sed -i "s/\${if_up.*}Connected/\${if_up $interface}Connected $ip/" $CONFIG_FILE
+  sed -i "s/\${if_up.*}Connected.*\${else}/\${if_up $interface}Connected $ip\${else}/" $CONFIG_FILE
 }
 
 # Prints a short help report
