@@ -23,15 +23,23 @@ abort () {
   exit $errcode
 }
 
-# Resolves and updates the network interface in config file
-resolveAndUpdateNetwork () {
+# Resolves the network interface and updates the config file
+resolveNetworkInterface () {
   # Resolve the network interface currently in use
-  local networkName=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
+  local response=$(ip route get 8.8.8.8 2>> $LOG_FILE)
 
-  # Update the config file with the resolved network
-  sed -i "s/ \${upspeedf.*}KiB / \${upspeedf $networkName}KiB /" $CONFIG_FILE
-  sed -i "s/\${downspeedf.*}/\${downspeedf $networkName}/" $CONFIG_FILE
-  sed -i "s/\${if_up.*}Connected/\${if_up $networkName}Connected/" $CONFIG_FILE
+  local ip=$(echo $response | awk -- '{printf $7}')
+  local interface=$(echo $response | awk -- '{printf $5}')
+
+  if [ -z "$interface" ]; then
+    ip="null"
+    interface="null"
+  fi
+
+  # Update the config file with the resolved network data
+  sed -i "s/ \${upspeedf.*}KiB / \${upspeedf $interface}KiB /" $CONFIG_FILE
+  sed -i "s/\${downspeedf.*}/\${downspeedf $interface}/" $CONFIG_FILE
+  sed -i "s/\${if_up.*}Connected/\${if_up $interface}Connected $ip/" $CONFIG_FILE
 }
 
 # Prints a short help report
@@ -83,7 +91,7 @@ startConky () {
   local pid=$!
 
   # Give time to child process to spawn
-  sleep 1
+  sleep 2
 
   # Check if child process spawn successfully
   ps -p $pid >> $LOG_FILE 2>&1 ||
