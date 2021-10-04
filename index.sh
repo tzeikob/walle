@@ -7,9 +7,9 @@ VERSION="#VERSION#"
 ROOT_DIR="#ROOT_DIR#"
 BIN_DIR="#BIN_DIR#"
 LOGS_DIR="#LOGS_DIR#"
+CONFIG_FILE="#CONFIG_FILE#"
 
 PID_FILE="$ROOT_DIR/pid"
-CONFIG_FILE="$ROOT_DIR/conkyrc"
 LOG_FILE="$LOGS_DIR/all.log"
 
 # Aborts process on fatal errors: <message> <errcode>

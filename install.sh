@@ -7,6 +7,7 @@ ROOT_DIR="/home/$USER/.tzkb/$NAME"
 BIN_DIR="$ROOT_DIR/bin"
 LOGS_DIR="$ROOT_DIR/logs"
 
+CONFIG_FILE="$ROOT_DIR/conkyrc"
 SYMLINK="/usr/local/bin/$NAME"
 AUTOSTART_DIR="/home/$USER/.config/autostart"
 AUTOSTART_FILE="$AUTOSTART_DIR/$NAME.desktop"
@@ -95,7 +96,7 @@ installConky () {
   wg $CONFIG_URL $ROOT_DIR "conkyrc" ||
     abort "failed to download the conky config file" $?
 
-  log "Config file has been downloaded"
+  log "Config file has been downloaded $CONFIG_FILE"
 
   log "Conky has been installed"
 }
@@ -115,6 +116,7 @@ installExecutable () {
   sed -i "s/#ROOT_DIR#/$(echo $ROOT_DIR | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
   sed -i "s/#BIN_DIR#/$(echo $BIN_DIR | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
   sed -i "s/#LOGS_DIR#/$(echo $LOGS_DIR | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
+  sed -i "s/#CONFIG_FILE#/$(echo $CONFIG_FILE | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
 
   log "Global variables have been set"
 
