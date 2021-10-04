@@ -158,7 +158,7 @@ case $cmd in
           shift
           config="${1-}";;
         *)
-          abort "Error: option $opt is not supported \U1F480";;
+          abort "Error: option $opt is not supported";;
       esac
 
       shift
@@ -171,7 +171,7 @@ case $cmd in
     stopConky
     exit 0;;
   *)
-    abort "Error: command $cmd is not supported \U1F480";;
+    abort "Error: command $cmd is not supported";;
 esac
 
 exit 0
