@@ -23,25 +23,6 @@ abort () {
   exit $errcode
 }
 
-# Resolves the network interface and updates the config file
-resolveNetworkInterface () {
-  # Resolve the network interface currently in use
-  local response=$(ip route get 8.8.8.8 2>> $LOG_FILE)
-
-  local ip=$(echo $response | awk -- '{printf $7}')
-  local interface=$(echo $response | awk -- '{printf $5}')
-
-  if [ -z "$interface" ]; then
-    ip="null"
-    interface="null"
-  fi
-
-  # Update the config file with the resolved network data
-  sed -i "s/ \${upspeedf.*}KiB / \${upspeedf $interface}KiB /" $CONFIG_FILE
-  sed -i "s/\${downspeedf.*}/\${downspeedf $interface}/" $CONFIG_FILE
-  sed -i "s/\${if_up.*}Connected.*\${else}/\${if_up $interface}Connected $ip\${else}/" $CONFIG_FILE
-}
-
 # Prints a short help report
 help () {
   echo -e "$NAME v$VERSION"
@@ -80,9 +61,6 @@ startConky () {
       kill "$id" >> $LOG_FILE 2>&1
     fi
   done
-
-  # Resolve and update the network interface currently in use
-  resolveNetworkInterface
 
   # Start a new conky process as child process
   conky -b -p 1 -c $config >> $LOG_FILE 2>&1 &

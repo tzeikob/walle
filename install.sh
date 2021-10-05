@@ -12,7 +12,8 @@ SYMLINK="/usr/local/bin/$NAME"
 AUTOSTART_DIR="/home/$USER/.config/autostart"
 AUTOSTART_FILE="$AUTOSTART_DIR/$NAME.desktop"
 
-INDEX_URL="https://raw.githubusercontent.com/tzeikob/$NAME/master/index.sh"
+INDEX_URL="https://raw.githubusercontent.com/tzeikob/$NAME/master/bin/index.sh"
+MAIN_LUA_URL="https://raw.githubusercontent.com/tzeikob/$NAME/master/bin/main.lua"
 CONFIG_URL="https://raw.githubusercontent.com/tzeikob/$NAME/master/conkyrc"
 
 LOG_FILE="./install.log"
@@ -109,6 +110,13 @@ installExecutable () {
     abort "failed to download the executable file" $?
 
   log "Executable file has been downloaded"
+
+  log "Downloading the main lua file" "\U1F4AC"
+
+  wg $MAIN_LUA_URL $BIN_DIR "main.lua" ||
+    abort "failed to download the main lua file" $?
+
+  log "Main lua file has been downloaded"
 
   # Set global variables in the executable file
   sed -i "s/#NAME#/$NAME/" $BIN_DIR/$NAME.sh

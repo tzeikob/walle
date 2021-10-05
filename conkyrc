@@ -34,7 +34,9 @@ conky.config = {
     update_interval = 1.0,
     uppercase = false,
     use_spacer = 'none',
-    use_xft = true
+    use_xft = true,
+    lua_load = '~/.tzkb/walle/bin/main.lua',
+    lua_draw_hook_post = 'main'
 }
 
 conky.text = [[
@@ -42,9 +44,9 @@ $alignr ${time %l:%M %p}
 $alignr ${time %B%e, %Y}
 $alignr Drama, Greece
 $alignr CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%
-$alignr Up ${upspeedf}KiB Down ${downspeedf}KiB
+$alignr Up ${lua_parse upspeed} Down ${lua_parse downspeed}
 $alignr Processes $processes
 $alignr $user_names on $nodename
 $alignr Uptime $uptime_short
-$alignr ${if_up}Connected${else}Offline${endif}
+$alignr ${lua_parse connection}
 ]]
