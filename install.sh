@@ -183,6 +183,6 @@ log "\nInstallation has been completed successfully" "\U1F389"
 $NAME start
 
 log "Try $NAME --help to get more help"
-log "Have a nice conky time, $USER!\n"
+log "Have a nice $NAME time, $USER!\n"
 
 exit 0

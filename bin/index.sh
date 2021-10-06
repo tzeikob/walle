@@ -31,12 +31,12 @@ help () {
   echo -e "Usage:"
   echo -e "  $NAME --help                       Print this help message"
   echo -e "  $NAME --version                    Print the installed version"
-  echo -e "  $NAME start [--config <file>]      Start conky with the given config file"
-  echo -e "  $NAME stop                         Stop conky service"
+  echo -e "  $NAME start [--config <file>]      Start $NAME with the given conky config file"
+  echo -e "  $NAME stop                         Stop $NAME and kills conky process"
 
   echo -e "\n Example:"
-  echo -e "  $NAME start --config ~/.conkyrc    Starts conky with the given config file"
-  echo -e "  $NAME stop                         Stops conky by killing it's running service"
+  echo -e "  $NAME start --config ~/.conkyrc    Starts $NAME with the given conky config file"
+  echo -e "  $NAME stop                         Stops $NAME and kills conky process"
 }
 
 # Prints the version number
@@ -44,7 +44,7 @@ version () {
   echo -e "v$VERSION"
 }
 
-# Starts walle and its conky process in the background: <config>
+# Starts executable and its conky process in the background: <config>
 start () {
   local config=$1
 
@@ -63,29 +63,29 @@ start () {
 
   # Check if child process spawn successfully
   ps -p $pid >> $LOG_FILE 2>&1 ||
-    abort "conky process failed to be spawn $pid" $?
+    abort "failed to be spawn conky process: $pid" $?
 
   # Save the child process id to the disk
   echo $pid > $PID_FILE
 
-  echo -e "Walle is now up and running" | tee -a $LOG_FILE
+  echo -e "$NAME is now up and running" | tee -a $LOG_FILE
 }
 
-# Stops walle and kills its running conky process
+# Stops executable and kills its running conky process
 stop () {
   # Check if the pid file exists
   if [ -f "$PID_FILE" ]; then
     local pid=$(cat $PID_FILE)
 
     kill $pid >> $LOG_FILE 2>&1 ||
-    abort "failed to stop walle, unknown or invalid pid: $pid" $?
+    abort "failed to stop $NAME, unknown or invalid pid: $pid" $?
 
     # Remove process id file
     rm -f $PID_FILE
 
-    echo -e "Walle has been shut down" | tee -a $LOG_FILE
+    echo -e "$NAME has been shut down" | tee -a $LOG_FILE
   else
-    abort "failed to stop walle, no pid file found" $?
+    abort "failed to stop $NAME, no pid file found" $?
   fi
 }
 
@@ -139,7 +139,6 @@ case $cmd in
       shift
     done
 
-    # Start walle and its conky process with the given opts
     start $config
     exit 0;;
   "stop")
