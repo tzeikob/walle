@@ -163,7 +163,7 @@ setEnvironmentVariables () {
   echo "export ${NS}_AUTOSTART_DIR=$AUTOSTART_DIR" >> $ENV_FILE
   echo ""
 
-  echo "export ${NS}_EXEC_FILE=$EXEC_FILE" >> $ENV_FILE
+  echo "export ${NS}_INDEX_FILE=$INDEX_FILE" >> $ENV_FILE
   echo "export ${NS}_MAIN_LUA_FILE=$MAIN_LUA_FILE" >> $ENV_FILE
   echo "export ${NS}_ENV_FILE=$ENV_FILE" >> $ENV_FILE
   echo "export ${NS}_CONFIG_FILE=$CONFIG_FILE" >> $ENV_FILE
