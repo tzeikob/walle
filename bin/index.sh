@@ -44,31 +44,21 @@ version () {
   echo -e "v$VERSION"
 }
 
-# Starts or restarts conky service in background: <config>
-startConky () {
+# Starts walle and its conky process in the background: <config>
+start () {
   local config=$1
 
-  # Try to kill process if already running
+  # Try to kill conky process if already running
   if [ -f "$PID_FILE" ]; then
     kill $(cat $PID_FILE) >> $LOG_FILE 2>&1
   fi
 
-  # Make sure any other conky processes are killed
-  local conkyPids=($(pgrep -f conky))
-
-  for id in "${conkyPids[@]}"; do
-    if [[ $id != $$ ]]; then
-      kill "$id" >> $LOG_FILE 2>&1
-    fi
-  done
-
   # Start a new conky process as child process
   conky -b -p 1 -c $config >> $LOG_FILE 2>&1 &
-
-  # Save child process id
+  # Right after spawning conky read its process id
   local pid=$!
 
-  # Give time to child process to spawn
+  # Give time to the child process to spawn
   sleep 2
 
   # Check if child process spawn successfully
@@ -78,18 +68,25 @@ startConky () {
   # Save the child process id to the disk
   echo $pid > $PID_FILE
 
-  echo -e "Conky is now up and running" | tee -a $LOG_FILE
+  echo -e "Walle is now up and running" | tee -a $LOG_FILE
 }
 
-# Stops and kills any conky running process
-stopConky () {
-  pkill -f conky >> $LOG_FILE 2>&1 ||
-    abort "failed to stop conky process" $?
+# Stops walle and kills its running conky process
+stop () {
+  # Check if the pid id file exists
+  if [ -f "$PID_FILE" ]; then
+    local pid=$(cat $PID_FILE)
 
-  # Remove process id file
-  rm -f $PID_FILE
+    kill $pid >> $LOG_FILE 2>&1 ||
+    abort "failed to stop walle, unknown or invalid pid: $pid" $?
 
-  echo -e "Conky has been shut down" | tee -a $LOG_FILE
+    # Remove process id file
+    rm -f $PID_FILE
+
+    echo -e "Walle has been shut down" | tee -a $LOG_FILE
+  else
+    abort "failed to stop walle, no pid file found" $?
+  fi
 }
 
 # Disallow to run this script as root or with sudo
@@ -142,11 +139,11 @@ case $cmd in
       shift
     done
 
-    # Start conky service with the given opts
-    startConky $config
+    # Start walle and its conky process with the given opts
+    start $config
     exit 0;;
   "stop")
-    stopConky
+    stop
     exit 0;;
   *)
     abort "Error: command $cmd is not supported";;

@@ -7,7 +7,7 @@ An opinionated tool to manage and configure conky for developers.
 In order to install walle into your system you just have to execute the following command:
 
 ```sh
-bash -c "$(wget -qO- https://git.io/JaJu7)"
+wget -qO - https://git.io/JaJu7 | bash
 ```
 
 # How to remove it
