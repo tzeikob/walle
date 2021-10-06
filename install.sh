@@ -57,15 +57,13 @@ rollback () {
   sed -i "/source $(echo $ENV_FILE | sed 's_/_\\/_g')/d" ~/.bashrc
 }
 
-# Downloads the given url: <url> <prefix> <filename>
+# Downloads the given url: <url> <filename>
 wg () {
   local url=$1
-  local prefix=$2
-  local filename=$3
+  local filename=$2
 
   wget $url \
-    --directory-prefix $prefix \
-    --output-document $prefix/$filename \
+    --output-document $filename \
     --no-show-progress \
     --retry-connrefused \
     --retry-on-http-error=404,500,503,504,599 \
@@ -101,7 +99,7 @@ installConky () {
 
   log "Downloading the conky config file" "\U1F4AC"
 
-  wg $CONFIG_URL "" $CONFIG_FILE ||
+  wg $CONFIG_URL $CONFIG_FILE ||
     abort "failed to download the conky config file" $?
 
   log "Config file has been downloaded $CONFIG_FILE"
@@ -113,14 +111,14 @@ installConky () {
 installExecutable () {
   log "Installing the executable file" "\U1F4AC"
 
-  wg $INDEX_URL "" $INDEX_FILE ||
+  wg $INDEX_URL $INDEX_FILE ||
     abort "failed to download the executable file" $?
 
   log "Executable file has been downloaded"
 
   log "Downloading the main lua file" "\U1F4AC"
 
-  wg $MAIN_LUA_URL "" $MAIN_LUA_FILE ||
+  wg $MAIN_LUA_URL $MAIN_LUA_FILE ||
     abort "failed to download the main lua file" $?
 
   log "Main lua file has been downloaded"
