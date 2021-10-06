@@ -73,7 +73,7 @@ start () {
 
 # Stops walle and kills its running conky process
 stop () {
-  # Check if the pid id file exists
+  # Check if the pid file exists
   if [ -f "$PID_FILE" ]; then
     local pid=$(cat $PID_FILE)
 
