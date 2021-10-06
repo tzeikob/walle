@@ -1,20 +1,24 @@
 #!/usr/bin/env bash
 # A script to install walle
 
-NAME="walle"
 VERSION="0.1.0"
-ROOT_DIR="/home/$USER/.tzkb/$NAME"
+
+ROOT_DIR="/home/$USER/.tzkb/walle"
 BIN_DIR="$ROOT_DIR/bin"
 LOGS_DIR="$ROOT_DIR/logs"
-
-CONFIG_FILE="$ROOT_DIR/conkyrc"
-SYMLINK="/usr/local/bin/$NAME"
 AUTOSTART_DIR="/home/$USER/.config/autostart"
-AUTOSTART_FILE="$AUTOSTART_DIR/$NAME.desktop"
 
-INDEX_URL="https://raw.githubusercontent.com/tzeikob/$NAME/master/bin/index.sh"
-MAIN_LUA_URL="https://raw.githubusercontent.com/tzeikob/$NAME/master/bin/main.lua"
-CONFIG_URL="https://raw.githubusercontent.com/tzeikob/$NAME/master/conkyrc"
+INDEX_FILE="$BIN_DIR/index.sh"
+MAIN_LUA_FILE="$BIN_DIR/main.lua"
+ENV_FILE="$ROOT_DIR/.envrc"
+CONFIG_FILE="$ROOT_DIR/.conkyrc"
+
+SYMLINK="/usr/local/bin/tzkb.walle"
+AUTOSTART_FILE="$AUTOSTART_DIR/tzkb.walle.desktop"
+
+INDEX_URL="https://raw.githubusercontent.com/tzeikob/walle/master/bin/index.sh"
+MAIN_LUA_URL="https://raw.githubusercontent.com/tzeikob/walle/master/bin/main.lua"
+CONFIG_URL="https://raw.githubusercontent.com/tzeikob/walle/master/.conkyrc"
 
 LOG_FILE="./install.log"
 
@@ -48,6 +52,9 @@ rollback () {
 
   # Remove conky deps as well if already installed
   sudo apt-get -y purge conky conky-all >> $LOG_FILE 2>&1
+
+  # Remove environment variables hook from user's bashrc
+  sed -i "/source $(echo $ENV_FILE | sed 's_/_\\/_g')/d" ~/.bashrc
 }
 
 # Downloads the given url: <url> <prefix> <filename>
@@ -94,7 +101,7 @@ installConky () {
 
   log "Downloading the conky config file" "\U1F4AC"
 
-  wg $CONFIG_URL $ROOT_DIR "conkyrc" ||
+  wg $CONFIG_URL "" $CONFIG_FILE ||
     abort "failed to download the conky config file" $?
 
   log "Config file has been downloaded $CONFIG_FILE"
@@ -104,33 +111,23 @@ installConky () {
 
 # Installs the executable file
 installExecutable () {
-  log "Installing the $NAME executable file" "\U1F4AC"
+  log "Installing the executable file" "\U1F4AC"
 
-  wg $INDEX_URL $BIN_DIR "$NAME.sh" ||
+  wg $INDEX_URL "" $INDEX_FILE ||
     abort "failed to download the executable file" $?
 
   log "Executable file has been downloaded"
 
   log "Downloading the main lua file" "\U1F4AC"
 
-  wg $MAIN_LUA_URL $BIN_DIR "main.lua" ||
+  wg $MAIN_LUA_URL "" $MAIN_LUA_FILE ||
     abort "failed to download the main lua file" $?
 
   log "Main lua file has been downloaded"
 
-  # Set global variables in the executable file
-  sed -i "s/#NAME#/$NAME/" $BIN_DIR/$NAME.sh
-  sed -i "s/#VERSION#/$VERSION/" $BIN_DIR/$NAME.sh
-  sed -i "s/#ROOT_DIR#/$(echo $ROOT_DIR | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
-  sed -i "s/#BIN_DIR#/$(echo $BIN_DIR | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
-  sed -i "s/#LOGS_DIR#/$(echo $LOGS_DIR | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
-  sed -i "s/#CONFIG_FILE#/$(echo $CONFIG_FILE | sed 's_/_\\/_g')/" $BIN_DIR/$NAME.sh
+  chmod +x $INDEX_FILE
 
-  log "Global variables have been set"
-
-  chmod +x $BIN_DIR/$NAME.sh
-
-  sudo ln -s $BIN_DIR/$NAME.sh $SYMLINK >> $LOG_FILE 2>&1 ||
+  sudo ln -s $INDEX_FILE $SYMLINK >> $LOG_FILE 2>&1 ||
     abort "failed to create symbolic link to the executable file" $?
 
   log "Executable symlink has been created to $SYMLINK"
@@ -140,17 +137,52 @@ installExecutable () {
 
   echo "[Desktop Entry]" >> $AUTOSTART_FILE
   echo "Type=Application" >> $AUTOSTART_FILE
-  echo "Exec=$NAME start" >> $AUTOSTART_FILE
+  echo "Exec=tzkb.walle start" >> $AUTOSTART_FILE
   echo "Hidden=false" >> $AUTOSTART_FILE
   echo "NoDisplay=false" >> $AUTOSTART_FILE
-  echo "Name[en_US]=$NAME" >> $AUTOSTART_FILE
-  echo "Name=$NAME" >> $AUTOSTART_FILE
-  echo "Comment[en_US]=$NAME Start Up" >> $AUTOSTART_FILE
-  echo "Comment=$NAME Start Up" >> $AUTOSTART_FILE
+  echo "Name[en_US]=Walle" >> $AUTOSTART_FILE
+  echo "Name=Walle" >> $AUTOSTART_FILE
+  echo "Comment[en_US]=Walle Start Up" >> $AUTOSTART_FILE
+  echo "Comment=Walle Start Up" >> $AUTOSTART_FILE
 
   log "Autostart has been set at system start-up"
 
   log "Executable has been installed"
+}
+
+# Creates the environment variables file and hooks it to user's bashrc
+setEnvironmentVariables () {
+  touch $ENV_FILE
+
+  local NS="TZKB_WALLE"
+
+  echo "export ${NS}_VERSION=$VERSION" >> $ENV_FILE
+  echo ""
+
+  echo "export ${NS}_ROOT_DIR=$ROOT_DIR" >> $ENV_FILE
+  echo "export ${NS}_BIN_DIR=$BIN_DIR" >> $ENV_FILE
+  echo "export ${NS}_LOGS_DIR=$LOGS_DIR" >> $ENV_FILE
+  echo "export ${NS}_AUTOSTART_DIR=$AUTOSTART_DIR" >> $ENV_FILE
+  echo ""
+
+  echo "export ${NS}_EXEC_FILE=$EXEC_FILE" >> $ENV_FILE
+  echo "export ${NS}_MAIN_LUA_FILE=$MAIN_LUA_FILE" >> $ENV_FILE
+  echo "export ${NS}_ENV_FILE=$ENV_FILE" >> $ENV_FILE
+  echo "export ${NS}_CONFIG_FILE=$CONFIG_FILE" >> $ENV_FILE
+  echo ""
+
+  echo "export ${NS}_SYMLINK=$SYMLINK" >> $ENV_FILE
+  echo "export ${NS}_AUTOSTART_FILE=$AUTOSTART_FILE" >> $ENV_FILE
+
+  log "Environment variables file has been created $ENV_FILE"
+
+  # Hook env file to bashrc file removing previous installed hooks
+  sed -i "/source $(echo $ENV_FILE | sed 's_/_\\/_g')/d" ~/.bashrc
+
+  echo "source $ENV_FILE" >> ~/.bashrc
+  source ~/.bashrc
+
+  log "Environment variables file has been hooked into ~/.bashrc"
 }
 
 # Disallow to run this script as root or with sudo
@@ -166,7 +198,7 @@ mkdir -p $BIN_DIR
 mkdir -p $LOGS_DIR
 
 # Echoing welcome messages
-log "$NAME v$VERSION"
+log "Walle v$VERSION"
 log "Running on $(lsb_release -si) $(lsb_release -sr) $(lsb_release -sc)"
 log "Logged in as $USER@$HOSTNAME with kernel $(uname -r)"
 log "Script spawn a process with PID $$"
@@ -177,12 +209,13 @@ log "Script initialization has been completed\n"
 installDependencies
 installConky
 installExecutable
+setEnvironmentVariables
 
 log "\nInstallation has been completed successfully" "\U1F389"
 
-$NAME start
+tzkb.walle start
 
-log "Try $NAME --help to get more help"
-log "Have a nice $NAME time, $USER!\n"
+log "Try tzkb.walle --help to get more help"
+log "Have a nice walle time, $USER!\n"
 
 exit 0

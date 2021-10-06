@@ -12,12 +12,22 @@ wget -qO - https://git.io/JaJu7 | bash
 
 # How to remove it
 
-To remove the installation files along with the conky dependencies just execute the following statements:
+To remove the installation files run the following statements:
 
 ```sh
 rm -rf ~/.tzkb/walle
-rm -f ~/.config/autostart/walle.desktop
-sudo rm -f /usr/local/bin/walle
+rm -f ~/.config/autostart/tzkb.walle.desktop
+sudo rm -f /usr/local/bin/tzkb.walle
+```
 
+Remove the environment variables hook from the user's bashrc file:
+
+```sh
+sed -i "/source /home/$USER/.tzkb/walle/.envrc/d" ~/.bashrc
+```
+
+Uninstall all conky dependencies:
+
+```sh
 sudo apt-get purge conky conky-all
 ```

@@ -2,12 +2,11 @@
 # An opinionated tool to manage and configure conky for developers
 
 # Global variables set by the install script
-NAME="#NAME#"
-VERSION="#VERSION#"
-ROOT_DIR="#ROOT_DIR#"
-BIN_DIR="#BIN_DIR#"
-LOGS_DIR="#LOGS_DIR#"
-CONFIG_FILE="#CONFIG_FILE#"
+VERSION=$TZKB_WALLE_VERSION
+ROOT_DIR=$TZKB_WALLE_ROOT_DIR
+BIN_DIR=$TZKB_WALLE_BIN_DIR
+LOGS_DIR=$TZKB_WALLE_LOGS_DIR
+CONFIG_FILE=$TZKB_WALLE_CONFIG_FILE
 
 PID_FILE="$ROOT_DIR/pid"
 LOG_FILE="$LOGS_DIR/all.log"
@@ -25,18 +24,18 @@ abort () {
 
 # Prints a short help report
 help () {
-  echo -e "$NAME v$VERSION"
+  echo -e "Walle v$VERSION"
   echo -e "An opinionated tool to manage and configure conky for developers\n"
 
   echo -e "Usage:"
-  echo -e "  $NAME --help                       Print this help message"
-  echo -e "  $NAME --version                    Print the installed version"
-  echo -e "  $NAME start [--config <file>]      Start $NAME with the given conky config file"
-  echo -e "  $NAME stop                         Stop $NAME and kills conky process"
+  echo -e "  tzkb.walle --help                       Print this help message"
+  echo -e "  tzkb.walle --version                    Print the installed version"
+  echo -e "  tzkb.walle start [--config <file>]      Start walle with the given conky config file"
+  echo -e "  tzkb.walle stop                         Stop walle and kill the conky process"
 
   echo -e "\n Example:"
-  echo -e "  $NAME start --config ~/.conkyrc    Starts $NAME with the given conky config file"
-  echo -e "  $NAME stop                         Stops $NAME and kills conky process"
+  echo -e "  tzkb.walle start --config ~/.conkyrc    Starts walle with the given conky config file"
+  echo -e "  tzkb.walle stop                         Stops walle and kills conky process"
 }
 
 # Prints the version number
@@ -68,7 +67,7 @@ start () {
   # Save the child process id to the disk
   echo $pid > $PID_FILE
 
-  echo -e "$NAME is now up and running" | tee -a $LOG_FILE
+  echo -e "Walle is now up and running" | tee -a $LOG_FILE
 }
 
 # Stops executable and kills its running conky process
@@ -78,14 +77,14 @@ stop () {
     local pid=$(cat $PID_FILE)
 
     kill $pid >> $LOG_FILE 2>&1 ||
-    abort "failed to stop $NAME, unknown or invalid pid: $pid" $?
+    abort "failed to stop walle, unknown or invalid pid: $pid" $?
 
     # Remove process id file
     rm -f $PID_FILE
 
-    echo -e "$NAME has been shut down" | tee -a $LOG_FILE
+    echo -e "Walle has been shut down" | tee -a $LOG_FILE
   else
-    abort "failed to stop $NAME, no pid file found" $?
+    abort "failed to stop walle, no pid file found" $?
   fi
 }
 
