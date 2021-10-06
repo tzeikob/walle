@@ -16,8 +16,8 @@ To remove the installation files run the following statements:
 
 ```sh
 rm -rf ~/.tzkb/walle
-rm -f ~/.config/autostart/tzkb.walle.desktop
-sudo rm -f /usr/local/bin/tzkb.walle
+rm -f ~/.config/autostart/walle.desktop
+sudo rm -f /usr/local/bin/walle
 ```
 
 Remove the environment variables hook from the user's bashrc file:
