@@ -23,7 +23,7 @@ sudo rm -f /usr/local/bin/tzkb.walle
 Remove the environment variables hook from the user's bashrc file:
 
 ```sh
-sed -i "/source /home/$USER/.tzkb/walle/.envrc/d" ~/.bashrc
+sed -i "/source \/home\/$USER\/.tzkb\/walle\/.envrc/d" ~/.bashrc
 ```
 
 Uninstall all conky dependencies:
