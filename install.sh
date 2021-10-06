@@ -172,15 +172,13 @@ setEnvironmentVariables () {
   echo "export ${NS}_SYMLINK=$SYMLINK" >> $ENV_FILE
   echo "export ${NS}_AUTOSTART_FILE=$AUTOSTART_FILE" >> $ENV_FILE
 
-  log "Environment variables file has been created $ENV_FILE"
-
   # Hook env file to bashrc file removing previous installed hooks
   sed -i "/source $(echo $ENV_FILE | sed 's_/_\\/_g')/d" ~/.bashrc
 
-  echo "source $ENV_FILE" >> ~/.bashrc
+  echo -e "\nsource $ENV_FILE" >> ~/.bashrc
   source ~/.bashrc
 
-  log "Environment variables file has been hooked into ~/.bashrc"
+  log "Env variables has been hooked into ~/.bashrc"
 }
 
 # Disallow to run this script as root or with sudo
