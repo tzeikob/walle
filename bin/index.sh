@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # An opinionated tool to manage and configure conky for developers
 
+# Source the user's bashrc file to take effect walle env vars
+source ~/.bashrc
+
 # Global variables set by the install script
 VERSION=$TZKB_WALLE_VERSION
 ROOT_DIR=$TZKB_WALLE_ROOT_DIR
