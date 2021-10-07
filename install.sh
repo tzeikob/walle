@@ -13,8 +13,8 @@ MAIN_LUA_FILE="$BIN_DIR/main.lua"
 ENV_FILE="$ROOT_DIR/.envrc"
 CONFIG_FILE="$ROOT_DIR/.conkyrc"
 
-SYMLINK="/usr/local/bin/tzkb.walle"
-AUTOSTART_FILE="$AUTOSTART_DIR/tzkb.walle.desktop"
+SYMLINK="/usr/local/bin/walle"
+AUTOSTART_FILE="$AUTOSTART_DIR/walle.desktop"
 
 INDEX_URL="https://raw.githubusercontent.com/tzeikob/walle/master/bin/index.sh"
 MAIN_LUA_URL="https://raw.githubusercontent.com/tzeikob/walle/master/bin/main.lua"
@@ -135,7 +135,7 @@ installExecutable () {
 
   echo "[Desktop Entry]" >> $AUTOSTART_FILE
   echo "Type=Application" >> $AUTOSTART_FILE
-  echo "Exec=tzkb.walle start" >> $AUTOSTART_FILE
+  echo "Exec=walle start" >> $AUTOSTART_FILE
   echo "Hidden=false" >> $AUTOSTART_FILE
   echo "NoDisplay=false" >> $AUTOSTART_FILE
   echo "Name[en_US]=Walle" >> $AUTOSTART_FILE
@@ -210,9 +210,9 @@ setEnvironmentVariables
 log "\nInstallation has been completed successfully" "\U1F389"
 
 # Start walle process
-tzkb.walle start
+walle start
 
-log "Try tzkb.walle --help to get more help"
+log "Try walle --help to get more help"
 log "Have a nice walle time, $USER!\n"
 
 exit 0
