@@ -14,6 +14,7 @@ ENV_FILE="$ROOT_DIR/.envrc"
 CONFIG_FILE="$ROOT_DIR/.conkyrc"
 
 SYMLINK="/usr/local/bin/walle"
+EXEC_NAME="walle"
 AUTOSTART_FILE="$AUTOSTART_DIR/walle.desktop"
 
 INDEX_URL="https://raw.githubusercontent.com/tzeikob/walle/master/bin/index.sh"
@@ -125,6 +126,11 @@ installExecutable () {
 
   chmod +x $INDEX_FILE
 
+  if [ -f $SYMLINK ]; then
+    SYMLINK="/usr/local/bin/tzkb.walle"
+    EXEC_NAME="tzkb.walle"
+  fi
+
   sudo ln -s $INDEX_FILE $SYMLINK >> $LOG_FILE 2>&1 ||
     abort "failed to create symbolic link to the executable file" $?
 
@@ -133,9 +139,13 @@ installExecutable () {
   # Create autostart folder if not yet exists
   mkdir -p $AUTOSTART_DIR
 
+  if [ -f $AUTOSTART_FILE ]; then
+    AUTOSTART_FILE="$AUTOSTART_DIR/tzkb.walle.desktop"
+  fi
+
   echo "[Desktop Entry]" >> $AUTOSTART_FILE
   echo "Type=Application" >> $AUTOSTART_FILE
-  echo "Exec=walle start" >> $AUTOSTART_FILE
+  echo "Exec=$EXEC_NAME start" >> $AUTOSTART_FILE
   echo "Hidden=false" >> $AUTOSTART_FILE
   echo "NoDisplay=false" >> $AUTOSTART_FILE
   echo "Name[en_US]=Walle" >> $AUTOSTART_FILE
@@ -170,6 +180,7 @@ setEnvironmentVariables () {
   echo "" >> $ENV_FILE
 
   echo "export ${NS}_SYMLINK=$SYMLINK" >> $ENV_FILE
+  echo "export ${NS}_EXEC_NAME=$EXEC_NAME" >> $ENV_FILE
   echo "export ${NS}_AUTOSTART_FILE=$AUTOSTART_FILE" >> $ENV_FILE
 
   # Hook env file to bashrc file removing previous installed hooks
@@ -209,9 +220,10 @@ setEnvironmentVariables
 
 log "\nInstallation has been completed successfully" "\U1F389"
 
-walle start
+# Start walle process
+EXEC_NAME start
 
-log "Try walle --help to get more help"
+log "Try $EXEC_NAME --help to get more help"
 log "Have a nice walle time, $USER!\n"
 
 exit 0

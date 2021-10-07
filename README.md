@@ -2,7 +2,7 @@
 
 An opinionated tool to manage and configure conky for developers.
 
-# How to install it
+## How to install it
 
 In order to install walle into your system you just have to execute the following command:
 
@@ -10,21 +10,44 @@ In order to install walle into your system you just have to execute the followin
 wget -qO - https://git.io/JaJu7 | bash
 ```
 
-# How to remove it
+The walle will start automatically right after the installation process is finished. You can always start or restart the process by using the following command:
 
-First of all you should stop walle if is already running:
+```sh
+walle start
+```
+
+or stop it like so:
 
 ```sh
 walle stop
 ```
 
-To remove the installation files run the following statements:
+Keep in mind though that if you already have another tool named walle, the installation process will use the `tzkb` namespace to avoid conflicts in your setup. So if this is the case the walle executable will be available under the name `tzkb.walle` instead of just `walle`.
+
+## How to remove it
+
+First of all you should stop walle if it is already running:
+
+```sh
+walle stop
+```
+
+> Run `tzkb.walle stop` if namespace has been used.
+
+To remove the installation files run the following statement:
 
 ```sh
 rm -rf ~/.tzkb/walle
-rm -f ~/.config/autostart/walle.desktop
-sudo rm -f /usr/local/bin/walle
 ```
+
+Clean up both the symlink and the autostart files:
+
+```sh
+sudo rm -f /usr/local/bin/walle
+rm -f ~/.config/autostart/walle.desktop
+```
+
+> Those files will be `tzkb.walle` and `tzkb.walle.desktop` if namespace has been used.
 
 Remove the environment variables hook from the user's bashrc file:
 
@@ -32,7 +55,7 @@ Remove the environment variables hook from the user's bashrc file:
 sed -i "/source \/home\/$USER\/.tzkb\/walle\/.envrc/d" ~/.bashrc
 ```
 
-Uninstall all conky dependencies:
+Finally uninstall all conky dependencies:
 
 ```sh
 sudo apt-get purge conky conky-all
