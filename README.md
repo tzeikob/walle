@@ -12,6 +12,12 @@ wget -qO - https://git.io/JaJu7 | bash
 
 # How to remove it
 
+First of all you should stop walle if is already running:
+
+```sh
+walle stop
+```
+
 To remove the installation files run the following statements:
 
 ```sh
