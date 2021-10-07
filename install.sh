@@ -221,7 +221,7 @@ setEnvironmentVariables
 log "\nInstallation has been completed successfully" "\U1F389"
 
 # Start walle process
-EXEC_NAME start
+$EXEC_NAME start
 
 log "Try $EXEC_NAME --help to get more help"
 log "Have a nice walle time, $USER!\n"
