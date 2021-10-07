@@ -13,26 +13,22 @@ wget -qO - https://git.io/JaJu7 | bash
 The walle will start automatically right after the installation process is finished. You can always start or restart the process by using the following command:
 
 ```sh
-walle start
+tzkb.walle start
 ```
 
 or stop it like so:
 
 ```sh
-walle stop
+tzkb.walle stop
 ```
-
-Keep in mind though that if you already have another tool named walle, the installation process will use the `tzkb` namespace to avoid conflicts in your setup. So if this is the case the walle executable will be available under the name `tzkb.walle` instead of just `walle`.
 
 ## How to remove it
 
 First of all you should stop walle if it is already running:
 
 ```sh
-walle stop
+tzkb.walle stop
 ```
-
-> Run `tzkb.walle stop` if namespace has been used.
 
 To remove the installation files run the following statement:
 
@@ -43,11 +39,9 @@ rm -rf ~/.tzkb/walle
 Clean up both the symlink and the autostart files:
 
 ```sh
-sudo rm -f /usr/local/bin/walle
-rm -f ~/.config/autostart/walle.desktop
+sudo rm -f /usr/local/bin/tzkb.walle
+rm -f ~/.config/autostart/tzkb.walle.desktop
 ```
-
-> Those files will be `tzkb.walle` and `tzkb.walle.desktop` if namespace has been used.
 
 Remove the environment variables hook from the user's bashrc file:
 

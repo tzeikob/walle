@@ -10,7 +10,6 @@ ROOT_DIR=$TZKB_WALLE_ROOT_DIR
 BIN_DIR=$TZKB_WALLE_BIN_DIR
 LOGS_DIR=$TZKB_WALLE_LOGS_DIR
 CONFIG_FILE=$TZKB_WALLE_CONFIG_FILE
-EXEC_NAME=$TZKB_WALLE_EXEC_NAME
 
 PID_FILE="$ROOT_DIR/pid"
 LOG_FILE="$LOGS_DIR/all.log"
@@ -32,14 +31,14 @@ help () {
   echo -e "An opinionated tool to manage and configure conky for developers\n"
 
   echo -e "Usage:"
-  echo -e "  $EXEC_NAME --help                       Print this help message"
-  echo -e "  $EXEC_NAME --version                    Print the installed version"
-  echo -e "  $EXEC_NAME start [--config <file>]      Start walle with the given conky config file"
-  echo -e "  $EXEC_NAME stop                         Stop walle and kill the conky process"
+  echo -e "  tzkb.walle --help                       Print this help message"
+  echo -e "  tzkb.walle --version                    Print the installed version"
+  echo -e "  tzkb.walle start [--config <file>]      Start walle with the given conky config file"
+  echo -e "  tzkb.walle stop                         Stop walle and kill the conky process"
 
   echo -e "\n Example:"
-  echo -e "  $EXEC_NAME start --config ~/.conkyrc    Starts walle with the given conky config file"
-  echo -e "  $EXEC_NAME stop                         Stops walle and kills conky process"
+  echo -e "  tzkb.walle start --config ~/.conkyrc    Starts walle with the given conky config file"
+  echo -e "  tzkb.walle stop                         Stops walle and kills conky process"
 }
 
 # Prints the version number
