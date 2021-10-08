@@ -1,0 +1,9 @@
+{
+  "package": "walle",
+  "version": "0.1.0",
+  "maintainer": "Jake Ob <iakopap@gmail.com>",
+  "depends": "wget, jq, conky, conky-all",
+  "architecture": "all",
+  "homepage": "https://github.com/tzeikob/walle",
+  "description": "An opinionated tool to manage and configure conky for developers"
+}

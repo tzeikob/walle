@@ -1,18 +1,13 @@
 #!/usr/bin/env bash
 # An opinionated tool to manage and configure conky for developers
 
-# Source the user's bashrc file to take effect walle env vars
-source ~/.bashrc
+NAME="PKG_NAME"
+VERSION="PKG_VERSION"
 
-# Global variables set by the install script
-VERSION=$TZKB_WALLE_VERSION
-ROOT_DIR=$TZKB_WALLE_ROOT_DIR
-BIN_DIR=$TZKB_WALLE_BIN_DIR
-LOGS_DIR=$TZKB_WALLE_LOGS_DIR
-CONFIG_FILE=$TZKB_WALLE_CONFIG_FILE
-
-PID_FILE="$ROOT_DIR/pid"
-LOG_FILE="$LOGS_DIR/all.log"
+CONFIG_DIR=~/.config/$NAME
+CONFIG_FILE=$CONFIG_DIR/.conkyrc
+PID_FILE=$CONFIG_DIR/pid
+LOG_FILE=$CONFIG_DIR/all.log
 
 # Aborts process on fatal errors: <message> <errcode>
 abort () {
@@ -20,25 +15,25 @@ abort () {
   local errcode=$2
 
   echo -e "Error: $message \U1F480" | tee -a $LOG_FILE
-  echo -e "\nProcess exited with code: $errcode" | tee -a $LOG_FILE
+  echo -e "Process exited with code: $errcode" | tee -a $LOG_FILE
 
   exit $errcode
 }
 
 # Prints a short help report
 help () {
-  echo -e "Walle v$VERSION"
+  echo -e "$NAME v$VERSION"
   echo -e "An opinionated tool to manage and configure conky for developers\n"
 
   echo -e "Usage:"
-  echo -e "  walle --help                       Print this help message"
-  echo -e "  walle --version                    Print the installed version"
-  echo -e "  walle start [--config <file>]      Start walle with the given conky config file"
-  echo -e "  walle stop                         Stop walle and kill the conky process"
+  echo -e "  $NAME --help                       Print this help message"
+  echo -e "  $NAME --version                    Print the installed version"
+  echo -e "  $NAME start [--config <file>]      Start conky process with the given config file"
+  echo -e "  $NAME stop                         Stop conky process"
 
   echo -e "\n Example:"
-  echo -e "  walle start --config ~/.conkyrc    Starts walle with the given conky config file"
-  echo -e "  walle stop                         Stops walle and kills conky process"
+  echo -e "  $NAME start --config ~/.conkyrc    Starts conky process with the given config file"
+  echo -e "  $NAME stop                         Stops conky process"
 }
 
 # Prints the version number
@@ -46,7 +41,7 @@ version () {
   echo -e "v$VERSION"
 }
 
-# Starts executable and its conky process in the background: <config>
+# Starts the conky as child process: <config>
 start () {
   local config=$1
 
@@ -70,31 +65,31 @@ start () {
   # Save the child process id to the disk
   echo $pid > $PID_FILE
 
-  echo -e "Walle is now up and running" | tee -a $LOG_FILE
+  echo -e "Conky is now up and running" | tee -a $LOG_FILE
 }
 
-# Stops executable and kills its running conky process
+# Stops and kills the running conky process
 stop () {
   # Check if the pid file exists
   if [ -f "$PID_FILE" ]; then
     local pid=$(cat $PID_FILE)
 
     kill $pid >> $LOG_FILE 2>&1 ||
-    abort "failed to stop walle, unknown or invalid pid: $pid" $?
+    abort "failed to stop conky, unknown or invalid pid: $pid" $?
 
     # Remove process id file
     rm -f $PID_FILE
 
-    echo -e "Walle has been shut down" | tee -a $LOG_FILE
+    echo -e "Conky has been shut down" | tee -a $LOG_FILE
   else
-    abort "failed to stop walle, no pid file found" $?
+    abort "failed to stop conky, no pid file found" $?
   fi
 }
 
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
   echo -e "Error: don't run this script as root or using sudo \U1F480"
-  echo -e "\nProcess exited with code: 1"
+  echo -e "Process exited with code: 1"
   exit 1
 fi
 
@@ -135,7 +130,7 @@ case $cmd in
           shift
           config="${1-}";;
         *)
-          abort "Error: option $opt is not supported";;
+          abort "Error: option $opt is not supported" 1;;
       esac
 
       shift
@@ -147,7 +142,7 @@ case $cmd in
     stop
     exit 0;;
   *)
-    abort "Error: command $cmd is not supported";;
+    abort "Error: command $cmd is not supported" 1;;
 esac
 
 exit 0

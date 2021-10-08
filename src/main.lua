@@ -1,4 +1,4 @@
--- local secret = os.getenv("PATH")
+-- Main lua file for the conky config file
 
 conky_on_start = true
 
