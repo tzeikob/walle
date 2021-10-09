@@ -1,33 +1,38 @@
 #!/usr/bin/env bash
-# A script to be run after installation
+# A script to be run after apt install
 
 set -e
 
 NAME=PKG_NAME
-CONFIG_DIR=/home/$SUDO_USER/.config/$NAME
-AUTOSTART_DIR=/home/$SUDO_USER/.config/autostart
+USER_HOME=/home/$SUDO_USER
+CONFIG_DIR=$USER_HOME/.config/$NAME
+AUTOSTART_DIR=$USER_HOME/.config/autostart
+TEMP_DIR=/tmp/$NAME
 
 echo -e "Startig post installation script"
-
-echo -e "Saving config and utility files"
 
 # Create config folder
 mkdir -p $CONFIG_DIR
 
-# Copy config and unitlity files to the config folder
-mv /tmp/$NAME/.conkyrc $CONFIG_DIR/.conkyrc
-mv /tmp/$NAME/main.lua $CONFIG_DIR/main.lua
+# Move config files to the config folder
+mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
+mv $TEMP_DIR/main.lua $CONFIG_DIR/main.lua
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
 
-echo -e "Config files have been created under '$CONFIG_DIR'"
+echo -e "Config files have been moved to '$CONFIG_DIR'"
 
+# Create autostart folder if no such exists
 mkdir -p $AUTOSTART_DIR
 
-mv /tmp/$NAME/$NAME.desktop $AUTOSTART_DIR/$NAME.desktop
+# Move startup desktop file to the autostart folder
+mv $TEMP_DIR/$NAME.desktop $AUTOSTART_DIR/$NAME.desktop
 
-echo -e "Autostart desktop file has been saved to $AUTOSTART_DIR"
+# Change permissions to sudo user
+chown $SUDO_USER:$SUDO_USER $AUTOSTART_DIR/$NAME.desktop
+
+echo -e "Autostart desktop file has been saved to '$AUTOSTART_DIR'"
 
 echo -e "Exiting post installation script"
 
