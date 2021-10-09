@@ -4,7 +4,7 @@ An opinionated tool to manage and configure conky for developers.
 
 ## How to install it
 
-In order to install walle into your system you just download the `deb` file and run:
+In order to install walle into your system just download the `deb` file and run:
 
 ```sh
 sudo apt-get install <path-to-deb-file>
@@ -37,5 +37,3 @@ sudo apt-get autoremove
 ```
 
 > Keep in mind, this will remove any other dangling dependencies your system has too.
-
-This command will remove the conky package along with a few other dependencies.
