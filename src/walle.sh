@@ -31,9 +31,12 @@ help () {
   echo -e "  $NAME start [--config <file>]      Start conky process with the given config file"
   echo -e "  $NAME stop                         Stop conky process"
 
-  echo -e "\n Example:"
+  echo -e "\nExample:"
   echo -e "  $NAME start --config ~/.conkyrc    Starts conky process with the given config file"
   echo -e "  $NAME stop                         Stops conky process"
+
+  echo -e "\nNote:"
+  echo -e "  to remove the package just run sudo apt-get remove $NAME"
 }
 
 # Prints the version number
