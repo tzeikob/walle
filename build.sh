@@ -29,7 +29,7 @@ abort () {
   clean
 
   log "Build files has been removed"
-  log "\nProcess exited with code: $errcode"
+  log "Process exited with code: $errcode"
 
   exit $errcode
 }
@@ -116,11 +116,11 @@ bundlePackageFiles () {
   local binFile="$binDir/$PKG_NAME"
   cp ./src/walle.sh $binFile
 
-  # Set the package version in the executable file
+  # Set the package name and version in the executable file
   sed -i "s/PKG_NAME/$PKG_NAME/g" $binFile
   sed -i "s/PKG_VERSION/$PKG_VERSION/g" $binFile
 
-  log "Binary executable file has been saved to $binFile"
+  log "Executable file has been saved to '$binFile'"
 
   local tempConfigDir="$DIST_DIR/build/tmp/$PKG_NAME"
   mkdir -p $tempConfigDir
@@ -128,21 +128,23 @@ bundlePackageFiles () {
   local luaFile="$tempConfigDir/main.lua"
   cp ./src/main.lua $luaFile
 
-  log "Main lua file has been saved to $luaFile"
+  log "Main lua file has been saved to '$luaFile'"
 
   local conkyrcFile="$tempConfigDir/.conkyrc"
   cp ./src/.conkyrc $conkyrcFile
 
+  # Set the package name in the conky config file
   sed -i "s/PKG_NAME/$PKG_NAME/g" $conkyrcFile
 
-  log "Conky config file has been saved to $conkyrcFile"
+  log "Conky config has been saved to '$conkyrcFile'"
 
   local desktopFile="$tempConfigDir/$PKG_NAME.desktop"
   cp ./src/walle.desktop $desktopFile
 
+  # Set the package name in the start up desktop file
   sed -i "s/PKG_NAME/$PKG_NAME/g" $desktopFile
 
-  log "Desktop file has been saved to $desktopFile"
+  log "Desktop file has been saved to '$desktopFile'"
 
   log "Bundling has been completed"
 }
@@ -168,7 +170,7 @@ if [[ "$UID" == "0" ]]; then
   exit 1
 fi
 
-# Clean previous builds
+# Clean previous build files
 clean
 
 log "Build process started"
@@ -178,4 +180,4 @@ createDebianFiles
 bundlePackageFiles
 buildPackageFile
 
-log "\nBuild has completed successfully" "\U1F389"
+log "Build has completed successfully" "\U1F389"
