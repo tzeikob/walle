@@ -155,7 +155,7 @@ buildPackageFile () {
 
   local debFile="$DIST_DIR/$PKG_NAME-$PKG_VERSION.deb"
 
-  dpkg-deb --build $DIST_DIR/build $debFile ||
+  dpkg-deb --build --root-owner-group $DIST_DIR/build $debFile ||
     abort "failed to build package file" "$?"
 
   log "Package '$PKG_NAME' saved in '$debFile'"
