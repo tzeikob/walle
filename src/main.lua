@@ -1,9 +1,8 @@
 -- Main lua file for the conky config file
 
+-- Global variables
+config_path = "~/.config/PKG_NAME/.wallerc"
 conky_on_start = true
-
-interface = ""
-ip = ""
 
 -- Splits the given string by the given delimiter
 function string:split (delimiter)
@@ -22,6 +21,21 @@ function string:split (delimiter)
 	return result
 end
 
+-- Reads the configuration property with the given json path
+function config (path, default)
+  local cmd = "jq --raw-output " .. path .. " " .. config_path .. " | awk -- '{printf \"%s\", $1}'"
+  local file = io.popen (cmd)
+  local value = file:read ("*a")
+  file:close ()
+
+  -- Return default if not found
+  if value ~= "null" then
+    return value
+  else
+    return default
+  end
+end
+
 -- Executes an operation after the given cycles have passed
 function executeEvery (cycles, updates, operation)
 	timer = (updates % cycles)
@@ -31,9 +45,14 @@ function executeEvery (cycles, updates, operation)
 	end
 end
 
+-- Initialize configuration properties
+theme = config (".theme", "light")
+interface = ""
+ip = ""
+
 -- Resolves the current network interface and IP
 function resolveConnection ()
-  local file = io.popen ("ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}' ")
+  local file = io.popen ("ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}'")
   output = file:read ("*a")
   file:close ()
   
@@ -60,9 +79,16 @@ function conky_main ()
   end
 end
 
--- Expose data and variables into the config file
-function conky_interface () return interface end
-function conky_ip () return ip end
+-- Expose information to the conky config file
+function conky_theme ()
+  if theme == "light" then
+    return "${color white}"
+  elseif theme == "dark" then
+    return "${color black}"
+  else
+    return "${color white}"
+  end
+end
 
 function conky_upspeed ()
   return "${upspeedf " .. interface .. "}KiB"

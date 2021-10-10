@@ -15,6 +15,7 @@ echo -e "Startig post installation script"
 mkdir -p $CONFIG_DIR
 
 # Move config files to the config folder
+mv $TEMP_DIR/.wallerc $CONFIG_DIR/.wallerc
 mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 mv $TEMP_DIR/main.lua $CONFIG_DIR/main.lua
 

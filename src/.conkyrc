@@ -40,6 +40,7 @@ conky.config = {
 }
 
 conky.text = [[
+${lua_parse theme}
 $alignr ${time %l:%M %p}
 $alignr ${time %B%e, %Y}
 $alignr Drama, Greece

@@ -128,6 +128,9 @@ bundlePackageFiles () {
   local luaFile="$tempConfigDir/main.lua"
   cp ./src/main.lua $luaFile
 
+  # Set the package name in the main lua file
+  sed -i "s/PKG_NAME/$PKG_NAME/g" $luaFile
+
   log "Main lua file has been saved to '$luaFile'"
 
   local conkyrcFile="$tempConfigDir/.conkyrc"
@@ -137,6 +140,11 @@ bundlePackageFiles () {
   sed -i "s/PKG_NAME/$PKG_NAME/g" $conkyrcFile
 
   log "Conky config has been saved to '$conkyrcFile'"
+
+  local configFile="$tempConfigDir/.wallerc"
+  cp ./src/.wallerc $configFile
+
+  log "Config file has been saved to '$configFile'"
 
   local desktopFile="$tempConfigDir/$PKG_NAME.desktop"
   cp ./src/walle.desktop $desktopFile
