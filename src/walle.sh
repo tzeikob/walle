@@ -5,7 +5,8 @@ NAME="PKG_NAME"
 VERSION="PKG_VERSION"
 
 CONFIG_DIR=~/.config/$NAME
-CONFIG_FILE=$CONFIG_DIR/.conkyrc
+CONFIG_FILE=$CONFIG_DIR/.wallerc
+CONKYRC_FILE=$CONFIG_DIR/.conkyrc
 PID_FILE=$CONFIG_DIR/pid
 LOG_FILE=$CONFIG_DIR/all.log
 
@@ -28,12 +29,17 @@ help () {
   echo -e "Usage:"
   echo -e "  $NAME --help                       Print this help message"
   echo -e "  $NAME --version                    Print the installed version"
-  echo -e "  $NAME start [--config <file>]      Start conky process with the given config file"
-  echo -e "  $NAME stop                         Stop conky process"
+  echo -e "  $NAME start                        Start the conky process"
+  echo -e "  $NAME stop                         Stop the conky process"
+  echo -e "  $NAME config [options]             Update the given options in the config file"
 
-  echo -e "\nExample:"
-  echo -e "  $NAME start --config ~/.conkyrc    Starts conky process with the given config file"
+  echo -e "\nOptions:"
+  echo -e "  -t, --theme <mode>                 Theme mode could be either 'light' or 'dark'"
+
+  echo -e "\nExamples:"
+  echo -e "  $NAME start                        Starts conky process"
   echo -e "  $NAME stop                         Stops conky process"
+  echo -e "  $NAME config --theme dark          Sets the theme to dark mode"
 
   echo -e "\nNote:"
   echo -e "  to remove the package just run sudo apt-get remove $NAME"
@@ -44,17 +50,15 @@ version () {
   echo -e "v$VERSION"
 }
 
-# Starts the conky as child process: <config>
+# Starts the conky as child process
 start () {
-  local config=$1
-
   # Try to kill conky process if already running
   if [ -f "$PID_FILE" ]; then
     kill $(cat $PID_FILE) >> $LOG_FILE 2>&1
   fi
 
   # Start a new conky process as child process
-  conky -b -p 1 -c $config >> $LOG_FILE 2>&1 &
+  conky -b -p 1 -c $CONKYRC_FILE >> $LOG_FILE 2>&1 &
   # Right after spawning conky read its process id
   local pid=$!
 
@@ -89,6 +93,42 @@ stop () {
   fi
 }
 
+# Returns if the conky process is up and running
+isUp () {
+  if [ -f "$PID_FILE" ]; then
+    local pid=$(cat $PID_FILE)
+
+    ps -p $pid >> $LOG_FILE 2>&1 ||
+      abort "failed to resolve status, invalid pid: $pid" $?
+
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
+# Updates the given properties in config file: <opts>
+config () {
+  # Properties must be given as an associated array
+  local -n opts=$1
+
+  # For each property update and save the config file
+  for key in "${!opts[@]}"; do
+    local value=${opts[$key]}
+
+    local contents=$(jq ".\"${key}\" = \"$value\"" $CONFIG_FILE) && \
+      echo "${contents}" > $CONFIG_FILE && \
+      echo "Option $key has been changed to $value"
+  done
+
+  # If conky is up and running do a restart
+  local isRunning=$(isUp)
+  if [ "$isRunning" == "true" ]; then
+    echo -e "Restarting the conky process..."
+    start
+  fi
+}
+
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
   echo -e "Error: don't run this script as root or using sudo \U1F480"
@@ -119,19 +159,24 @@ cmd="${1-}"
 
 case $cmd in
   "start" | "restart")
+    start
+    exit 0;;
+  "stop")
+    stop
+    exit 0;;
+  "config")
     shift
 
-    # Initialize start command options
-    config=$CONFIG_FILE
+    declare -A options
 
     # Iterate to gather command's option values
     while [ "$#" -gt 0 ]; do
       opt="${1-}"
 
       case "$opt" in
-        "-c" | "--config")
+        "-t" | "--theme")
           shift
-          config="${1-}";;
+          options['theme']="${1-}";;
         *)
           abort "Error: option $opt is not supported" 1;;
       esac
@@ -139,10 +184,7 @@ case $cmd in
       shift
     done
 
-    start $config
-    exit 0;;
-  "stop")
-    stop
+    config options
     exit 0;;
   *)
     abort "Error: command $cmd is not supported" 1;;

@@ -1,7 +1,7 @@
 -- Main lua file for the conky config file
 
 -- Global variables
-config_path = "~/.config/PKG_NAME/.wallerc"
+config_file = "~/.config/PKG_NAME/.wallerc"
 conky_on_start = true
 
 -- Splits the given string by the given delimiter
@@ -23,7 +23,7 @@ end
 
 -- Reads the configuration property with the given json path
 function config (path, default)
-  local cmd = "jq --raw-output " .. path .. " " .. config_path .. " | awk -- '{printf \"%s\", $1}'"
+  local cmd = "jq --raw-output " .. path .. " " .. config_file .. " | awk -- '{printf \"%s\", $1}'"
   local file = io.popen (cmd)
   local value = file:read ("*a")
   file:close ()
