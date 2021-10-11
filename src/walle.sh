@@ -122,8 +122,7 @@ config () {
   done
 
   # If conky is up and running do a restart
-  local isRunning=$(isUp)
-  if [ "$isRunning" == "true" ]; then
+  if [ "$(isUp)" == "true" ]; then
     echo -e "Restarting the conky process..."
     start
   fi
