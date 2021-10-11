@@ -177,7 +177,7 @@ case $cmd in
           shift
           options['theme']="${1-}";;
         *)
-          abort "Error: option $opt is not supported" 1;;
+          abort "option $opt is not supported" 1;;
       esac
 
       shift
@@ -186,7 +186,7 @@ case $cmd in
     config options
     exit 0;;
   *)
-    abort "Error: command $cmd is not supported" 1;;
+    abort "command $cmd is not supported" 1;;
 esac
 
 exit 0
