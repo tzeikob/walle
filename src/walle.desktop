@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=PKG_NAME start
+Hidden=false
+NoDisplay=false
+Name[en_US]=PKG_NAME
+Name=PKG_NAME
+Comment[en_US]=PKG_NAME Start Up
+Comment=PKG_NAME Start Up

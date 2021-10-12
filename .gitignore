@@ -4,3 +4,12 @@
 
 # Log files
 **/*.log
+
+# Build files
+build/
+.build/
+
+# Distribution folder and files
+dist/
+.dist/
+*.deb

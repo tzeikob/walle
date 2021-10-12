@@ -35,11 +35,12 @@ conky.config = {
     uppercase = false,
     use_spacer = 'none',
     use_xft = true,
-    lua_load = '~/.tzkb/walle/bin/main.lua',
+    lua_load = '~/.config/PKG_NAME/main.lua',
     lua_draw_hook_post = 'main'
 }
 
 conky.text = [[
+${lua_parse theme}
 $alignr ${time %l:%M %p}
 $alignr ${time %B%e, %Y}
 $alignr Drama, Greece
