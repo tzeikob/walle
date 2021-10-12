@@ -65,6 +65,7 @@ help () {
 
   echo -e "\nOptions:"
   echo -e "  -t, --theme <mode>                 Theme mode could be either 'light' or 'dark'"
+  echo -e "  -w, --wallpaper <mode>             Wallpaper mode could be either 'static' or 'slide'"
 
   echo -e "\nExamples:"
   echo -e "  $NAME start                        Starts conky process"
