@@ -88,7 +88,11 @@ function resolveConnection ()
   interface = output[1]
   ip = output[2]
 
-  print ("Network resolved to '" .. interface .. "' and ip '" .. ip .. "'")
+  if interface ~= nil and interface ~= "" then
+    print ("Network resolved to '" .. interface .. "' and ip '" .. ip .. "'")
+  else
+    print ("Unable to resolve network seems your are offline")
+  end
 end
 
 -- Updates the background and screensaver wallpapers
