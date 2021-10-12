@@ -178,6 +178,7 @@ for arg in "$@"; do
     "-h" | "--help")
       help
       exit 0;;
+
     "-v" | "--version")
       version
       exit 0;;
@@ -191,9 +192,11 @@ case $cmd in
   "start" | "restart")
     start
     exit 0;;
+
   "stop")
     stop
     exit 0;;
+
   "config")
     shift
 
@@ -204,8 +207,11 @@ case $cmd in
       opt="${1-}"
 
       case "$opt" in
-        "-t" | "--theme")
+        "--theme" | "-t")
           shift
+          value="${1-}"
+          notEmpty "$value" "option $opt should not be empty"
+          shouldBe "$value" "option $opt should be either" "light" "dark"
           options['theme']="${1-}";;
 
         "--wallpaper" | "-w")
@@ -213,8 +219,8 @@ case $cmd in
           value="${1-}"
           notEmpty "$value" "option $opt should not be empty"
           shouldBe "$value" "option $opt should be either" "static" "slide"
-
           options['wallpaper']="$value";;
+
         *)
           abort "option $opt is not supported" 1;;
       esac
@@ -224,6 +230,7 @@ case $cmd in
 
     config options
     exit 0;;
+
   *)
     abort "command $cmd is not supported" 1;;
 esac
