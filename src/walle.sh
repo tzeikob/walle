@@ -21,6 +21,36 @@ abort () {
   exit $errcode
 }
 
+# Asserts a value is not empty: <value>, <message>
+notEmpty () {
+  local value=$1
+  local message=$2
+
+  if [ -z "$value" ]; then
+    abort "$message" 1
+  fi
+}
+
+# Asserts a value matches either one of the given values: <value> <message> <value1> <value2> [valueN]
+shouldBe () {
+  local value=$1
+  local message=$2
+
+  # Collect the rest of the arguments
+  shift
+  shift
+  local list=($@)
+
+  # If you find a match return
+  for item in "${list[@]}"; do
+    if [[ $value == $item ]]; then
+      return
+    fi
+  done
+
+  abort "$message ${list[*]}" 1
+}
+
 # Prints a short help report
 help () {
   echo -e "$NAME v$VERSION"
@@ -176,6 +206,14 @@ case $cmd in
         "-t" | "--theme")
           shift
           options['theme']="${1-}";;
+
+        "--wallpaper" | "-w")
+          shift
+          value="${1-}"
+          notEmpty "$value" "option $opt should not be empty"
+          shouldBe "$value" "option $opt should be either" "static" "slide"
+
+          options['wallpaper']="$value";;
         *)
           abort "option $opt is not supported" 1;;
       esac

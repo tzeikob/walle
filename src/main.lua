@@ -2,6 +2,7 @@
 
 -- Global variables
 config_file = "~/.config/PKG_NAME/.wallerc"
+pictures_dir = "~/pictures/wallpapers/"
 conky_on_start = true
 
 -- Splits the given string by the given delimiter
@@ -47,8 +48,34 @@ end
 
 -- Initialize configuration properties
 theme = config (".theme", "light")
+wallpaper = config (".wallpaper", "static")
+pictures = {}
 interface = ""
 ip = ""
+
+-- Loads the list of pictures stored under the ~/pictures/wallpapers folder
+function loadPictures ()
+  local re = ".*.\\(jpe?g\\|png\\)$"
+  local file = io.popen ('find ' .. pictures_dir .. ' -type f -regex "' .. re .. '" 2> /dev/null || echo ""')
+  local output = file:read ("*a")
+  file:close ()
+
+  -- Split raw output
+  local items = string.split (output, '\n')
+
+  -- Filter only non-empty items
+  local index = 1
+  for i=1,table.getn(items) do
+    local item = items[i]
+
+    if item ~= "" then
+      pictures[index] = item
+      index = index + 1
+    end
+  end
+
+  print ("Found " .. table.getn(pictures) .. " pictures under " .. pictures_dir)
+end
 
 -- Resolves the current network interface and IP
 function resolveConnection ()
@@ -62,6 +89,26 @@ function resolveConnection ()
   ip = output[2]
 end
 
+-- Updates the background and screensaver wallpapers
+function updateWallpapers ()
+  local len = table.getn(pictures)
+
+  if len > 0 then
+    local index = math.random(1, len)
+    local pic = pictures[index]
+
+    -- Set the background picture
+    local file = io.popen ('gsettings set org.gnome.desktop.background picture-uri "file://' .. pic .. '"')
+    file:close ()
+
+    -- Set the screensaver picture
+    file = io.popen ('gsettings set org.gnome.desktop.screensaver picture-uri "file://' .. pic .. '"')
+    file:close ()
+
+    print ('Wallpapers have been set to ' .. pic)
+  end
+end
+
 function conky_main ()
   -- Abort if the conky window is not rendered
   if conky_window == nil then
@@ -73,8 +120,13 @@ function conky_main ()
 
   executeEvery (10, updates, resolveConnection)
 
+  if wallpaper == "slide" then
+    executeEvery (3600, updates, updateWallpapers)
+  end
+
   -- Mark conky as started in the subsequent cycles
   if conky_on_start then
+    loadPictures ()
     conky_on_start = false
   end
 end
