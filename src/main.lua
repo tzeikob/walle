@@ -7,19 +7,19 @@ conky_on_start = true
 
 -- Splits the given string by the given delimiter
 function string:split (delimiter)
-	local result = {}
-	local from = 1
-	local delim_from, delim_to = string.find (self, delimiter, from)
+  local result = {}
+  local from = 1
+  local delim_from, delim_to = string.find (self, delimiter, from)
 
-	while delim_from do
-		table.insert (result, string.sub (self, from , delim_from - 1))
-		from = delim_to + 1
-		delim_from, delim_to = string.find (self, delimiter, from)
-	end
+  while delim_from do
+    table.insert (result, string.sub (self, from , delim_from - 1))
+    from = delim_to + 1
+    delim_from, delim_to = string.find (self, delimiter, from)
+  end
 
-	table.insert ( result, string.sub (self, from))
+  table.insert ( result, string.sub (self, from))
 
-	return result
+  return result
 end
 
 -- Reads the configuration property with the given json path
@@ -39,11 +39,11 @@ end
 
 -- Executes an operation after the given cycles have passed
 function executeEvery (cycles, updates, operation)
-	timer = (updates % cycles)
+  local timer = (updates % cycles)
 
-	if timer == 0 or conky_on_start then
+  if timer == 0 or conky_on_start then
     operation ()
-	end
+  end
 end
 
 -- Initialize configuration properties
@@ -80,7 +80,7 @@ end
 -- Resolves the current network interface and IP
 function resolveConnection ()
   local file = io.popen ("ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}'")
-  output = file:read ("*a")
+  local output = file:read ("*a")
   file:close ()
   
   output = string.split (output, ',')
@@ -118,7 +118,7 @@ function conky_main ()
   end
 
   -- Read the number of conky updates so far
-  updates = tonumber (conky_parse ("${updates}"))
+  local updates = tonumber (conky_parse ("${updates}"))
 
   executeEvery (10, updates, resolveConnection)
 
