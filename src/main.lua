@@ -87,6 +87,8 @@ function resolveConnection ()
 
   interface = output[1]
   ip = output[2]
+
+  print ("Network resolved to '" .. interface .. "' and ip '" .. ip .. "'")
 end
 
 -- Updates the background and screensaver wallpapers
