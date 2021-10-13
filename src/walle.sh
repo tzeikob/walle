@@ -66,14 +66,18 @@ help () {
   echo -e "\nOptions:"
   echo -e "  -t, --theme <mode>                 Theme mode could be either 'light' or 'dark'"
   echo -e "  -w, --wallpaper <mode>             Wallpaper mode could be either 'static' or 'slide'"
+  echo -e "  -c, --clock <font>                 Font name and style for the clock section"
+  echo -e "  -d, --date <font>                  Font name and style for the date section"
+  echo -e "  -x, --text <font>                  Font name and style for the text section"
 
   echo -e "\nExamples:"
   echo -e "  $NAME start                        Starts conky process"
   echo -e "  $NAME stop                         Stops conky process"
   echo -e "  $NAME config --theme dark          Sets the theme to dark mode"
 
-  echo -e "\nNote:"
-  echo -e "  to remove the package just run sudo apt-get remove $NAME"
+  echo -e "\nNotes:"
+  echo -e "  -font options must be given as strings in form \"Font Name:bold:italic:size=14\""
+  echo -e "  -to remove the package just run sudo apt-get remove $NAME"
 }
 
 # Prints the version number
@@ -220,6 +224,24 @@ case $cmd in
           notEmpty "$value" "option $opt should not be empty"
           shouldBe "$value" "option $opt should be either" "static" "slide"
           options['wallpaper']="$value";;
+        
+        "--clock" | "-c")
+          shift
+          value="${1-}"
+          notEmpty "$value" "option $opt should not be empty"
+          options['clock']="$value";;
+        
+        "--date" | "-d")
+          shift
+          value="${1-}"
+          notEmpty "$value" "option $opt should not be empty"
+          options['date']="$value";;
+        
+        "--text" | "-x")
+          shift
+          value="${1-}"
+          notEmpty "$value" "option $opt should not be empty"
+          options['text']="$value";;
 
         *)
           abort "option $opt is not supported" 1;;

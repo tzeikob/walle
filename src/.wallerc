@@ -1,4 +1,7 @@
 {
   "theme": "light",
-  "wallpaper": "static"
+  "wallpaper": "static",
+  "clock": "",
+  "date": "",
+  "text": ""
 }

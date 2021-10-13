@@ -24,7 +24,7 @@ end
 
 -- Reads the configuration property with the given json path
 function config (path, default)
-  local cmd = "jq --raw-output " .. path .. " " .. config_file .. " | awk -- '{printf \"%s\", $1}'"
+  local cmd = "jq --raw-output " .. path .. " " .. config_file .. " | sed -z '$ s/\\n$//'"
   local file = io.popen (cmd)
   local value = file:read ("*a")
   file:close ()
@@ -49,6 +49,9 @@ end
 -- Initialize configuration properties
 theme = config (".theme", "light")
 wallpaper = config (".wallpaper", "static")
+clock_font = config(".clock", "")
+date_font = config(".date", "")
+text_font = config(".text", "")
 pictures = {}
 interface = ""
 ip = ""
@@ -161,5 +164,17 @@ function conky_connection ()
     return "Connected " .. ip
   else
     return "Offline"
+  end
+end
+
+function conky_font (section)
+  if section == "clock" then
+    return "${font " .. clock_font .. "}"
+  elseif section == "date" then
+    return "${font " .. date_font .. "}"
+  elseif section == "text" then
+    return "${font " .. text_font .. "}"
+  else
+    return ""
   end
 end
