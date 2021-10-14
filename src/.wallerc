@@ -4,5 +4,6 @@
   "clock": "",
   "date": "",
   "text": "",
-  "debug": "disabled"
+  "debug": "disabled",
+  "monitor": "0"
 }

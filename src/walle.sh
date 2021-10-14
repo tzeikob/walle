@@ -61,6 +61,16 @@ shouldBeFont () {
   fi
 }
 
+# Asserts a value matches a positive integer: <value> <message>
+shouldBePositiveInt () {
+  local value=$1
+  local message=$2
+
+  if [[ ! $value =~ ^[0-9][0-9]*$ ]]; then
+    abort "$message" 1
+  fi
+}
+
 # Prints a short help report
 help () {
   echo -e "$NAME v$VERSION"
@@ -80,6 +90,7 @@ help () {
   echo -e "  -d, --date <font>                  Font name and style for the date section"
   echo -e "  -x, --text <font>                  Font name and style for the text section"
   echo -e "  --debug <mode>                     Debug mode could be either 'disabled' or 'enabled'"
+  echo -e "  --monitor <index>                  An experimental option to set the monitor index the conky renders"
 
   echo -e "\nExamples:"
   echo -e "  $NAME start                        Starts conky process"
@@ -164,7 +175,21 @@ config () {
 
     local contents=$(jq ".\"${key}\" = \"$value\"" $CONFIG_FILE) && \
       echo "${contents}" > $CONFIG_FILE && \
-      echo "Option $key has been changed to $value"
+
+    local message="$key has been changed to $value"
+
+    if [ "$key" == "monitor" ]; then
+      message="Experimental option $message"
+    else
+      message="Option $message"
+    fi
+
+    echo $message
+
+    # Monitor option should update the 'xinerama_head' config in conkyrc
+    if [ "$key" == "monitor" ]; then
+      sed -i "/xinerama_head/c\    xinerama_head = $value," $CONKYRC_FILE
+    fi
   done
 
   # If conky is up and running do a restart
@@ -263,6 +288,13 @@ case $cmd in
           notEmpty "$value" "option $opt should not be empty"
           shouldBe "$value" "option $opt should be either" "disabled" "enabled"
           options['debug']="$value";;
+        
+        "--monitor")
+          shift
+          value="${1-}"
+          notEmpty "$value" "option $opt should not be empty"
+          shouldBePositiveInt "$value" "option $opt should be a positive integer"
+          options['monitor']="$value";;
 
         *)
           abort "option $opt is not supported" 1;;
