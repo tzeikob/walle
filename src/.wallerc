@@ -3,5 +3,6 @@
   "wallpaper": "static",
   "clock": "",
   "date": "",
-  "text": ""
+  "text": "",
+  "debug": "disabled"
 }
