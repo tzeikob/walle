@@ -51,6 +51,16 @@ shouldBe () {
   abort "$message ${list[*]}" 1
 }
 
+# Asserts a value matches the regular expression of fonts: <value> <message>
+shouldBeFont () {
+  local value=$1
+  local message=$2
+
+  if [[ ! $value =~ ^([a-zA-Z0-9_\ \-])+(:bold)?(:italic)?(:size=[1-9][0-9]?[0-9]?)?$ ]]; then
+    abort "$message" 1
+  fi
+}
+
 # Prints a short help report
 help () {
   echo -e "$NAME v$VERSION"
@@ -77,7 +87,7 @@ help () {
   echo -e "  $NAME config --theme dark          Sets the theme to dark mode"
 
   echo -e "\nNotes:"
-  echo -e "  -font options must be given as strings in form \"Font Name:bold:italic:size=14\""
+  echo -e "  -font option must be given as string in form \"Font Name[:bold][:italic][:size=xxx]\""
   echo -e "  -to remove the package just run sudo apt-get remove $NAME"
 }
 
@@ -230,18 +240,21 @@ case $cmd in
           shift
           value="${1-}"
           notEmpty "$value" "option $opt should not be empty"
+          shouldBeFont "$value" "option $opt should be a valid font"
           options['clock']="$value";;
         
         "--date" | "-d")
           shift
           value="${1-}"
           notEmpty "$value" "option $opt should not be empty"
+          shouldBeFont "$value" "option $opt should be a valid font"
           options['date']="$value";;
         
         "--text" | "-x")
           shift
           value="${1-}"
           notEmpty "$value" "option $opt should not be empty"
+          shouldBeFont "$value" "option $opt should be a valid font"
           options['text']="$value";;
         
         "--debug")
