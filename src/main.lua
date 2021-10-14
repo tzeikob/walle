@@ -2,8 +2,15 @@
 
 -- Global variables
 config_file = "~/.config/PKG_NAME/.wallerc"
-pictures_dir = "~/pictures/wallpapers/"
+wallpapers_dir = "~/pictures/wallpapers/"
 conky_on_start = true
+
+-- Logs a debug message if debug is enabled
+function log_debug (message)
+  if debug == "enabled" then
+    print (message)
+  end
+end
 
 -- Splits the given string by the given delimiter
 function string:split (delimiter)
@@ -52,14 +59,15 @@ wallpaper = config (".wallpaper", "static")
 clock_font = config(".clock", "")
 date_font = config(".date", "")
 text_font = config(".text", "")
-pictures = {}
+debug = config (".debug", "disabled")
+wallpapers = {}
 interface = ""
 ip = ""
 
--- Loads the list of pictures stored under the ~/pictures/wallpapers folder
-function loadPictures ()
+-- Loads the list of images under the ~/pictures/wallpapers folder
+function loadWallpapers ()
   local re = ".*.\\(jpe?g\\|png\\)$"
-  local file = io.popen ('find ' .. pictures_dir .. ' -type f -regex "' .. re .. '" 2> /dev/null || echo ""')
+  local file = io.popen ('find ' .. wallpapers_dir .. ' -type f -regex "' .. re .. '" 2> /dev/null || echo ""')
   local output = file:read ("*a")
   file:close ()
 
@@ -72,12 +80,14 @@ function loadPictures ()
     local item = items[i]
 
     if item ~= "" then
-      pictures[index] = item
+      log_debug ("Found image '" .. item .. "'")
+
+      wallpapers[index] = item
       index = index + 1
     end
   end
 
-  print ("Found " .. table.getn(pictures) .. " pictures under " .. pictures_dir)
+  log_debug ("Found " .. table.getn(wallpapers) .. " images under " .. wallpapers_dir)
 end
 
 -- Resolves the current network interface and IP
@@ -92,19 +102,19 @@ function resolveConnection ()
   ip = output[2]
 
   if interface ~= nil and interface ~= "" then
-    print ("Network resolved to '" .. interface .. "' and ip '" .. ip .. "'")
+    log_debug ("Network resolved to '" .. interface .. "' and ip '" .. ip .. "'")
   else
-    print ("Unable to resolve network seems your are offline")
+    log_debug ("Unable to resolve network seems your are offline")
   end
 end
 
--- Updates the background and screensaver wallpapers
-function updateWallpapers ()
-  local len = table.getn(pictures)
+-- Updates the background and screensaver wallpaper
+function updateWallpaper ()
+  local len = table.getn(wallpapers)
 
   if len > 0 then
     local index = math.random(1, len)
-    local pic = pictures[index]
+    local pic = wallpapers[index]
 
     -- Set the background picture
     local file = io.popen ('gsettings set org.gnome.desktop.background picture-uri "file://' .. pic .. '"')
@@ -114,7 +124,7 @@ function updateWallpapers ()
     file = io.popen ('gsettings set org.gnome.desktop.screensaver picture-uri "file://' .. pic .. '"')
     file:close ()
 
-    print ('Wallpapers have been set to ' .. pic)
+    log_debug ('Wallpaper has been set to ' .. pic)
   end
 end
 
@@ -130,12 +140,12 @@ function conky_main ()
   executeEvery (10, updates, resolveConnection)
 
   if wallpaper == "slide" then
-    executeEvery (3600, updates, updateWallpapers)
+    executeEvery (3600, updates, updateWallpaper)
   end
 
   -- Mark conky as started in the subsequent cycles
   if conky_on_start then
-    loadPictures ()
+    loadWallpapers ()
     conky_on_start = false
   end
 end

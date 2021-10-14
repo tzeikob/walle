@@ -69,6 +69,7 @@ help () {
   echo -e "  -c, --clock <font>                 Font name and style for the clock section"
   echo -e "  -d, --date <font>                  Font name and style for the date section"
   echo -e "  -x, --text <font>                  Font name and style for the text section"
+  echo -e "  --debug <mode>                     Debug mode could be either 'disabled' or 'enabled'"
 
   echo -e "\nExamples:"
   echo -e "  $NAME start                        Starts conky process"
@@ -242,6 +243,13 @@ case $cmd in
           value="${1-}"
           notEmpty "$value" "option $opt should not be empty"
           options['text']="$value";;
+        
+        "--debug")
+          shift
+          value="${1-}"
+          notEmpty "$value" "option $opt should not be empty"
+          shouldBe "$value" "option $opt should be either" "disabled" "enabled"
+          options['debug']="$value";;
 
         *)
           abort "option $opt is not supported" 1;;
