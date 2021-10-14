@@ -1,9 +1,12 @@
 -- Main lua file for the conky config file
 
--- Global variables
+-- Initialize global variables
 config_file = "~/.config/PKG_NAME/.wallerc"
 wallpapers_dir = "~/pictures/wallpapers/"
 conky_on_start = true
+wallpapers = {}
+interface = ""
+ip = ""
 
 -- Logs a debug message if debug is enabled
 function log_debug (message)
@@ -24,7 +27,7 @@ function string:split (delimiter)
     delim_from, delim_to = string.find (self, delimiter, from)
   end
 
-  table.insert ( result, string.sub (self, from))
+  table.insert (result, string.sub (self, from))
 
   return result
 end
@@ -53,17 +56,6 @@ function executeEvery (cycles, updates, operation)
   end
 end
 
--- Initialize configuration properties
-theme = config (".theme", "light")
-wallpaper = config (".wallpaper", "static")
-clock_font = config(".clock", "")
-date_font = config(".date", "")
-text_font = config(".text", "")
-debug = config (".debug", "disabled")
-wallpapers = {}
-interface = ""
-ip = ""
-
 -- Loads the list of images under the ~/pictures/wallpapers folder
 function loadWallpapers ()
   local re = ".*.\\(jpe?g\\|png\\)$"
@@ -76,7 +68,7 @@ function loadWallpapers ()
 
   -- Filter only non-empty items
   local index = 1
-  for i=1,table.getn(items) do
+  for i=1,table.getn (items) do
     local item = items[i]
 
     if item ~= "" then
@@ -87,7 +79,7 @@ function loadWallpapers ()
     end
   end
 
-  log_debug ("Found " .. table.getn(wallpapers) .. " images under " .. wallpapers_dir)
+  log_debug ("Found " .. table.getn (wallpapers) .. " images under " .. wallpapers_dir)
 end
 
 -- Resolves the current network interface and IP
@@ -110,10 +102,10 @@ end
 
 -- Updates the background and screensaver wallpaper
 function updateWallpaper ()
-  local len = table.getn(wallpapers)
+  local len = table.getn (wallpapers)
 
   if len > 0 then
-    local index = math.random(1, len)
+    local index = math.random (1, len)
     local pic = wallpapers[index]
 
     -- Set the background picture
@@ -127,6 +119,14 @@ function updateWallpaper ()
     log_debug ('Wallpaper has been set to ' .. pic)
   end
 end
+
+-- Initialize configuration properties
+theme = config (".theme", "light")
+wallpaper = config (".wallpaper", "static")
+clock_font = config (".clock", "")
+date_font = config (".date", "")
+text_font = config (".text", "")
+debug = config (".debug", "disabled")
 
 function conky_main ()
   -- Abort if the conky window is not rendered
