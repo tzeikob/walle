@@ -1,0 +1,31 @@
+date.day.monday=Monday
+date.day.tuesday=Tuesday
+date.day.wednesday=Wednesday
+date.day.thursday=Thursday
+date.day.friday=Friday
+date.day.saturday=Saturday
+date.day.sunday=Sunday
+
+date.month.january=January
+date.month.february=February
+date.month.march=March
+date.month.april=April
+date.month.may=May
+date.month.june=June
+date.month.july=July
+date.month.august=August
+date.month.september=September
+date.month.october=October
+date.month.november=November
+date.month.december=December
+
+date.time.am=AM
+date.time.pm=PM
+
+text.line.logged.user=Logged as $1@$2 on $3
+text.line.running.system=Running $1 with $2 cores at $3
+text.line.loads=CPU $1 Mem $2 Disk $3
+text.line.network.speeds=Up $1 Down $2
+text.line.network.connected=Connected as $1
+text.line.network.offline=You are offline
+text.line.uptime=Uptime $1

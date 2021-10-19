@@ -1,0 +1,31 @@
+date.day.monday=Δευτέρα
+date.day.tuesday=Τρίτη
+date.day.wednesday=Τετάρτη
+date.day.thursday=Πέμπτη
+date.day.friday=Παρασκευή
+date.day.saturday=Σάββατο
+date.day.sunday=Κυριακή
+
+date.month.january=Ιανουάριος
+date.month.february=Φεβρουάριος
+date.month.march=Μάρτης
+date.month.april=Απρίλης
+date.month.may=Μαϊος
+date.month.june=Ιούνιος
+date.month.july=Ιούλιος
+date.month.august=Αύγουστος
+date.month.september=Σεπτέμβριος
+date.month.october=Οκτώβριος
+date.month.november=Νοέμβριος
+date.month.december=Δεκέμβριος
+
+date.time.am=ΜΜ
+date.time.pm=ΠΜ
+
+text.line.logged.user=Χρήστης $1@$2 στο $3
+text.line.running.system=Τρέχει $1 με $2 πυρήνες στα $3
+text.line.loads=CPU $1 Μνήμη $2 Δίσκος $3
+text.line.network.speeds=Αποστολή $1 Λήψη $2
+text.line.network.connected=Συνδεμένος ως $1
+text.line.network.offline=Αποσυνδεμένος
+text.line.uptime=Σύνοδος $1 μέχρι τώρα

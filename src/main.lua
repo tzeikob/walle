@@ -1,9 +1,13 @@
 -- Main lua file for the conky config file
 
 -- Initialize global variables
-config_file = "~/.config/PKG_NAME/.wallerc"
-wallpapers_dir = "~/pictures/wallpapers/"
+user_home_dir = "/home/USER"
+working_dir = user_home_dir .. "/.config/walle"
+config_file = working_dir .. "/.wallerc"
+langs_dir = working_dir .. "/langs"
+wallpapers_dir = user_home_dir .. "/pictures/wallpapers"
 conky_on_start = true
+texts={}
 wallpapers = {}
 interface = ""
 ip = ""
@@ -15,8 +19,8 @@ function log_debug (message)
   end
 end
 
--- Splits the given string by the given delimiter
-function string:split (delimiter)
+-- Splits the string by the given delimiter
+function string:split (delimiter, lazy)
   local result = {}
   local from = 1
   local delim_from, delim_to = string.find (self, delimiter, from)
@@ -24,12 +28,36 @@ function string:split (delimiter)
   while delim_from do
     table.insert (result, string.sub (self, from , delim_from - 1))
     from = delim_to + 1
+
+    -- Split only by the first occurence if lazy
+    if lazy then
+      break
+    end
+
     delim_from, delim_to = string.find (self, delimiter, from)
   end
 
   table.insert (result, string.sub (self, from))
 
   return result
+end
+
+-- Checks if the string matches the given pattern
+function string:matches (pattern)
+  if self ~= nil then
+    return string.find (self, pattern)
+  end
+
+  return self
+end
+
+-- Trims any whitespace of the string
+function string:trim ()
+  if self ~= nil then
+    return self:gsub ("^%s*(.-)%s*$", "%1")
+  end
+
+  return self
 end
 
 -- Reads the configuration property with the given json path
@@ -56,6 +84,19 @@ function executeEvery (cycles, updates, operation)
   end
 end
 
+-- Loads the texts correspond to the lang option in the config file
+function loadTexts ()
+  local lines = io.lines (langs_dir .. "/" .. lang .. ".dict")
+
+  for line in lines do
+    if line:matches ("^[a-zA-Z0-9-_][a-zA-Z0-9-_\.]* *=.*") then
+      local items = line:split ("=", true)
+      local key, value = items[1]:trim (), items[2]:trim ()
+      texts[key] = value
+    end
+  end
+end
+
 -- Loads the list of images under the ~/pictures/wallpapers folder
 function loadWallpapers ()
   local re = ".*.\\(jpe?g\\|png\\)$"
@@ -64,7 +105,7 @@ function loadWallpapers ()
   file:close ()
 
   -- Split raw output
-  local items = string.split (output, '\n')
+  local items = output:split ('\n')
 
   -- Filter only non-empty items
   local index = 1
@@ -88,7 +129,7 @@ function resolveConnection ()
   local output = file:read ("*a")
   file:close ()
   
-  output = string.split (output, ',')
+  output = output:split (',')
 
   interface = output[1]
   ip = output[2]
@@ -126,6 +167,7 @@ wallpaper = config (".wallpaper", "static")
 clock_font = config (".clock", "")
 date_font = config (".date", "")
 text_font = config (".text", "")
+lang = config ('.lang', "en")
 debug = config (".debug", "disabled")
 
 function conky_main ()
@@ -145,6 +187,7 @@ function conky_main ()
 
   -- Mark conky as started in the subsequent cycles
   if conky_on_start then
+    loadTexts ()
     loadWallpapers ()
     conky_on_start = false
   end

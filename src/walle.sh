@@ -89,6 +89,7 @@ help () {
   echo -e "  -c, --clock <font>                 Font name and style for the clock section"
   echo -e "  -d, --date <font>                  Font name and style for the date section"
   echo -e "  -x, --text <font>                  Font name and style for the text section"
+  echo -e "  -l, --lang <code>                  The code of a language textuals should appear with"
   echo -e "  --debug <mode>                     Debug mode could be either 'disabled' or 'enabled'"
   echo -e "  --monitor <index>                  An experimental option to set the monitor index the conky renders"
 
@@ -99,6 +100,7 @@ help () {
 
   echo -e "\nNotes:"
   echo -e "  -font option must be given as string in form \"Font Name[:bold][:italic][:size=xxx]\""
+  echo -e "  -lang option must be given in ISO language codes like 'en', 'el', etc."
   echo -e "  -to remove the package just run sudo apt-get remove $NAME"
 }
 
@@ -281,6 +283,13 @@ case $cmd in
           notEmpty "$value" "option $opt should not be empty"
           shouldBeFont "$value" "option $opt should be a valid font"
           options['text']="$value";;
+        
+        "--lang" | "-l")
+          shift
+          value="${1-}"
+          notEmpty "$value" "option $opt should not be empty"
+          shouldBe "$value" "option $opt should be either" "en" "el"
+          options['lang']="$value";;
         
         "--debug")
           shift
