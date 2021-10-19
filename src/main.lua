@@ -1,23 +1,22 @@
--- Main lua file for the conky config file
+-- Main lua file of the conky config file
 
 -- Initialize global variables
 user_home_dir = "/home/USER"
-working_dir = user_home_dir .. "/.config/walle"
-config_file = working_dir .. "/.wallerc"
+working_dir = user_home_dir .. "/.config/PKG_NAME"
 langs_dir = working_dir .. "/langs"
 wallpapers_dir = user_home_dir .. "/pictures/wallpapers"
-conky_on_start = true
-texts={}
-wallpapers = {}
-interface = ""
-ip = ""
+config_file = working_dir .. "/.wallerc"
 
--- Logs a debug message if debug is enabled
-function log_debug (message)
-  if debug == "enabled" then
-    print (message)
-  end
-end
+status = "init"
+debug_mode = "disabled"
+lang = "en"
+theme = "light"
+i18n = {}
+wallpaper = "static"
+wallpapers = {}
+release = { name = "", version = "", codename = "" }
+network = { interface = "", ip = "", proxy = "" }
+fonts = { clock = "", date = "", text = "" }
 
 -- Splits the string by the given delimiter
 function string:split (delimiter, lazy)
@@ -29,7 +28,7 @@ function string:split (delimiter, lazy)
     table.insert (result, string.sub (self, from , delim_from - 1))
     from = delim_to + 1
 
-    -- Split only by the first occurence if lazy
+    -- Split only by the first occurence if lazy is given
     if lazy then
       break
     end
@@ -60,84 +59,111 @@ function string:trim ()
   return self
 end
 
--- Reads the configuration property with the given json path
-function config (path, default)
-  local cmd = "jq --raw-output " .. path .. " " .. config_file .. " | sed -z '$ s/\\n$//'"
-  local file = io.popen (cmd)
-  local value = file:read ("*a")
+-- Executes a native system command given as string
+function string:exec ()
+  local file = io.popen (self)
+  local output = file:read ("*a")
   file:close ()
 
-  -- Return default if not found
-  if value ~= "null" then
-    return value
-  else
-    return default
+  return output
+end
+
+-- Logs a message if logging level is on debug mode
+function log (message)
+  if debug_mode == "enabled" then
+    print (message)
   end
 end
 
+-- Reads the configuration property down to the given json path
+function config (path, default)
+  local jq = "jq --raw-output " .. path .. " " .. config_file .. " | sed -z '$ s/\\n$//'"
+  local value = jq:exec ()
+
+  -- Return default if not found
+  if value == "null" then
+    return default
+  end
+
+  return value
+end
+
 -- Executes an operation after the given cycles have passed
-function executeEvery (cycles, updates, operation)
+function interval (cycles, updates, operation)
   local timer = (updates % cycles)
 
-  if timer == 0 or conky_on_start then
+  if timer == 0 or status == "init" then
     operation ()
   end
 end
 
--- Loads the texts correspond to the lang option in the config file
-function loadTexts ()
+function init ()
+  -- Initialize configuration properties
+  debug_mode = config (".debug", "disabled")
+  lang = config ('.lang', "en")
+  theme = config (".theme", "light")
+  wallpaper = config (".wallpaper", "static")
+  fonts["clock"] = config (".clock", "")
+  fonts["date"] = config (".date", "")
+  fonts["text"] = config (".text", "")
+
+  -- Initialize some os release information
+  local lsb_release = "lsb_release --short -icr"
+  local output = lsb_release:exec ()
+  local keys = output:split("\n")
+
+  release["name"] = keys[1]
+  release["version"] = keys[2]
+  release["codename"] = keys[3]
+
+  -- Load the i18n texts correspond to the choosen lang
   local lines = io.lines (langs_dir .. "/" .. lang .. ".dict")
 
   for line in lines do
     if line:matches ("^[a-zA-Z0-9-_][a-zA-Z0-9-_\.]* *=.*") then
       local items = line:split ("=", true)
       local key, value = items[1]:trim (), items[2]:trim ()
-      texts[key] = value
+      i18n[key] = value
     end
   end
-end
 
--- Loads the list of images under the ~/pictures/wallpapers folder
-function loadWallpapers ()
+  -- Load the file path of any wallpaper
   local re = ".*.\\(jpe?g\\|png\\)$"
-  local file = io.popen ('find ' .. wallpapers_dir .. ' -type f -regex "' .. re .. '" 2> /dev/null || echo ""')
-  local output = file:read ("*a")
-  file:close ()
+  local find = 'find ' .. wallpapers_dir .. ' -type f -regex "' .. re .. '" 2> /dev/null || echo ""'
+  local output = find:exec ()
 
   -- Split raw output
-  local items = output:split ('\n')
+  local paths = output:split ('\n')
 
-  -- Filter only non-empty items
+  -- Filter out empty paths
   local index = 1
-  for i=1,table.getn (items) do
-    local item = items[i]
+  for i=1,table.getn (paths) do
+    local path = paths[i]
 
-    if item ~= "" then
-      log_debug ("Found image '" .. item .. "'")
+    if path ~= "" then
+      log ("Found image '" .. path .. "'")
 
-      wallpapers[index] = item
+      wallpapers[index] = path
       index = index + 1
     end
   end
 
-  log_debug ("Found " .. table.getn (wallpapers) .. " images under " .. wallpapers_dir)
+  log ("Found " .. table.getn (wallpapers) .. " images under " .. wallpapers_dir)
 end
 
--- Resolves the current network interface and IP
+-- Resolves the current network interface and ip
 function resolveConnection ()
-  local file = io.popen ("ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}'")
-  local output = file:read ("*a")
-  file:close ()
-  
+  local route = "ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}'"
+  local output = route:exec ()
   output = output:split (',')
 
-  interface = output[1]
-  ip = output[2]
+  network["interface"] = output[1]
+  network["ip"] = output[2]
 
-  if interface ~= nil and interface ~= "" then
-    log_debug ("Network resolved to '" .. interface .. "' and ip '" .. ip .. "'")
+  if network["interface"] ~= nil and network["interface"] ~= "" then
+    log ("Network resolved to '" .. network["interface"] .. "' and ip '" .. network["ip"] .. "'")
   else
-    log_debug ("Unable to resolve network seems your are offline")
+    log ("Unable to resolve network")
   end
 end
 
@@ -149,26 +175,16 @@ function updateWallpaper ()
     local index = math.random (1, len)
     local pic = wallpapers[index]
 
-    -- Set the background picture
-    local file = io.popen ('gsettings set org.gnome.desktop.background picture-uri "file://' .. pic .. '"')
-    file:close ()
+    -- Set the background and screensaver pictures
+    local background = 'gsettings set org.gnome.desktop.background picture-uri "file://' .. pic .. '"'
+    background:exec ()
 
-    -- Set the screensaver picture
-    file = io.popen ('gsettings set org.gnome.desktop.screensaver picture-uri "file://' .. pic .. '"')
-    file:close ()
+    local screensaver = 'gsettings set org.gnome.desktop.screensaver picture-uri "file://' .. pic .. '"'
+    screensaver:exec ()
 
-    log_debug ('Wallpaper has been set to ' .. pic)
+    log ("Wallpaper has been updated to '" .. pic .. "'")
   end
 end
-
--- Initialize configuration properties
-theme = config (".theme", "light")
-wallpaper = config (".wallpaper", "static")
-clock_font = config (".clock", "")
-date_font = config (".date", "")
-text_font = config (".text", "")
-lang = config ('.lang', "en")
-debug = config (".debug", "disabled")
 
 function conky_main ()
   -- Abort if the conky window is not rendered
@@ -179,17 +195,15 @@ function conky_main ()
   -- Read the number of conky updates so far
   local updates = tonumber (conky_parse ("${updates}"))
 
-  executeEvery (10, updates, resolveConnection)
+  interval (10, updates, resolveConnection)
 
   if wallpaper == "slide" then
-    executeEvery (3600, updates, updateWallpaper)
+    interval (60, updates, updateWallpaper)
   end
 
-  -- Mark conky as started in the subsequent cycles
-  if conky_on_start then
-    loadTexts ()
-    loadWallpapers ()
-    conky_on_start = false
+  -- Mark conky as running in subsequent cycles
+  if status == "init" then
+    status = "running"
   end
 end
 
@@ -205,16 +219,18 @@ function conky_theme ()
 end
 
 function conky_upspeed ()
-  return "${upspeedf " .. interface .. "}KiB"
+  return "${upspeedf " .. network["interface"] .. "}KiB"
 end
 
 function conky_downspeed ()
-  return "${downspeedf " .. interface .. "}KiB"
+  return "${downspeedf " .. network["interface"] .. "}KiB"
 end
 
 function conky_connection ()
+  local interface = network["interface"]
+
   if interface ~= nil and interface ~= "" then
-    return "Connected " .. ip
+    return "Connected " .. network["ip"]
   else
     return "Offline"
   end
@@ -222,12 +238,14 @@ end
 
 function conky_font (section)
   if section == "clock" then
-    return "${font " .. clock_font .. "}"
+    return "${font " .. fonts["clock"] .. "}"
   elseif section == "date" then
-    return "${font " .. date_font .. "}"
+    return "${font " .. fonts["date"] .. "}"
   elseif section == "text" then
-    return "${font " .. text_font .. "}"
+    return "${font " .. fonts["text"] .. "}"
   else
     return ""
   end
 end
+
+init ()
