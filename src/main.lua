@@ -27,6 +27,10 @@ statics = {
 
 -- Extra conky variables interpolated at interval
 vars = {
+  time_p = "",
+  time_P = "",
+  month_name = "",
+  day_name = "",
   net_name = "",
   net_ip = ""
 }
@@ -231,10 +235,19 @@ function conky_main ()
 end
 
 -- Returns a left aligned conky text line
-function text (line, font)
+function text (line, font, interpolate)
+  -- Resolve instantly date and time literals
+  local time_p = tonumber (os.date("%H")) < 12 and "am" or "pm"
+  vars["time_p"] = i18n["date.time." .. time_p]
+  vars["time_P"] = i18n["date.time." .. time_p:upper ()]
+  vars["day_name"] = i18n["date.day." .. os.date("%w")]
+  vars["month_name"] = i18n["date.month." .. os.date("%m")]
+
   -- Interpolate any given dynamic variables
-  for varKey, varValue in pairs(vars) do
-    line = line:gsub ("$_" .. varKey, varValue)
+  if interpolate then
+    for varKey, varValue in pairs(vars) do
+      line = line:gsub ("$_" .. varKey, varValue)
+    end
   end
 
   if font ~= nil then
@@ -255,32 +268,32 @@ end
 
 -- Exposes the clock time to conky
 function conky_clock ()
-  return text ("${time %H:%M}", fonts["clock"])
+  return text (i18n["text.line.clock"], fonts["clock"], true)
 end
 
 -- Exposes the date to conky
 function conky_date ()
-  return text ("${time %B %e, %Y}", fonts["date"])
+  return text (i18n["text.line.date"], fonts["date"], true)
 end
 
 -- Exposes the user line to conky
 function conky_user ()
-  return text (i18n["text.line.user"], fonts["text"])
+  return text (i18n["text.line.user"], fonts["text"], true)
 end
 
 -- Exposes the running system info to the conky
 function conky_system ()
-  return text (i18n["text.line.system"], fonts["text"])
+  return text (i18n["text.line.system"], fonts["text"], true)
 end
 
 -- Exposes the loads and sensors data to the conky
 function conky_loads ()
-  return text (i18n["text.line.loads"], fonts["text"])
+  return text (i18n["text.line.loads"], fonts["text"], true)
 end
 
 -- Exposes the network speeds to the conky
 function conky_network ()
-  return text (i18n["text.line.network"], fonts["text"])
+  return text (i18n["text.line.network"], fonts["text"], true)
 end
 
 -- Exposes the connection status to the conky
@@ -291,12 +304,12 @@ function conky_connection ()
     line = i18n["text.line.connection.offline"]
   end
 
-  return text (line, fonts["text"])
+  return text (line, fonts["text"], true)
 end
 
 -- Exposes the uptime to the conky
 function conky_uptime ()
-  return text (i18n["text.line.uptime"], fonts["text"])
+  return text (i18n["text.line.uptime"], fonts["text"], true)
 end
 
 init ()

@@ -5,25 +5,29 @@ date.day.3=Wednesday
 date.day.4=Thursday
 date.day.5=Friday
 date.day.6=Saturday
-date.day.7=Sunday
+date.day.0=Sunday
 
-date.month.1=January
-date.month.2=February
-date.month.3=March
-date.month.4=April
-date.month.5=May
-date.month.6=June
-date.month.7=July
-date.month.8=August
-date.month.9=September
+date.month.01=January
+date.month.02=February
+date.month.03=March
+date.month.04=April
+date.month.05=May
+date.month.06=June
+date.month.07=July
+date.month.08=August
+date.month.09=September
 date.month.10=October
 date.month.11=November
 date.month.12=December
 
-date.time.am=AM
-date.time.pm=PM
+date.time.am=am
+date.time.pm=pm
+date.time.AM=AM
+date.time.PM=PM
 
 # Conky text lines
+text.line.clock=${time %H:%M}
+text.line.date=$_day_name $_month_name ${time %e, %Y}
 text.line.user=Logged as $user_names at $nodename
 text.line.system=Running $_rls_arch on $_rls_name $_rls_codename
 text.line.loads=CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%
