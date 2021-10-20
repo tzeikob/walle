@@ -17,7 +17,16 @@ mkdir -p $CONFIG_DIR
 # Move config files to the config folder
 mv $TEMP_DIR/.wallerc $CONFIG_DIR/.wallerc
 mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
-mv $TEMP_DIR/main.lua $CONFIG_DIR/main.lua
+
+# Move language files
+mv $TEMP_DIR/langs $CONFIG_DIR
+
+# Move main lua file
+luaFile=$CONFIG_DIR/main.lua
+mv $TEMP_DIR/main.lua $luaFile
+
+# Set the user name in the main lua file
+sed -i "s/USER/$SUDO_USER/g" $luaFile
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR

@@ -154,6 +154,12 @@ bundlePackageFiles () {
 
   log "Desktop file has been saved to '$desktopFile'"
 
+  local langFilesDir="$tempConfigDir/langs"
+  mkdir -p $langFilesDir
+  cp ./src/langs/*.dict $langFilesDir
+
+  log "Language files have been saved to '$langFilesDir'"
+
   log "Bundling has been completed"
 }
 
