@@ -42,12 +42,12 @@ conky.config = {
 
 conky.text = [[
 ${lua_parse theme}
-${lua_parse font clock}$alignr ${time %H:%M}$font
-${lua_parse font date}$alignr ${time %B %e, %Y}$font
-${lua_parse font text}$alignr CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%
-$alignr Up ${lua_parse upspeed} Down ${lua_parse downspeed}
-$alignr Processes $processes
-$alignr $user_names on $nodename
-$alignr Uptime $uptime_short
-$alignr ${lua_parse connection}
+${lua_parse clock}
+${lua_parse date}
+${lua_parse user}
+${lua_parse system}
+${lua_parse loads}
+${lua_parse network}
+${lua_parse connection}
+${lua_parse uptime}
 ]]

@@ -1,22 +1,35 @@
 -- Main lua file of the conky config file
 
--- Initialize global variables
+-- Global file and dir paths
 user_home_dir = "/home/USER"
 working_dir = user_home_dir .. "/.config/PKG_NAME"
 langs_dir = working_dir .. "/langs"
 wallpapers_dir = user_home_dir .. "/pictures/wallpapers"
 config_file = working_dir .. "/.wallerc"
 
+-- Global configuration properties
 status = "init"
 debug_mode = "disabled"
 lang = "en"
 theme = "light"
-i18n = {}
 wallpaper = "static"
 wallpapers = {}
-release = { name = "", version = "", codename = "" }
-network = { interface = "", ip = "", proxy = "" }
 fonts = { clock = "", date = "", text = "" }
+i18n = {}
+
+-- Extra conky variables interpolated at init
+statics = {
+  rls_name = "",
+  rls_version = "", 
+  rls_codename = "",
+  rls_arch = ""
+}
+
+-- Extra conky variables interpolated at interval
+vars = {
+  net_name = "",
+  net_ip = ""
+}
 
 -- Splits the string by the given delimiter
 function string:split (delimiter, lazy)
@@ -98,7 +111,7 @@ function interval (cycles, updates, operation)
 end
 
 function init ()
-  -- Initialize configuration properties
+  -- Initialize global properties from the config file
   debug_mode = config (".debug", "disabled")
   lang = config ('.lang', "en")
   theme = config (".theme", "light")
@@ -107,37 +120,46 @@ function init ()
   fonts["date"] = config (".date", "")
   fonts["text"] = config (".text", "")
 
-  -- Initialize some os release information
+  -- Initialize release static interpolation variables
   local lsb_release = "lsb_release --short -icr"
   local output = lsb_release:exec ()
-  local keys = output:split("\n")
+  local parts = output:split("\n")
 
-  release["name"] = keys[1]
-  release["version"] = keys[2]
-  release["codename"] = keys[3]
+  statics["rls_name"] = parts[1]
+  statics["rls_version"] = parts[2]
+  statics["rls_codename"] = parts[3]
 
-  -- Load the i18n texts correspond to the choosen lang
+  local uname = "uname -p | sed -z '$ s/\\n$//'"
+  local output = uname:exec ()
+
+  statics["rls_arch"] = output
+
+  -- Load the i18n texts corresponding to the choosen lang
   local lines = io.lines (langs_dir .. "/" .. lang .. ".dict")
 
   for line in lines do
     if line:matches ("^[a-zA-Z0-9-_][a-zA-Z0-9-_\.]* *=.*") then
-      local items = line:split ("=", true)
-      local key, value = items[1]:trim (), items[2]:trim ()
+      local parts = line:split ("=", true)
+      local key, value = parts[1]:trim (), parts[2]:trim ()
+
+      -- Interpolate any given static variables
+      for varKey, varValue in pairs (statics) do
+        value = value:gsub ("$_" .. varKey, varValue)
+      end
+
       i18n[key] = value
     end
   end
 
-  -- Load the file path of any wallpaper
+  -- Collect the file path of any image file found in the wallpapers dir
   local re = ".*.\\(jpe?g\\|png\\)$"
   local find = 'find ' .. wallpapers_dir .. ' -type f -regex "' .. re .. '" 2> /dev/null || echo ""'
   local output = find:exec ()
-
-  -- Split raw output
   local paths = output:split ('\n')
 
   -- Filter out empty paths
   local index = 1
-  for i=1,table.getn (paths) do
+  for i = 1, table.getn (paths) do
     local path = paths[i]
 
     if path ~= "" then
@@ -155,13 +177,14 @@ end
 function resolveConnection ()
   local route = "ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}'"
   local output = route:exec ()
-  output = output:split (',')
+  local parts = output:split (',')
 
-  network["interface"] = output[1]
-  network["ip"] = output[2]
+  -- Update the network dynamic interpolation variables
+  vars["net_name"] = parts[1]
+  vars["net_ip"] = parts[2]
 
-  if network["interface"] ~= nil and network["interface"] ~= "" then
-    log ("Network resolved to '" .. network["interface"] .. "' and ip '" .. network["ip"] .. "'")
+  if vars["net_name"] ~= nil and vars["net_name"] ~= "" then
+    log ("Network resolved to '" .. vars["net_name"])
   else
     log ("Unable to resolve network")
   end
@@ -207,45 +230,73 @@ function conky_main ()
   end
 end
 
--- Expose information to the conky config file
+-- Returns a left aligned conky text line
+function text (line, font)
+  -- Interpolate any given dynamic variables
+  for varKey, varValue in pairs(vars) do
+    line = line:gsub ("$_" .. varKey, varValue)
+  end
+
+  if font ~= nil then
+    return "${font " .. font .. "}" .. "$alignr " .. line .. "$font"
+  end
+
+  return "$alignr " .. line
+end
+
+-- Resolves the theme color to conky
 function conky_theme ()
-  if theme == "light" then
-    return "${color white}"
-  elseif theme == "dark" then
+  if theme == "dark" then
     return "${color black}"
-  else
-    return "${color white}"
   end
+
+  return "${color white}"
 end
 
-function conky_upspeed ()
-  return "${upspeedf " .. network["interface"] .. "}KiB"
+-- Exposes the clock time to conky
+function conky_clock ()
+  return text ("${time %H:%M}", fonts["clock"])
 end
 
-function conky_downspeed ()
-  return "${downspeedf " .. network["interface"] .. "}KiB"
+-- Exposes the date to conky
+function conky_date ()
+  return text ("${time %B %e, %Y}", fonts["date"])
 end
 
+-- Exposes the user line to conky
+function conky_user ()
+  return text (i18n["text.line.user"], fonts["text"])
+end
+
+-- Exposes the running system info to the conky
+function conky_system ()
+  return text (i18n["text.line.system"], fonts["text"])
+end
+
+-- Exposes the loads and sensors data to the conky
+function conky_loads ()
+  return text (i18n["text.line.loads"], fonts["text"])
+end
+
+-- Exposes the network speeds to the conky
+function conky_network ()
+  return text (i18n["text.line.network"], fonts["text"])
+end
+
+-- Exposes the connection status to the conky
 function conky_connection ()
-  local interface = network["interface"]
+  local line = i18n["text.line.connection.online"]
 
-  if interface ~= nil and interface ~= "" then
-    return "Connected " .. network["ip"]
-  else
-    return "Offline"
+  if vars["net_ip"] == nil or vars["net_ip"] == "" then
+    line = i18n["text.line.connection.offline"]
   end
+
+  return text (line, fonts["text"])
 end
 
-function conky_font (section)
-  if section == "clock" then
-    return "${font " .. fonts["clock"] .. "}"
-  elseif section == "date" then
-    return "${font " .. fonts["date"] .. "}"
-  elseif section == "text" then
-    return "${font " .. fonts["text"] .. "}"
-  else
-    return ""
-  end
+-- Exposes the uptime to the conky
+function conky_uptime ()
+  return text (i18n["text.line.uptime"], fonts["text"])
 end
 
 init ()

@@ -1,31 +1,33 @@
-date.day.monday=Δευτέρα
-date.day.tuesday=Τρίτη
-date.day.wednesday=Τετάρτη
-date.day.thursday=Πέμπτη
-date.day.friday=Παρασκευή
-date.day.saturday=Σάββατο
-date.day.sunday=Κυριακή
+# Date constants and literals
+date.day.1=Δευτέρα
+date.day.2=Τρίτη
+date.day.3=Τετάρτη
+date.day.4=Πέμπτη
+date.day.5=Παρασκευή
+date.day.6=Σάββατο
+date.day.7=Κυριακή
 
-date.month.january=Ιανουάριος
-date.month.february=Φεβρουάριος
-date.month.march=Μάρτης
-date.month.april=Απρίλης
-date.month.may=Μαϊος
-date.month.june=Ιούνιος
-date.month.july=Ιούλιος
-date.month.august=Αύγουστος
-date.month.september=Σεπτέμβριος
-date.month.october=Οκτώβριος
-date.month.november=Νοέμβριος
-date.month.december=Δεκέμβριος
+date.month.1=Ιανουάριος
+date.month.2=Φεβρουάριος
+date.month.3=Μάρτιος
+date.month.4=Απρίλιος
+date.month.5=Μαϊος
+date.month.6=Ιούνιος
+date.month.7=Ιούλιος
+date.month.8=Αύγουστος
+date.month.9=Σεπτέμβριος
+date.month.10=Οκτώβριος
+date.month.11=Νοέμβριος
+date.month.12=Δεκέμβριος
 
-date.time.am=ΜΜ
-date.time.pm=ΠΜ
+date.time.am=ΠΜ
+date.time.pm=ΜΜ
 
-text.line.logged.user=Χρήστης $1@$2 στο $3
-text.line.running.system=Τρέχει $1 με $2 πυρήνες στα $3
-text.line.loads=CPU $1 Μνήμη $2 Δίσκος $3
-text.line.network.speeds=Αποστολή $1 Λήψη $2
-text.line.network.connected=Συνδεμένος ως $1
-text.line.network.offline=Αποσυνδεμένος
-text.line.uptime=Σύνοδος $1 μέχρι τώρα
+# Conky text lines
+text.line.user=Χρήστης $user_names στο $nodename
+text.line.system=Τρέχει $_rls_arch με το $_rls_name $_rls_codename
+text.line.loads=CPU $cpu% Mem $memperc% Δίσκος ${fs_used_perc /}%
+text.line.network=Αποστολή ${upspeedf $_net_name}KiB Λήψη ${downspeedf $_net_name}KiB
+text.line.connection.online=Συνδεμένος στο $_net_name με $_net_ip
+text.line.connection.offline=Είστε εκτός δικτύου
+text.line.uptime=Η σύνοδος σας είναι $uptime_short μέχρι τώρα

@@ -1,31 +1,33 @@
-date.day.monday=Monday
-date.day.tuesday=Tuesday
-date.day.wednesday=Wednesday
-date.day.thursday=Thursday
-date.day.friday=Friday
-date.day.saturday=Saturday
-date.day.sunday=Sunday
+# Date constants and literals
+date.day.1=Monday
+date.day.2=Tuesday
+date.day.3=Wednesday
+date.day.4=Thursday
+date.day.5=Friday
+date.day.6=Saturday
+date.day.7=Sunday
 
-date.month.january=January
-date.month.february=February
-date.month.march=March
-date.month.april=April
-date.month.may=May
-date.month.june=June
-date.month.july=July
-date.month.august=August
-date.month.september=September
-date.month.october=October
-date.month.november=November
-date.month.december=December
+date.month.1=January
+date.month.2=February
+date.month.3=March
+date.month.4=April
+date.month.5=May
+date.month.6=June
+date.month.7=July
+date.month.8=August
+date.month.9=September
+date.month.10=October
+date.month.11=November
+date.month.12=December
 
 date.time.am=AM
 date.time.pm=PM
 
-text.line.logged.user=Logged as $1@$2 on $3
-text.line.running.system=Running $1 with $2 cores at $3
-text.line.loads=CPU $1 Mem $2 Disk $3
-text.line.network.speeds=Up $1 Down $2
-text.line.network.connected=Connected as $1
-text.line.network.offline=You are offline
-text.line.uptime=Uptime $1
+# Conky text lines
+text.line.user=Logged as $user_names at $nodename
+text.line.system=Running $_rls_arch on $_rls_name $_rls_codename
+text.line.loads=CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%
+text.line.network=Up ${upspeedf $_net_name}KiB Down ${downspeedf $_net_name}KiB
+text.line.connection.online=Connected to $_net_name with $_net_ip
+text.line.connection.offline=You are offline
+text.line.uptime=Uptime is $uptime_short so far
