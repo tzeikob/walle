@@ -12,7 +12,7 @@ status = "init"
 debug_mode = "disabled"
 lang = "en"
 theme = "light"
-wallpaper = "static"
+wallpaperInterval = 0
 wallpapers = {}
 fonts = { clock = "", date = "", text = "" }
 i18n = {}
@@ -119,7 +119,7 @@ function init ()
   debug_mode = config (".debug", "disabled")
   lang = config ('.lang', "en")
   theme = config (".theme", "light")
-  wallpaper = config (".wallpaper", "static")
+  wallpaperInterval = tonumber (config (".wallpaper", "0"))
   fonts["clock"] = config (".clock", "")
   fonts["date"] = config (".date", "")
   fonts["text"] = config (".text", "")
@@ -162,15 +162,10 @@ function init ()
   local paths = output:split ('\n')
 
   -- Filter out empty paths
-  local index = 1
-  for i = 1, table.getn (paths) do
-    local path = paths[i]
-
+  for _, path in ipairs (paths) do
     if path ~= "" then
+      table.insert (wallpapers, path)
       log ("Found image '" .. path .. "'")
-
-      wallpapers[index] = path
-      index = index + 1
     end
   end
 
@@ -224,8 +219,8 @@ function conky_main ()
 
   interval (10, updates, resolveConnection)
 
-  if wallpaper == "slide" then
-    interval (60, updates, updateWallpaper)
+  if wallpaperInterval > 0 then
+    interval (wallpaperInterval, updates, updateWallpaper)
   end
 
   -- Mark conky as running in subsequent cycles

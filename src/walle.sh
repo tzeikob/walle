@@ -85,7 +85,7 @@ help () {
 
   echo -e "\nOptions:"
   echo -e "  -t, --theme <mode>                 Theme mode could be either 'light' or 'dark'"
-  echo -e "  -w, --wallpaper <mode>             Wallpaper mode could be either 'static' or 'slide'"
+  echo -e "  -w, --wallpaper <secs>             Wallpaper should rotate in given seconds, 0 means no rotation"
   echo -e "  -c, --clock <font>                 Font name and style for the clock section"
   echo -e "  -d, --date <font>                  Font name and style for the date section"
   echo -e "  -x, --text <font>                  Font name and style for the text section"
@@ -101,6 +101,7 @@ help () {
   echo -e "\nNotes:"
   echo -e "  -font option must be given as string in form \"Font Name[:bold][:italic][:size=xxx]\""
   echo -e "  -lang option must be given in ISO language codes like 'en', 'el', etc."
+  echo -e "  -wallpapers must be stored under the user's ~/pictures/wallpapers folder"
   echo -e "  -to remove the package just run sudo apt-get remove $NAME"
 }
 
@@ -260,7 +261,7 @@ case $cmd in
           shift
           value="${1-}"
           notEmpty "$value" "option $opt should not be empty"
-          shouldBe "$value" "option $opt should be either" "static" "slide"
+          shouldBePositiveInt "$value" "option $opt should be a positive integer"
           options['wallpaper']="$value";;
         
         "--clock" | "-c")
