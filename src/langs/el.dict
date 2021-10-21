@@ -33,5 +33,5 @@ text.line.system=Τρέχει $_rls_arch με το $_rls_name $_rls_codename
 text.line.loads=CPU $cpu% Mem $memperc% Δίσκος ${fs_used_perc /}%
 text.line.network=Αποστολή ${upspeedf $_net_name}KiB Λήψη ${downspeedf $_net_name}KiB
 text.line.connection.online=Συνδεμένος στο $_net_name με $_net_ip
-text.line.connection.offline=Είστε εκτός δικτύου
+text.line.connection.offline=Είστε εκτός δυκτίου
 text.line.uptime=Η σύνοδος σας είναι $uptime_short μέχρι τώρα
