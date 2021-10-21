@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # An opinionated tool to manage and configure conky for developers
 
-NAME="PKG_NAME"
-VERSION="PKG_VERSION"
+NAME="#PKG_NAME"
+VERSION="#PKG_VERSION"
 
 CONFIG_DIR=~/.config/$NAME
 CONFIG_FILE=$CONFIG_DIR/.wallerc

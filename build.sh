@@ -93,13 +93,13 @@ createDebianFiles () {
   cp ./src/hooks/postinst.sh $postinstFile
 
   # Set the package name in the postinst file
-  sed -i "s/PKG_NAME/$PKG_NAME/g" $postinstFile
+  sed -i "s/#PKG_NAME/$PKG_NAME/g" $postinstFile
 
   local postrmFile="$debianDir/postrm"
   cp ./src/hooks/postrm.sh $postrmFile
 
   # Set the package name in the postrm file
-  sed -i "s/PKG_NAME/$PKG_NAME/g" $postrmFile
+  sed -i "s/#PKG_NAME/$PKG_NAME/g" $postrmFile
 
   log "Installation scripts have been set in place"
 
@@ -117,8 +117,8 @@ bundlePackageFiles () {
   cp ./src/walle.sh $binFile
 
   # Set the package name and version in the executable file
-  sed -i "s/PKG_NAME/$PKG_NAME/g" $binFile
-  sed -i "s/PKG_VERSION/$PKG_VERSION/g" $binFile
+  sed -i "s/#PKG_NAME/$PKG_NAME/g" $binFile
+  sed -i "s/#PKG_VERSION/$PKG_VERSION/g" $binFile
 
   log "Executable file has been saved to '$binFile'"
 
@@ -129,7 +129,7 @@ bundlePackageFiles () {
   cp ./src/main.lua $luaFile
 
   # Set the package name in the main lua file
-  sed -i "s/PKG_NAME/$PKG_NAME/g" $luaFile
+  sed -i "s/#PKG_NAME/$PKG_NAME/g" $luaFile
 
   log "Main lua file has been saved to '$luaFile'"
 
@@ -137,7 +137,7 @@ bundlePackageFiles () {
   cp ./src/.conkyrc $conkyrcFile
 
   # Set the package name in the conky config file
-  sed -i "s/PKG_NAME/$PKG_NAME/g" $conkyrcFile
+  sed -i "s/#PKG_NAME/$PKG_NAME/g" $conkyrcFile
 
   log "Conky config has been saved to '$conkyrcFile'"
 
@@ -150,7 +150,7 @@ bundlePackageFiles () {
   cp ./src/walle.desktop $desktopFile
 
   # Set the package name in the start up desktop file
-  sed -i "s/PKG_NAME/$PKG_NAME/g" $desktopFile
+  sed -i "s/#PKG_NAME/$PKG_NAME/g" $desktopFile
 
   log "Desktop file has been saved to '$desktopFile'"
 

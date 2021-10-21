@@ -3,7 +3,7 @@
 
 set -e
 
-NAME=PKG_NAME
+NAME="#PKG_NAME"
 USER_HOME=/home/$SUDO_USER
 CONFIG_DIR=$USER_HOME/.config/$NAME
 AUTOSTART_DIR=$USER_HOME/.config/autostart

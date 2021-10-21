@@ -3,7 +3,7 @@
 
 set -e
 
-NAME=PKG_NAME
+NAME="#PKG_NAME"
 USER_HOME=/home/$SUDO_USER
 CONFIG_DIR=$USER_HOME/.config/$NAME
 AUTOSTART_DIR=$USER_HOME/.config/autostart
@@ -26,7 +26,7 @@ luaFile=$CONFIG_DIR/main.lua
 mv $TEMP_DIR/main.lua $luaFile
 
 # Set the user name in the main lua file
-sed -i "s/USER/$SUDO_USER/g" $luaFile
+sed -i "s/#USER/$SUDO_USER/g" $luaFile
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
