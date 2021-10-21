@@ -169,7 +169,7 @@ function init ()
     end
   end
 
-  log ("Found " .. table.getn (wallpapers) .. " images under " .. wallpapers_dir)
+  log ("Found " .. table.getn (wallpapers) .. " images under '" .. wallpapers_dir .. "'")
 end
 
 -- Resolves the current network interface and ip
@@ -183,7 +183,7 @@ function resolveConnection ()
   vars["net_ip"] = parts[2]
 
   if vars["net_name"] ~= nil and vars["net_name"] ~= "" then
-    log ("Network resolved to '" .. vars["net_name"])
+    log ("Network resolved to '" .. vars["net_name"] .. "'")
   else
     log ("Unable to resolve network")
   end
