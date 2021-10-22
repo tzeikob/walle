@@ -1,4 +1,5 @@
 {
+  "version": "#PKG_VERSION",
   "theme": "light",
   "wallpaper": "0",
   "clock": "",
