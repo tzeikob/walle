@@ -33,20 +33,20 @@ opt="${1-}"
 
 # Abort if no option is given
 if [[ $opt == "" ]]; then
-  abort "no option is given, try again with --distro" 1
+  abort "no option is given, try again with --distro <name>" 1
 fi
 
 # Launch the build process given the distro
 case $opt in
   "--distro" | "-d")
     shift
-    distro="${1-}"
+    name="${1-}"
 
-    case "$distro" in
+    case "$name" in
       "debian")
         ./debian/build.sh $PKG_NAME $PKG_VERSION || exit $?;;
       *)
-        abort "distro '$distro' is not yet supported" 1;;
+        abort "distro '$name' is not yet supported" 1;;
     esac;;
   *)
     abort "option '$opt' is not supported" 1;;

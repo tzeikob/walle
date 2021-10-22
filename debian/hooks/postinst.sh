@@ -4,8 +4,9 @@
 set -e
 
 PKG_NAME="walle"
-CONFIG_DIR=/home/$SUDO_USER/.config/$PKG_NAME
-AUTOSTART_DIR=/home/$SUDO_USER/.config/autostart
+HOME_DIR=/home/$SUDO_USER
+CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
+AUTOSTART_DIR=$HOME_DIR/.config/autostart
 TEMP_DIR=/tmp/$PKG_NAME
 
 echo -e "Startig post installation script"
@@ -14,7 +15,7 @@ echo -e "Startig post installation script"
 mkdir -p $CONFIG_DIR
 
 # Move config files to the config folder
-mv $TEMP_DIR/.wallerc $CONFIG_DIR/.wallerc
+mv $TEMP_DIR/config.yml $CONFIG_DIR/config.yml
 mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
 # Move language files
@@ -50,6 +51,12 @@ echo "Comment=$PKG_NAME Start Up" >> $DESKTOP_FILE
 chown $SUDO_USER:$SUDO_USER $DESKTOP_FILE
 
 echo -e "Autostart desktop file created at '$DESKTOP_FILE'"
+
+echo -e "Installing python third-party dependencies..."
+
+su $SUDO_USER -c "pip3 install pyyaml --upgrade"
+
+echo -e "Python dependencies have been installed"
 
 echo -e "Exiting post installation script"
 

@@ -4,8 +4,9 @@
 set -e
 
 PKG_NAME="walle"
-CONFIG_DIR=/home/$SUDO_USER/.config/$PKG_NAME
-AUTOSTART_DIR=/home/$SUDO_USER/.config/autostart
+HOME_DIR=/home/$SUDO_USER
+CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
+AUTOSTART_DIR=$HOME_DIR/.config/autostart
 
 echo -e "Startig post remove script"
 

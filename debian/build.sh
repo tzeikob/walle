@@ -3,7 +3,7 @@
 
 PKG_NAME=$1
 PKG_VERSION=$2
-PKG_DEPENDS="wget, jq, conky, conky-all"
+PKG_DEPENDS="python3, python3-pip, conky, conky-all"
 PKG_ARCHITECTURE="all"
 PKG_MAINTAINER="Jake Ob <iakopap@gmail.com>"
 PKG_HOMEPAGE="https://github.com/tzeikob/walle"
@@ -71,11 +71,7 @@ echo -e "Bundling the package files \U1F4AC"
 BIN_DIR=$DIST_DIR/build/usr/bin
 mkdir -p $BIN_DIR
 
-cp $BASE_DIR/../src/walle.sh $BIN_DIR/$PKG_NAME
-
-# Set the package name and version to the executable file
-sed -i "s/#PKG_NAME/$PKG_NAME/g" $BIN_DIR/$PKG_NAME
-sed -i "s/#PKG_VERSION/$PKG_VERSION/g" $BIN_DIR/$PKG_NAME
+cp $BASE_DIR/../src/index.py $BIN_DIR/$PKG_NAME
 
 echo -e "Executable file has been created"
 
@@ -90,8 +86,8 @@ cp $BASE_DIR/../src/.conkyrc $CONFIG_DIR/.conkyrc
 
 echo -e "Conkyrc file has been created"
 
-CONFIG_FILE=$CONFIG_DIR/.wallerc
-cp $BASE_DIR/../src/.wallerc $CONFIG_FILE
+CONFIG_FILE=$CONFIG_DIR/config.yml
+cp $BASE_DIR/../src/config.yml $CONFIG_FILE
 
 # Set the version in the config file
 sed -i "s/#PKG_VERSION/$PKG_VERSION/g" $CONFIG_FILE
