@@ -1,11 +1,11 @@
 -- Main lua file of the conky config file
 
 -- Global file and dir paths
-user_home_dir = "/home/#USER"
-working_dir = user_home_dir .. "/.config/#PKG_NAME"
-langs_dir = working_dir .. "/langs"
-wallpapers_dir = user_home_dir .. "/pictures/wallpapers"
-config_file = working_dir .. "/.wallerc"
+user_home = "/home/#USER"
+wallpapers_dir = user_home .. "/pictures/wallpapers"
+base_dir = user_home .. "/.config/walle"
+langs_dir = base_dir .. "/langs"
+config_file = base_dir .. "/.wallerc"
 
 -- Global configuration properties
 status = "init"

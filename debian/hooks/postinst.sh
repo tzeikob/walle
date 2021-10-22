@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# A script to be run after apt install
+
+set -e
+
+PKG_NAME="walle"
+CONFIG_DIR=/home/$SUDO_USER/.config/$PKG_NAME
+AUTOSTART_DIR=/home/$SUDO_USER/.config/autostart
+TEMP_DIR=/tmp/$PKG_NAME
+
+echo -e "Startig post installation script"
+
+# Create config folder
+mkdir -p $CONFIG_DIR
+
+# Move config files to the config folder
+mv $TEMP_DIR/.wallerc $CONFIG_DIR/.wallerc
+mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
+
+# Move language files
+mv $TEMP_DIR/langs $CONFIG_DIR
+
+# Move main lua file
+LUA_FILE=$CONFIG_DIR/main.lua
+mv $TEMP_DIR/main.lua $LUA_FILE
+
+# Set the user name in the main lua file
+sed -i "s/#USER/$SUDO_USER/g" $LUA_FILE
+
+# Change permissions to sudo user
+chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
+
+echo -e "Config folder has been created"
+
+# Create the autostart gnome desktop file
+mkdir -p $AUTOSTART_DIR
+DESKTOP_FILE=$AUTOSTART_DIR/$PKG_NAME.desktop
+
+echo "[Desktop Entry]" >> $DESKTOP_FILE
+echo "Type=Application" >> $DESKTOP_FILE
+echo "Exec=$PKG_NAME start" >> $DESKTOP_FILE
+echo "Hidden=false" >> $DESKTOP_FILE
+echo "NoDisplay=false" >> $DESKTOP_FILE
+echo "Name[en_US]=$PKG_NAME" >> $DESKTOP_FILE
+echo "Name=$PKG_NAME" >> $DESKTOP_FILE
+echo "Comment[en_US]=$PKG_NAME Start Up" >> $DESKTOP_FILE
+echo "Comment=$PKG_NAME Start Up" >> $DESKTOP_FILE
+
+# Change permissions to sudo user
+chown $SUDO_USER:$SUDO_USER $DESKTOP_FILE
+
+echo -e "Autostart desktop file created at '$DESKTOP_FILE'"
+
+echo -e "Exiting post installation script"
+
+exit 0

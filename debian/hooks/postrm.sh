@@ -3,20 +3,19 @@
 
 set -e
 
-NAME="#PKG_NAME"
-USER_HOME=/home/$SUDO_USER
-CONFIG_DIR=$USER_HOME/.config/$NAME
-AUTOSTART_DIR=$USER_HOME/.config/autostart
+PKG_NAME="walle"
+CONFIG_DIR=/home/$SUDO_USER/.config/$PKG_NAME
+AUTOSTART_DIR=/home/$SUDO_USER/.config/autostart
 
 echo -e "Startig post remove script"
 
-# Delete config folder
+# Remove config folder
 rm -rf $CONFIG_DIR
 
 echo -e "Config folder has been removed"
 
 # Remove autostart desktop file
-rm -f $AUTOSTART_DIR/$NAME.desktop
+rm -f $AUTOSTART_DIR/$PKG_NAME.desktop
 
 echo -e "Autostart desktop file has been removed"
 
