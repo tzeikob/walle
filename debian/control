@@ -1,0 +1,7 @@
+Package: #PKG_NAME
+Version: #PKG_VERSION
+Depends: #PKG_DEPENDS
+Architecture: #PKG_ARCHITECTURE
+Maintainer: #PKG_MAINTAINER
+Homepage: #PKG_HOMEPAGE
+Description: #PKG_DESCRIPTION

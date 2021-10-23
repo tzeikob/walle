@@ -9,7 +9,7 @@ import yaml
 from yaml.loader import SafeLoader
 from pathlib import Path
 
-PKG_NAME = 'walle'
+PKG_NAME = '#PKG_NAME'
 HOME = str(Path.home())
 BASE_DIR = HOME + '/.config/' + PKG_NAME
 CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
