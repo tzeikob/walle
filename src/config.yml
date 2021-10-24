@@ -1,12 +1,12 @@
-version: "#PKG_VERSION"
+version: '#PKG_VERSION'
 theme:
-  mode: "light"
-  wallpaper: 0
+  color: light
+  wall: 0
   fonts:
-    clock: ""
-    date: ""
-    text: ""
+    time:
+    date:
+    text:
 system:
-  lang: "en"
+  lang: en
   monitor: 0
-  debug: false
+  debug: disabled
