@@ -152,16 +152,35 @@ elif args.command == 'stop':
 elif args.command == 'config':
   config['version'] = scalar(config['version'])
 
-  if args.color != None: config['theme']['color'] = args.color
-  if args.wall != None: config['theme']['wall'] = args.wall
+  if args.color != None:
+    config['theme']['color'] = args.color
+  
+  if args.wall != None:
+    config['theme']['wall'] = args.wall
 
-  if args.time != None: config['theme']['fonts']['time'] = scalar(args.time)
-  if args.date != None: config['theme']['fonts']['date'] = scalar(args.date)
-  if args.text != None: config['theme']['fonts']['text'] = scalar(args.text)
+  if args.time != None:
+    config['theme']['fonts']['time'] = scalar(args.time)
+  else:
+    config['theme']['fonts']['time'] = scalar(config['theme']['fonts']['time'])
 
-  if args.lang != None: config['system']['lang'] = args.lang
-  if args.monitor != None: config['system']['monitor'] = args.monitor
-  if args.debug != None: config['system']['debug'] = args.debug
+  if args.date != None:
+    config['theme']['fonts']['date'] = scalar(args.date)
+  else:
+    config['theme']['fonts']['date'] = scalar(config['theme']['fonts']['date'])
+
+  if args.text != None:
+    config['theme']['fonts']['text'] = scalar(args.text)
+  else:
+    config['theme']['fonts']['text'] = scalar(config['theme']['fonts']['text'])
+
+  if args.lang != None:
+    config['system']['lang'] = args.lang
+
+  if args.monitor != None:
+    config['system']['monitor'] = args.monitor
+
+  if args.debug != None:
+    config['system']['debug'] = args.debug
 
   writeConfig(config)
 
