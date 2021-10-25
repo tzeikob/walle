@@ -49,7 +49,78 @@ def writeConfig (config):
   with open(CONFIG_FILE_PATH, 'w') as output:
     output.write(yaml.dump(config, sort_keys = False))
 
-# Returns if the process is up and running
+# Resolves the given arguments schema: prog
+def resolveArgs (prog):
+  parser = argparse.ArgumentParser(
+    prog = prog,
+    description = 'An opinionated tool to manage and configure conky for developers.',
+    epilog = 'Have a nice %(prog)s time!')
+
+  parser.add_argument(
+    '-v', '--version',
+    action = 'version',
+    version = config['version'],
+    help = 'show the version number and exit')
+
+  subparsers = parser.add_subparsers(metavar = 'command', dest = 'command')
+
+  subparsers.add_parser('start', help = 'start %(prog)s spawning the conky process')
+  subparsers.add_parser('restart', help = 'restart %(prog)s respawning the conky process')
+  subparsers.add_parser('stop', help = 'stop %(prog)s killing the conky process')
+
+  configParser = subparsers.add_parser('config', help = 'configure %(prog)s and restart the conky process')
+
+  configParser.add_argument(
+    '-c', '--color',
+    choices = ['light', 'dark'],
+    metavar = 'mode',
+    help = "set the theme color mode to 'light' or 'dark'")
+
+  configParser.add_argument(
+    '-w', '--wall',
+    type = posInt,
+    metavar = 'secs',
+    help = 'set the interval time the wallpaper should rotate by')
+
+  configParser.add_argument(
+    '-t', '--time',
+    type = fontStyle,
+    metavar = 'font',
+    help = 'set the font and style used in time line')
+
+  configParser.add_argument(
+    '-d', '--date',
+    type = fontStyle,
+    metavar = 'font',
+    help = 'set the font and style used in date line')
+
+  configParser.add_argument(
+    '-x', '--text',
+    type = fontStyle,
+    metavar = 'font',
+    help = 'set the font and style used in the text lines')
+
+  configParser.add_argument(
+    '-l', '--lang',
+    choices = ['en', 'el'],
+    metavar = 'code',
+    help = 'set the language code texts should appear in')
+
+  configParser.add_argument(
+    '--monitor',
+    type = posInt,
+    metavar = 'index',
+    help = 'set the monitor index the conky should render at')
+
+  configParser.add_argument(
+    '--debug',
+    choices = ['enabled', 'disabled'],
+    metavar = 'mode',
+    help = "set debug mode to 'enabled' or 'disabled'")
+
+  return parser.parse_args()
+
+# Returns if the conky process is up and running
 def isProcessUp():
   if os.path.exists(PID_FILE_PATH):
     with open(PID_FILE_PATH) as input:
@@ -66,78 +137,8 @@ if getpass.getuser() == 'root':
 # Load the configuration file
 config = readConfig()
 
-# Build up the arguments schema
-parser = argparse.ArgumentParser(
-  prog = PKG_NAME,
-  description = 'An opinionated tool to manage and configure conky for developers.',
-  epilog = 'Have a nice %(prog)s time!')
-
-parser.add_argument(
-  '-v', '--version',
-  action = 'version',
-  version = config['version'],
-  help = 'show the version number and exit')
-
-subparsers = parser.add_subparsers(
-  title = 'command',
-  dest = 'command',
-  metavar = 'start, restart, stop, config')
-
-subparsers.add_parser('start', help = 'start %(prog)s spawning the conky process')
-subparsers.add_parser('restart', help = 'restart %(prog)s respawning the conky process')
-subparsers.add_parser('stop', help = 'stop %(prog)s killing the conky process')
-
-configParser = subparsers.add_parser('config', help = 'configure %(prog)s and restart the conky process')
-
-configParser.add_argument(
-  '-c', '--color',
-  choices = ['light', 'dark'],
-  metavar = 'mode',
-  help = "set the theme color mode to 'light' or 'dark'")
-
-configParser.add_argument(
-  '-w', '--wall',
-  type = posInt,
-  metavar = 'secs',
-  help = 'set the interval time the wallpaper should rotate by')
-
-configParser.add_argument(
-  '-t', '--time',
-  type = fontStyle,
-  metavar = 'font',
-  help = 'set the font and style used in time line')
-
-configParser.add_argument(
-  '-d', '--date',
-  type = fontStyle,
-  metavar = 'font',
-  help = 'set the font and style used in date line')
-
-configParser.add_argument(
-  '-x', '--text',
-  type = fontStyle,
-  metavar = 'font',
-  help = 'set the font and style used in the text lines')
-
-configParser.add_argument(
-  '-l', '--lang',
-  choices = ['en', 'el'],
-  metavar = 'code',
-  help = 'set the language code texts should appear in')
-
-configParser.add_argument(
-  '--monitor',
-  type = posInt,
-  metavar = 'index',
-  help = 'set the monitor index the conky should render at')
-
-configParser.add_argument(
-  '--debug',
-  choices = ['enabled', 'disabled'],
-  metavar = 'mode',
-  help = "set debug mode to 'enabled' or 'disabled'")
-
-args = parser.parse_args()
+# Resolve given arguments
+args = resolveArgs(PKG_NAME)
 
 if args.command == 'start':
   print('Todo: start conky process')
