@@ -5,6 +5,7 @@ import sys
 import os
 import re
 import getpass
+import logging
 import argparse
 from pathlib import Path
 import ruamel.yaml
@@ -14,14 +15,40 @@ PKG_NAME = '#PKG_NAME'
 HOME = str(Path.home())
 BASE_DIR = HOME + '/.config/' + PKG_NAME
 CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
+LOG_FILE_PATH = BASE_DIR + '/all.log'
 PID_FILE_PATH = BASE_DIR + '/pid'
+
+# Initialize logger with stdout/err and file streams
+class Logger:
+  def __init__ (self, filepath):
+    self.file = logging.getLogger('file')
+    self.file.addHandler(logging.FileHandler(filepath))
+    self.file.setLevel(logging.INFO)
+
+    self.stdout = logging.getLogger('stdout')
+    self.stdout.addHandler(logging.StreamHandler(sys.stdout))
+    self.stdout.setLevel(logging.INFO)
+
+    self.stderr = logging.getLogger('stderr')
+    self.stderr.addHandler(logging.StreamHandler(sys.stderr))
+    self.stderr.setLevel(logging.ERROR)
+
+  def info (self, message):
+    self.stdout.info(message)
+    self.file.info(message)
+
+  def error (self, message):
+    self.stderr.error(message)
+    self.file.error(message)
+
+logger = Logger(LOG_FILE_PATH)
 
 # Initialize yaml parser
 yaml = ruamel.yaml.YAML()
 
 # Aborts the process in fatal error: message, errcode
 def abort (message, errcode):
-  print('Error: ' + message)
+  logger.error('Error: ' + message)
   sys.exit(errcode)
 
 # Asserts if the given value is a seconds value
@@ -44,13 +71,19 @@ def fontStyle (value):
 
 # Reads and parses the config file to an object
 def readConfig ():
-  with open(CONFIG_FILE_PATH) as input:
-    return yaml.load(input)
+  try:
+    with open(CONFIG_FILE_PATH) as input:
+      return yaml.load(input)
+  except EnvironmentError:
+    abort('failed to read the config file: ' + CONFIG_FILE_PATH, 1)
 
 # Dumps the config object to a yaml file: config
 def writeConfig (config):
-  with open(CONFIG_FILE_PATH, 'w') as output:
-    yaml.dump(config, output)
+  try:
+    with open(CONFIG_FILE_PATH, 'w') as output:
+      yaml.dump(config, output)
+  except EnvironmentError:
+    abort('failed to write to config file: ' + CONFIG_FILE_PATH, 1)
 
 # Resolves the given arguments schema: prog
 def resolveArgs (prog):
@@ -135,7 +168,7 @@ def isProcessUp():
 
 # Disalow calling this script as root user or sudo
 if getpass.getuser() == 'root':
-  abort("don't run this script as root user")
+  abort("don't run this script as root user", 1)
 
 # Load the configuration file
 config = readConfig()
@@ -144,11 +177,11 @@ config = readConfig()
 args = resolveArgs(PKG_NAME)
 
 if args.command == 'start':
-  print('Todo: start conky process')
+  logger.info('Todo: start conky process')
 elif args.command == 'restart':
-  print('Todo: restart conky process')
+  logger.info('Todo: restart conky process')
 elif args.command == 'stop':
-  print('Todo: stop conky process')
+  logger.info('Todo: stop conky process')
 elif args.command == 'config':
   config['version'] = scalar(config['version'])
 
@@ -184,6 +217,6 @@ elif args.command == 'config':
 
   writeConfig(config)
 
-  print('Todo: restart conky process')
+  logger.info('Todo: restart conky process')
 
 sys.exit(0)
