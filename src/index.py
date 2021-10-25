@@ -34,7 +34,7 @@ def posInt (value):
 
 # Asserts if the given value is a conky valid font style value
 def fontStyle (value):
-  if not re.match(r'^([a-zA-Z0-9_\- ])+(:bold)?(:italic)?(:size=[1-9][0-9]?[0-9]?)?$', value):
+  if not re.match(r'^[a-zA-Z0-9]([a-zA-Z0-9_\- ])*(:bold)?(:italic)?(:size=[1-9][0-9]?[0-9]?)?$', value):
     raise argparse.ArgumentTypeError("'%s' is not a valid conky font style value" % value)
 
   return value
