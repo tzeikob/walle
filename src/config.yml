@@ -3,9 +3,9 @@ theme:
   color: light
   wall: 0
   fonts:
-    time:
-    date:
-    text:
+    time: ''
+    date: ''
+    text: ''
 system:
   lang: en
   monitor: 0

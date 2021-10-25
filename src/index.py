@@ -6,15 +6,18 @@ import os
 import re
 import getpass
 import argparse
-import yaml
-from yaml.loader import SafeLoader
 from pathlib import Path
+import ruamel.yaml
+from ruamel.yaml.scalarstring import SingleQuotedScalarString as scalar
 
 PKG_NAME = '#PKG_NAME'
 HOME = str(Path.home())
 BASE_DIR = HOME + '/.config/' + PKG_NAME
 CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
 PID_FILE_PATH = BASE_DIR + '/pid'
+
+# Initialize yaml parser
+yaml = ruamel.yaml.YAML()
 
 # Aborts the process in fatal error: message, errcode
 def abort (message, errcode):
@@ -42,12 +45,12 @@ def fontStyle (value):
 # Reads and parses the config file to an object
 def readConfig ():
   with open(CONFIG_FILE_PATH) as input:
-    return yaml.load(input, Loader = SafeLoader)
+    return yaml.load(input)
 
 # Dumps the config object to a yaml file: config
 def writeConfig (config):
   with open(CONFIG_FILE_PATH, 'w') as output:
-    output.write(yaml.dump(config, sort_keys = False))
+    yaml.dump(config, output)
 
 # Resolves the given arguments schema: prog
 def resolveArgs (prog):
@@ -147,15 +150,17 @@ elif args.command == 'restart':
 elif args.command == 'stop':
   print('Todo: stop conky process')
 elif args.command == 'config':
-  if args.color: config['theme']['color'] = args.color
-  if args.wall: config['theme']['wall'] = args.wall
+  config['version'] = scalar(config['version'])
 
-  if args.time: config['theme']['fonts']['time'] = args.time
-  if args.date: config['theme']['fonts']['date'] = args.date
-  if args.text: config['theme']['fonts']['text'] = args.text
+  if args.color: config['theme']['color'] = args.color
+  if args.wall != None: config['theme']['wall'] = args.wall
+
+  if args.time: config['theme']['fonts']['time'] = scalar(args.time)
+  if args.date: config['theme']['fonts']['date'] = scalar(args.date)
+  if args.text: config['theme']['fonts']['text'] = scalar(args.text)
 
   if args.lang: config['system']['lang'] = args.lang
-  if args.monitor: config['system']['monitor'] = args.monitor
+  if args.monitor != None: config['system']['monitor'] = args.monitor
   if args.debug: config['system']['debug'] = args.debug
 
   writeConfig(config)

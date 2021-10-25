@@ -54,7 +54,7 @@ echo -e "Autostart desktop file created at '$DESKTOP_FILE'"
 
 echo -e "Installing python third-party dependencies..."
 
-su $SUDO_USER -c "pip3 install pyyaml --upgrade"
+su $SUDO_USER -c "pip3 install ruamel.yaml --upgrade"
 
 echo -e "Python dependencies have been installed"
 
