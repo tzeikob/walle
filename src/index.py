@@ -18,7 +18,7 @@ CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
 LOG_FILE_PATH = BASE_DIR + '/all.log'
 PID_FILE_PATH = BASE_DIR + '/pid'
 
-# Initialize logger with stdout/err and file streams
+# Logger with stdout/err and file handlers
 class Logger:
   def __init__ (self, filepath):
     self.file = logging.getLogger('file')
@@ -40,11 +40,6 @@ class Logger:
   def error (self, message):
     self.stderr.error(message)
     self.file.error(message)
-
-logger = Logger(LOG_FILE_PATH)
-
-# Initialize yaml parser
-yaml = ruamel.yaml.YAML()
 
 # Aborts the process in fatal error: message, errcode
 def abort (message, errcode):
@@ -166,9 +161,11 @@ def isProcessUp():
   else:
     return False
 
-# Disalow calling this script as root user or sudo
-if getpass.getuser() == 'root':
-  abort("don't run this script as root user", 1)
+# Initialize logger
+logger = Logger(LOG_FILE_PATH)
+
+# Initialize yaml parser
+yaml = ruamel.yaml.YAML()
 
 # Load the configuration file
 config = readConfig()
@@ -176,8 +173,13 @@ config = readConfig()
 # Resolve given arguments
 args = resolveArgs(PKG_NAME)
 
+# Disalow calling this script as root user or sudo
+if getpass.getuser() == 'root':
+  abort("don't run this script as root user", 1)
+
 if args.command == 'start':
   logger.info('Todo: start conky process')
+
 elif args.command == 'restart':
   logger.info('Todo: restart conky process')
 elif args.command == 'stop':
