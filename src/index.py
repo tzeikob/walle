@@ -3,6 +3,8 @@
 
 import sys
 import os
+import subprocess
+import time
 import re
 import getpass
 import logging
@@ -15,6 +17,7 @@ PKG_NAME = '#PKG_NAME'
 HOME = str(Path.home())
 BASE_DIR = HOME + '/.config/' + PKG_NAME
 CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
+CONKYRC_FILE_PATH = BASE_DIR + '/.conkyrc'
 LOG_FILE_PATH = BASE_DIR + '/all.log'
 PID_FILE_PATH = BASE_DIR + '/pid'
 
@@ -151,15 +154,71 @@ def resolveArgs (prog):
 
   return parser.parse_args()
 
-# Returns if the conky process is up and running
-def isProcessUp():
+# Read the pid of the pid file
+def readPid ():
   if os.path.exists(PID_FILE_PATH):
     with open(PID_FILE_PATH) as input:
-      pid = input.read()
-
-      return os.path.exists('/proc/' + pid)
+      return input.read()
   else:
-    return False
+    return None
+
+# Returns if the conky process is up and running
+def isUp ():
+  pid = readPid()
+  return os.path.exists('/proc/' + str(pid))
+
+# Spawns the conky process
+def start ():
+  if isUp():
+    logger.info('Conky is already up and running')
+    return
+
+  # Launch the conky process
+  with open(LOG_FILE_PATH, 'a') as logfile:
+    process = subprocess.Popen(
+      ['conky', '-b', '-p', '1', '-c', CONKYRC_FILE_PATH],
+      stdout = logfile,
+      stderr = logfile,
+      universal_newlines = True)
+
+    # Give time to conky to be spawn
+    time.sleep(2)
+
+    # Save the conky process id in the file system
+    with open(PID_FILE_PATH, 'w') as pidfile:
+      pidfile.write(str(process.pid))
+
+  if isUp():
+    logger.info('Conky is up and running')
+  else:
+    abort('failed to start conky process', 1)
+
+# Stops the running conky process
+def stop ():
+  if isUp():
+    pid = readPid()
+
+    # Kill conky process given the pid
+    with open(LOG_FILE_PATH, 'a') as logfile:
+      subprocess.Popen(
+        ['kill', str(pid)],
+        stdout = logfile,
+        stderr = logfile,
+        universal_newlines = True)
+
+    os.remove(PID_FILE_PATH)
+
+    logger.info('Conky is now shut down')
+  else:
+    logger.info('Conky is already shut down')
+
+# Restart the conky process
+def restart():
+  if isUp:
+    stop()
+    time.sleep(2)
+
+  start()
 
 # Initialize logger
 logger = Logger(LOG_FILE_PATH)
@@ -178,12 +237,11 @@ if getpass.getuser() == 'root':
   abort("don't run this script as root user", 1)
 
 if args.command == 'start':
-  logger.info('Todo: start conky process')
-
-elif args.command == 'restart':
-  logger.info('Todo: restart conky process')
+  start()
 elif args.command == 'stop':
-  logger.info('Todo: stop conky process')
+  stop()
+elif args.command == 'restart':
+  restart()
 elif args.command == 'config':
   config['version'] = scalar(config['version'])
 
@@ -219,6 +277,7 @@ elif args.command == 'config':
 
   writeConfig(config)
 
-  logger.info('Todo: restart conky process')
+  if isUp():
+    restart()
 
 sys.exit(0)
