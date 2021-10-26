@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # A script to build the project as debian package
 
-PKG_NAME=$1
-PKG_VERSION=$2
-PKG_DEPENDS="wget, jq, conky, conky-all"
-PKG_ARCHITECTURE="all"
-PKG_MAINTAINER="Jake Ob <iakopap@gmail.com>"
-PKG_HOMEPAGE="https://github.com/tzeikob/walle"
-PKG_DESCRIPTION="An opinionated tool to manage and configure conky for developers"
+PKG_NAME="$1"
+PKG_VERSION="$2"
+PKG_DEPENDS="$3"
+PKG_ARCHITECTURE="$4"
+PKG_MAINTAINER="$5"
+PKG_HOMEPAGE="$6"
+PKG_DESCRIPTION="$7"
 
 # Resolve base and dist folder paths
 BASE_DIR=$(dirname "$0")
@@ -32,10 +32,9 @@ if [[ "$UID" == "0" ]]; then
   abort "don't run this script as root user" 1
 fi
 
-# Abort build process if arguments are missing
-if [[ $PKG_NAME == "" || $PKG_VERSION == "" ]]; then
-  abort "name or version arguments is missing" 1
-fi
+# Source utility methods
+source $BASE_DIR/../src/util/core.sh
+source $BASE_DIR/../src/util/text.sh
 
 # Clean any build files
 rm -rf $DIST_DIR
@@ -46,22 +45,33 @@ echo -e "Creating debian files \U1F4AC"
 DEBIAN_DIR=$DIST_DIR/build/DEBIAN
 mkdir -p $DEBIAN_DIR
 
-CONTROL_FILE=$DEBIAN_DIR/control
+echo -e "Creating the debian control file \U1F4AC"
 
-echo "Package: $PKG_NAME" >> $CONTROL_FILE
-echo "Version: $PKG_VERSION" >> $CONTROL_FILE
-echo "Depends: $PKG_DEPENDS" >> $CONTROL_FILE
-echo "Architecture: $PKG_ARCHITECTURE" >> $CONTROL_FILE
-echo "Maintainer: $PKG_MAINTAINER" >> $CONTROL_FILE
-echo "Homepage: $PKG_HOMEPAGE" >> $CONTROL_FILE
-echo "Description: $PKG_DESCRIPTION" >> $CONTROL_FILE
+CONTROL_FILE=$DEBIAN_DIR/control
+cp $BASE_DIR/control $CONTROL_FILE
+
+# Inject the package metadata into the control file
+sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $CONTROL_FILE
+sed -i "s/#PKG_VERSION/$(esc "$PKG_VERSION")/g" $CONTROL_FILE
+sed -i "s/#PKG_DEPENDS/$(esc "$PKG_DEPENDS")/g" $CONTROL_FILE
+sed -i "s/#PKG_ARCHITECTURE/$(esc "$PKG_ARCHITECTURE")/g" $CONTROL_FILE
+sed -i "s/#PKG_MAINTAINER/$(esc "$PKG_MAINTAINER")/g" $CONTROL_FILE
+sed -i "s/#PKG_HOMEPAGE/$(esc "$PKG_HOMEPAGE")/g" $CONTROL_FILE
+sed -i "s/#PKG_DESCRIPTION/$(esc "$PKG_DESCRIPTION")/g" $CONTROL_FILE
 
 echo -e "Control file has been created"
 
 echo -e "Copying apt pre/post installation scripts \U1F4AC"
 
-cp $BASE_DIR/hooks/postinst.sh $DEBIAN_DIR/postinst
-cp $BASE_DIR/hooks/postrm.sh $DEBIAN_DIR/postrm
+POSTINST_FILE=$DEBIAN_DIR/postinst
+cp $BASE_DIR/hooks/postinst.sh $POSTINST_FILE
+
+sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $POSTINST_FILE
+
+POSTRM_FILE=$DEBIAN_DIR/postrm
+cp $BASE_DIR/hooks/postrm.sh $POSTRM_FILE
+
+sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $POSTRM_FILE
 
 echo -e "Installation scripts have been set in place"
 echo -e "Debian files have been created successfully"
@@ -71,11 +81,10 @@ echo -e "Bundling the package files \U1F4AC"
 BIN_DIR=$DIST_DIR/build/usr/bin
 mkdir -p $BIN_DIR
 
-cp $BASE_DIR/../src/walle.sh $BIN_DIR/$PKG_NAME
+BIN_FILE=$BIN_DIR/$PKG_NAME
+cp $BASE_DIR/../src/index.py $BIN_FILE
 
-# Set the package name and version to the executable file
-sed -i "s/#PKG_NAME/$PKG_NAME/g" $BIN_DIR/$PKG_NAME
-sed -i "s/#PKG_VERSION/$PKG_VERSION/g" $BIN_DIR/$PKG_NAME
+sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $BIN_FILE
 
 echo -e "Executable file has been created"
 
@@ -86,15 +95,17 @@ cp $BASE_DIR/../src/main.lua $CONFIG_DIR/main.lua
 
 echo -e "Main lua file has been created"
 
-cp $BASE_DIR/../src/.conkyrc $CONFIG_DIR/.conkyrc
+CONKYRC_FILE=$CONFIG_DIR/.conkyrc
+cp $BASE_DIR/../src/.conkyrc $CONKYRC_FILE
+
+sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $CONKYRC_FILE
 
 echo -e "Conkyrc file has been created"
 
-CONFIG_FILE=$CONFIG_DIR/.wallerc
-cp $BASE_DIR/../src/.wallerc $CONFIG_FILE
+CONFIG_FILE=$CONFIG_DIR/config.yml
+cp $BASE_DIR/../src/config.yml $CONFIG_FILE
 
-# Set the version in the config file
-sed -i "s/#PKG_VERSION/$PKG_VERSION/g" $CONFIG_FILE
+sed -i "s/#PKG_VERSION/$(esc "$PKG_VERSION")/g" $CONFIG_FILE
 
 echo -e "Config file has been created"
 

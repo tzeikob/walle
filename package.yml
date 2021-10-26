@@ -1,0 +1,10 @@
+name: 'walle'
+version: '0.1.0'
+author: 'Jake Ob <iakopap@gmail.com>'
+homepage: 'https://github.com/tzeikob/walle'
+description: 'An opinionated tool to manage and configure conky for developers'
+
+builds:
+  debian:
+    arch: 'all'
+    depends: 'python3, python3-pip, conky, conky-all'

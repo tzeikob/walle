@@ -5,7 +5,7 @@ user_home = "/home/#USER"
 wallpapers_dir = user_home .. "/pictures/wallpapers"
 base_dir = user_home .. "/.config/walle"
 langs_dir = base_dir .. "/langs"
-config_file = base_dir .. "/.wallerc"
+config_file = base_dir .. "/config.yml"
 
 -- Global configuration properties
 status = "init"
