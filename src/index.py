@@ -220,6 +220,22 @@ def restart():
 
   start()
 
+# Write the conky monitor directly to the conkyrc file
+def writeConkyMonitor (index):
+  if not os.path.exists(CONKYRC_FILE_PATH):
+    abort('failed to write monitor index: missing conkyrc file', 1)
+
+  newContent = ''
+
+  with open(CONKYRC_FILE_PATH, 'r') as rcfile:
+    for line in rcfile:
+      if re.match(r'^[ ]*xinerama_head[ ]*=[ ]*[0-9]+[ ]*,[ ]*$', line):
+        line = '    xinerama_head = ' + str(index) + ',\n'
+      newContent += line
+
+  with open(CONKYRC_FILE_PATH, 'w') as rcfile:
+    rcfile.write(newContent)
+
 # Initialize logger
 logger = Logger(LOG_FILE_PATH)
 
@@ -271,6 +287,7 @@ elif args.command == 'config':
 
   if args.monitor != None:
     config['system']['monitor'] = args.monitor
+    writeConkyMonitor(args.monitor)
 
   if args.debug != None:
     config['system']['debug'] = args.debug
