@@ -49,7 +49,7 @@ def abort (message, errcode):
   logger.error('Error: ' + message)
   sys.exit(errcode)
 
-# Asserts if the given value is a seconds value
+# Asserts if the given value is a seconds value: value
 def posInt (value):
   try:
     number = int(value)
@@ -60,7 +60,7 @@ def posInt (value):
   except ValueError:
     raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
 
-# Asserts if the given value is a conky valid font style value
+# Asserts if the given value is a conky valid font style value: value
 def fontStyle (value):
   if not re.match(r'^[a-zA-Z0-9]([a-zA-Z0-9_\- ])*(:bold)?(:italic)?(:size=[1-9][0-9]?[0-9]?)?$', value):
     raise argparse.ArgumentTypeError("'%s' is not a valid conky font style value" % value)
@@ -167,10 +167,10 @@ def isUp ():
   pid = readPid()
   return os.path.exists('/proc/' + str(pid))
 
-# Spawns the conky process
-def start ():
+# Spawns the conky process: silent
+def start (silent = False):
   if isUp():
-    logger.info('Conky is already up and running')
+    if not silent: logger.info('Conky is already up and running')
     return
 
   # Launch the conky process
@@ -189,12 +189,12 @@ def start ():
       pidfile.write(str(process.pid))
 
   if isUp():
-    logger.info('Conky is up and running')
+    if not silent: logger.info('Conky is up and running')
   else:
     abort('failed to start conky process', 1)
 
-# Stops the running conky process
-def stop ():
+# Stops the running conky process: silent
+def stop (silent = False):
   if isUp():
     pid = readPid()
 
@@ -208,17 +208,20 @@ def stop ():
 
     os.remove(PID_FILE_PATH)
 
-    logger.info('Conky is now shut down')
+    if not silent: logger.info('Conky is now shut down')
   else:
-    logger.info('Conky is already shut down')
+    if not silent: logger.info('Conky is already shut down')
 
 # Restart the conky process
 def restart():
-  if isUp:
-    stop()
-    time.sleep(2)
+  if isUp():
+    stop(True)
+    time.sleep(1)
+    start(True)
 
-  start()
+    logger.info('Conky process has been restarted')
+  else:
+    start()
 
 # Write the conky monitor directly to the conkyrc file
 def writeConkyMonitor (index):
