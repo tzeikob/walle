@@ -70,16 +70,16 @@ def fontStyle (value):
 # Reads and parses the config file to an object
 def readConfig ():
   try:
-    with open(CONFIG_FILE_PATH) as input:
-      return yaml.load(input)
+    with open(CONFIG_FILE_PATH) as config_file:
+      return yaml.load(config_file)
   except EnvironmentError:
     abort('failed to read the config file', 1)
 
 # Dumps the config object to a yaml file: config
 def writeConfig (config):
   try:
-    with open(CONFIG_FILE_PATH, 'w') as output:
-      yaml.dump(config, output)
+    with open(CONFIG_FILE_PATH, 'w') as config_file:
+      yaml.dump(config, config_file)
   except EnvironmentError:
     abort('failed to write to config file', 1)
 
@@ -157,8 +157,8 @@ def resolveArgs (prog):
 # Read the pid of the pid file
 def readPid ():
   if os.path.exists(PID_FILE_PATH):
-    with open(PID_FILE_PATH) as input:
-      return input.read().strip()
+    with open(PID_FILE_PATH) as pid_file:
+      return pid_file.read().strip()
   else:
     return None
 
@@ -174,12 +174,12 @@ def start (silent=False):
     return
 
   # Launch the conky process
-  with open(LOG_FILE_PATH, 'a') as logfile:
+  with open(LOG_FILE_PATH, 'a') as log_file:
     try:
       process = subprocess.Popen(
         ['conky', '-b', '-p', '1', '-c', CONKYRC_FILE_PATH],
-        stdout=logfile,
-        stderr=logfile,
+        stdout=log_file,
+        stderr=log_file,
         universal_newlines=True)
     except:
       abort('failed to spawn the conky process', 1)
@@ -193,8 +193,8 @@ def start (silent=False):
       abort('failed to spawn the conky process', 1)
 
     # Save the conky process id in the file system
-    with open(PID_FILE_PATH, 'w') as pidfile:
-      pidfile.write(str(process.pid))
+    with open(PID_FILE_PATH, 'w') as pid_file:
+      pid_file.write(str(process.pid))
 
   if isUp():
     if not silent: logger.info('Conky is up and running')
@@ -207,12 +207,12 @@ def stop (silent=False):
     pid = readPid()
 
     # Kill conky process given the pid
-    with open(LOG_FILE_PATH, 'a') as logfile:
+    with open(LOG_FILE_PATH, 'a') as log_file:
       try:
         process = subprocess.run(
           ['kill', str(pid)],
-          stdout=logfile,
-          stderr=logfile,
+          stdout=log_file,
+          stderr=log_file,
           universal_newlines=True)
       except:
         abort('failed to kill the conky process', 1)
@@ -244,14 +244,14 @@ def writeConkyMonitor (index):
 
   newContent = ''
 
-  with open(CONKYRC_FILE_PATH, 'r') as rcfile:
-    for line in rcfile:
+  with open(CONKYRC_FILE_PATH, 'r') as conkyrc_file:
+    for line in conkyrc_file:
       if re.match(r'^[ ]*xinerama_head[ ]*=[ ]*[0-9]+[ ]*,[ ]*$', line):
         line = '    xinerama_head = ' + str(index) + ',\n'
       newContent += line
 
-  with open(CONKYRC_FILE_PATH, 'w') as rcfile:
-    rcfile.write(newContent)
+  with open(CONKYRC_FILE_PATH, 'w') as conkyrc_file:
+    conkyrc_file.write(newContent)
 
 # Initialize logger
 logger = Logger(LOG_FILE_PATH)
