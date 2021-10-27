@@ -73,7 +73,7 @@ def readConfig ():
     with open(CONFIG_FILE_PATH) as input:
       return yaml.load(input)
   except EnvironmentError:
-    abort('failed to read the config file: ' + CONFIG_FILE_PATH, 1)
+    abort('failed to read the config file', 1)
 
 # Dumps the config object to a yaml file: config
 def writeConfig (config):
@@ -81,7 +81,7 @@ def writeConfig (config):
     with open(CONFIG_FILE_PATH, 'w') as output:
       yaml.dump(config, output)
   except EnvironmentError:
-    abort('failed to write to config file: ' + CONFIG_FILE_PATH, 1)
+    abort('failed to write to config file', 1)
 
 # Resolves the given arguments schema: prog
 def resolveArgs (prog):
@@ -158,7 +158,7 @@ def resolveArgs (prog):
 def readPid ():
   if os.path.exists(PID_FILE_PATH):
     with open(PID_FILE_PATH) as input:
-      return input.read()
+      return input.read().strip()
   else:
     return None
 
@@ -175,14 +175,22 @@ def start (silent=False):
 
   # Launch the conky process
   with open(LOG_FILE_PATH, 'a') as logfile:
-    process = subprocess.Popen(
-      ['conky', '-b', '-p', '1', '-c', CONKYRC_FILE_PATH],
-      stdout=logfile,
-      stderr=logfile,
-      universal_newlines=True)
+    try:
+      process = subprocess.Popen(
+        ['conky', '-b', '-p', '1', '-c', CONKYRC_FILE_PATH],
+        stdout=logfile,
+        stderr=logfile,
+        universal_newlines=True)
+    except:
+      abort('failed to spawn the conky process', 1)
 
     # Give time to conky to be spawn
     time.sleep(2)
+
+    # Check if the process has failed to spawn
+    returncode = process.poll()
+    if returncode != None and returncode != 0:
+      abort('failed to spawn the conky process', 1)
 
     # Save the conky process id in the file system
     with open(PID_FILE_PATH, 'w') as pidfile:
@@ -191,7 +199,7 @@ def start (silent=False):
   if isUp():
     if not silent: logger.info('Conky is up and running')
   else:
-    abort('failed to start conky process', 1)
+    abort('failed to spawn the conky process', 1)
 
 # Stops the running conky process: silent
 def stop (silent=False):
@@ -200,11 +208,17 @@ def stop (silent=False):
 
     # Kill conky process given the pid
     with open(LOG_FILE_PATH, 'a') as logfile:
-      subprocess.Popen(
-        ['kill', str(pid)],
-        stdout=logfile,
-        stderr=logfile,
-        universal_newlines=True)
+      try:
+        process = subprocess.run(
+          ['kill', str(pid)],
+          stdout=logfile,
+          stderr=logfile,
+          universal_newlines=True)
+      except:
+        abort('failed to kill the conky process', 1)
+
+    if process.returncode != 0:
+      abort('failed to kill the conky process', 1)
 
     os.remove(PID_FILE_PATH)
 
@@ -219,7 +233,7 @@ def restart():
     time.sleep(1)
     start(True)
 
-    logger.info('Conky process has been restarted')
+    logger.info('Conky has been restarted')
   else:
     start()
 
