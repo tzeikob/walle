@@ -86,71 +86,71 @@ def writeConfig (config):
 # Resolves the given arguments schema: prog
 def resolveArgs (prog):
   parser = argparse.ArgumentParser(
-    prog = prog,
-    description = 'An opinionated tool to manage and configure conky for developers.',
-    epilog = 'Have a nice %(prog)s time!')
+    prog=prog,
+    description='An opinionated tool to manage and configure conky for developers.',
+    epilog='Have a nice %(prog)s time!')
 
   parser.add_argument(
     '-v', '--version',
-    action = 'version',
-    version = config['version'],
-    help = 'show the version number and exit')
+    action='version',
+    version=config['version'],
+    help='show the version number and exit')
 
-  subparsers = parser.add_subparsers(metavar = 'command', dest = 'command')
+  subparsers = parser.add_subparsers(metavar='command', dest='command')
 
-  subparsers.add_parser('start', help = 'start %(prog)s spawning the conky process')
-  subparsers.add_parser('restart', help = 'restart %(prog)s respawning the conky process')
-  subparsers.add_parser('stop', help = 'stop %(prog)s killing the conky process')
+  subparsers.add_parser('start', help='start %(prog)s spawning the conky process')
+  subparsers.add_parser('restart', help='restart %(prog)s respawning the conky process')
+  subparsers.add_parser('stop', help='stop %(prog)s killing the conky process')
 
-  configParser = subparsers.add_parser('config', help = 'configure %(prog)s and restart the conky process')
+  configParser = subparsers.add_parser('config', help='configure %(prog)s and restart the conky process')
 
   configParser.add_argument(
     '-c', '--color',
-    choices = ['light', 'dark'],
-    metavar = 'mode',
-    help = "set the theme color mode to 'light' or 'dark'")
+    choices=['light', 'dark'],
+    metavar='mode',
+    help="set the theme color mode to 'light' or 'dark'")
 
   configParser.add_argument(
     '-w', '--wall',
-    type = posInt,
-    metavar = 'secs',
-    help = 'set the interval time the wallpaper should rotate by')
+    type=posInt,
+    metavar='secs',
+    help='set the interval time the wallpaper should rotate by')
 
   configParser.add_argument(
     '-t', '--time',
-    type = fontStyle,
-    metavar = 'font',
-    help = 'set the font and style used in time line')
+    type=fontStyle,
+    metavar='font',
+    help='set the font and style used in time line')
 
   configParser.add_argument(
     '-d', '--date',
-    type = fontStyle,
-    metavar = 'font',
-    help = 'set the font and style used in date line')
+    type=fontStyle,
+    metavar='font',
+    help='set the font and style used in date line')
 
   configParser.add_argument(
     '-x', '--text',
-    type = fontStyle,
-    metavar = 'font',
-    help = 'set the font and style used in the text lines')
+    type=fontStyle,
+    metavar='font',
+    help='set the font and style used in the text lines')
 
   configParser.add_argument(
     '-l', '--lang',
-    choices = ['en', 'el'],
-    metavar = 'code',
-    help = 'set the language code texts should appear in')
+    choices=['en', 'el'],
+    metavar='code',
+    help='set the language code texts should appear in')
 
   configParser.add_argument(
     '--monitor',
-    type = posInt,
-    metavar = 'index',
-    help = 'set the monitor index the conky should render at')
+    type=posInt,
+    metavar='index',
+    help='set the monitor index the conky should render at')
 
   configParser.add_argument(
     '--debug',
-    choices = ['enabled', 'disabled'],
-    metavar = 'mode',
-    help = "set debug mode to 'enabled' or 'disabled'")
+    choices=['enabled', 'disabled'],
+    metavar='mode',
+    help="set debug mode to 'enabled' or 'disabled'")
 
   return parser.parse_args()
 
@@ -168,7 +168,7 @@ def isUp ():
   return os.path.exists('/proc/' + str(pid))
 
 # Spawns the conky process: silent
-def start (silent = False):
+def start (silent=False):
   if isUp():
     if not silent: logger.info('Conky is already up and running')
     return
@@ -177,9 +177,9 @@ def start (silent = False):
   with open(LOG_FILE_PATH, 'a') as logfile:
     process = subprocess.Popen(
       ['conky', '-b', '-p', '1', '-c', CONKYRC_FILE_PATH],
-      stdout = logfile,
-      stderr = logfile,
-      universal_newlines = True)
+      stdout=logfile,
+      stderr=logfile,
+      universal_newlines=True)
 
     # Give time to conky to be spawn
     time.sleep(2)
@@ -194,7 +194,7 @@ def start (silent = False):
     abort('failed to start conky process', 1)
 
 # Stops the running conky process: silent
-def stop (silent = False):
+def stop (silent=False):
   if isUp():
     pid = readPid()
 
@@ -202,9 +202,9 @@ def stop (silent = False):
     with open(LOG_FILE_PATH, 'a') as logfile:
       subprocess.Popen(
         ['kill', str(pid)],
-        stdout = logfile,
-        stderr = logfile,
-        universal_newlines = True)
+        stdout=logfile,
+        stderr=logfile,
+        universal_newlines=True)
 
     os.remove(PID_FILE_PATH)
 
