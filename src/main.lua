@@ -154,8 +154,8 @@ function conky_main ()
   interval (10, updates, resolveConnection)
 
   local wallIntervalInSecs = tonumber (cfg["theme"]["wall"])
-  if tonumber (wallIntervalInSecs) > 0 then
-    interval (tonumber (wallIntervalInSecs), updates, updateWallpaper)
+  if wallIntervalInSecs > 0 then
+    interval (wallIntervalInSecs, updates, updateWallpaper)
   end
 
   -- Mark conky as running in subsequent cycles
