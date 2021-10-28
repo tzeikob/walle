@@ -5,3 +5,4 @@ Architecture: #PKG_ARCHITECTURE
 Maintainer: #PKG_MAINTAINER
 Homepage: #PKG_HOMEPAGE
 Description: #PKG_DESCRIPTION
+Installed-Size: #PKG_FILE_SIZE

@@ -124,6 +124,13 @@ cp $BASE_DIR/../src/langs/*.dict $LANGS_DIR
 echo -e "Language files have been created"
 echo -e "Package files have been bundled successfully"
 
+echo -e "Calculating the package files size \U1F4AC"
+
+PKG_FILE_SIZE=$(find $DIST_DIR/build/ -type f -exec du -ch {} + | grep total$ | awk '{print $1}')
+sed -i "s/#PKG_FILE_SIZE/$(esc "$PKG_FILE_SIZE")/g" $CONTROL_FILE
+
+echo -e "Total of $PKG_FILE_SIZE bytes in file size"
+
 echo -e "Building the debian package file \U1F4AC"
 
 DEB_FILE=$DIST_DIR/$PKG_NAME-$PKG_VERSION.deb
