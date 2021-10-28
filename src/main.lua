@@ -1,23 +1,27 @@
 -- Main lua file of the conky config file
 
+-- Load third-party dependencies
+yaml = require "yaml"
+
 -- Global file and dir paths
+pkg_name = "#PKG_NAME"
 user_home = "/home/#USER"
 wallpapers_dir = user_home .. "/pictures/wallpapers"
-base_dir = user_home .. "/.config/walle"
+base_dir = user_home .. "/.config/" .. pkg_name
 langs_dir = base_dir .. "/langs"
 config_file = base_dir .. "/config.yml"
 
+-- Load the config file
+file = io.open (config_file, "r")
+cfg = yaml.load (file:read ("*a"))
+file:close ()
+
 -- Global configuration properties
 status = "init"
-debug_mode = "disabled"
-lang = "en"
-theme = "light"
-wallpaperInterval = 0
 wallpapers = {}
-fonts = { clock = "", date = "", text = "" }
 i18n = {}
 
--- Extra conky variables interpolated at init
+-- Extra conky variables resolved at initialization
 statics = {
   rls_name = "",
   rls_version = "", 
@@ -25,7 +29,7 @@ statics = {
   rls_arch = ""
 }
 
--- Extra conky variables interpolated at interval
+-- Extra conky variables resolved at interval
 vars = {
   time_p = "",
   time_P = "",
@@ -87,22 +91,9 @@ end
 
 -- Logs a message if logging level is on debug mode
 function log (message)
-  if debug_mode == "enabled" then
+  if cfg["system"]["debug"] == "enabled" then
     print (message)
   end
-end
-
--- Reads the configuration property down to the given json path
-function config (path, default)
-  local jq = "jq --raw-output " .. path .. " " .. config_file .. " | sed -z '$ s/\\n$//'"
-  local value = jq:exec ()
-
-  -- Return default if not found
-  if value == "null" then
-    return default
-  end
-
-  return value
 end
 
 -- Executes an operation after the given cycles have passed
@@ -112,64 +103,6 @@ function interval (cycles, updates, operation)
   if timer == 0 or status == "init" then
     operation ()
   end
-end
-
-function init ()
-  -- Initialize global properties from the config file
-  debug_mode = config (".debug", "disabled")
-  lang = config ('.lang', "en")
-  theme = config (".theme", "light")
-  wallpaperInterval = tonumber (config (".wallpaper", "0"))
-  fonts["clock"] = config (".clock", "")
-  fonts["date"] = config (".date", "")
-  fonts["text"] = config (".text", "")
-
-  -- Initialize release static interpolation variables
-  local lsb_release = "lsb_release --short -icr"
-  local output = lsb_release:exec ()
-  local parts = output:split("\n")
-
-  statics["rls_name"] = parts[1]
-  statics["rls_version"] = parts[2]
-  statics["rls_codename"] = parts[3]
-
-  local uname = "uname -p | sed -z '$ s/\\n$//'"
-  local output = uname:exec ()
-
-  statics["rls_arch"] = output
-
-  -- Load the i18n texts corresponding to the choosen lang
-  local lines = io.lines (langs_dir .. "/" .. lang .. ".dict")
-
-  for line in lines do
-    if line:matches ("^[a-zA-Z0-9-_][a-zA-Z0-9-_\.]* *=.*") then
-      local parts = line:split ("=", true)
-      local key, value = parts[1]:trim (), parts[2]:trim ()
-
-      -- Interpolate any given static variables
-      for varKey, varValue in pairs (statics) do
-        value = value:gsub ("$_" .. varKey, varValue)
-      end
-
-      i18n[key] = value
-    end
-  end
-
-  -- Collect the file path of any image file found in the wallpapers dir
-  local re = ".*.\\(jpe?g\\|png\\)$"
-  local find = 'find ' .. wallpapers_dir .. ' -type f -regex "' .. re .. '" 2> /dev/null || echo ""'
-  local output = find:exec ()
-  local paths = output:split ('\n')
-
-  -- Filter out empty paths
-  for _, path in ipairs (paths) do
-    if path ~= "" then
-      table.insert (wallpapers, path)
-      log ("Found image '" .. path .. "'")
-    end
-  end
-
-  log ("Found " .. table.getn (wallpapers) .. " images under '" .. wallpapers_dir .. "'")
 end
 
 -- Resolves the current network interface and ip
@@ -208,6 +141,7 @@ function updateWallpaper ()
   end
 end
 
+-- Main lua function called by conkyrc
 function conky_main ()
   -- Abort if the conky window is not rendered
   if conky_window == nil then
@@ -219,8 +153,9 @@ function conky_main ()
 
   interval (10, updates, resolveConnection)
 
-  if wallpaperInterval > 0 then
-    interval (wallpaperInterval, updates, updateWallpaper)
+  local wallIntervalInSecs = tonumber (cfg["theme"]["wall"])
+  if tonumber (wallIntervalInSecs) > 0 then
+    interval (tonumber (wallIntervalInSecs), updates, updateWallpaper)
   end
 
   -- Mark conky as running in subsequent cycles
@@ -254,7 +189,7 @@ end
 
 -- Resolves the theme color to conky
 function conky_theme ()
-  if theme == "dark" then
+  if cfg["theme"]["color"] == "dark" then
     return "${color black}"
   end
 
@@ -263,32 +198,32 @@ end
 
 -- Exposes the clock time to conky
 function conky_clock ()
-  return text (i18n["text.line.clock"], fonts["clock"], true)
+  return text (i18n["text.line.clock"], cfg["theme"]["fonts"]["time"], true)
 end
 
 -- Exposes the date to conky
 function conky_date ()
-  return text (i18n["text.line.date"], fonts["date"], true)
+  return text (i18n["text.line.date"], cfg["theme"]["fonts"]["date"], true)
 end
 
 -- Exposes the user line to conky
 function conky_user ()
-  return text (i18n["text.line.user"], fonts["text"], true)
+  return text (i18n["text.line.user"], cfg["theme"]["fonts"]["text"], true)
 end
 
 -- Exposes the running system info to the conky
 function conky_system ()
-  return text (i18n["text.line.system"], fonts["text"], true)
+  return text (i18n["text.line.system"], cfg["theme"]["fonts"]["text"], true)
 end
 
 -- Exposes the loads and sensors data to the conky
 function conky_loads ()
-  return text (i18n["text.line.loads"], fonts["text"], true)
+  return text (i18n["text.line.loads"], cfg["theme"]["fonts"]["text"], true)
 end
 
 -- Exposes the network speeds to the conky
 function conky_network ()
-  return text (i18n["text.line.network"], fonts["text"], true)
+  return text (i18n["text.line.network"], cfg["theme"]["fonts"]["text"], true)
 end
 
 -- Exposes the connection status to the conky
@@ -299,12 +234,61 @@ function conky_connection ()
     line = i18n["text.line.connection.offline"]
   end
 
-  return text (line, fonts["text"], true)
+  return text (line, cfg["theme"]["fonts"]["text"], true)
 end
 
 -- Exposes the uptime to the conky
 function conky_uptime ()
-  return text (i18n["text.line.uptime"], fonts["text"], true)
+  return text (i18n["text.line.uptime"], cfg["theme"]["fonts"]["text"], true)
 end
 
-init ()
+-- Initialize release static interpolation variables
+local lsb_release = "lsb_release --short -icr"
+local output = lsb_release:exec ()
+local parts = output:split ("\n")
+
+statics["rls_name"] = parts[1]
+statics["rls_version"] = parts[2]
+statics["rls_codename"] = parts[3]
+
+local uname = "uname -p | sed -z '$ s/\\n$//'"
+local output = uname:exec ()
+
+statics["rls_arch"] = output
+
+log ("Resolved release interpolation statics")
+
+-- Load the i18n texts corresponding to the choosen lang
+local lines = io.lines (langs_dir .. "/" .. cfg['system']['lang'] .. ".dict")
+
+for line in lines do
+  if line:matches ("^[a-zA-Z0-9-_][a-zA-Z0-9-_\.]* *=.*") then
+    local parts = line:split ("=", true)
+    local key, value = parts[1]:trim (), parts[2]:trim ()
+
+    -- Interpolate any given static variables
+    for varKey, varValue in pairs (statics) do
+      value = value:gsub ("$_" .. varKey, varValue)
+    end
+
+    i18n[key] = value
+  end
+end
+
+log ("Set languge to '" .. cfg['system']['lang'] .. ".dict'")
+
+-- Collect the file path of any image file found in the wallpapers dir
+local re = ".*.\\(jpe?g\\|png\\)$"
+local find = 'find ' .. wallpapers_dir .. ' -type f -regex "' .. re .. '" 2> /dev/null || echo ""'
+local output = find:exec ()
+local paths = output:split ('\n')
+
+-- Filter out empty paths
+for _, path in ipairs (paths) do
+  if path ~= "" then
+    table.insert (wallpapers, path)
+    log ("Found image '" .. path .. "'")
+  end
+end
+
+log ("Found " .. table.getn (wallpapers) .. " images under '" .. wallpapers_dir .. "'")

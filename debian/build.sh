@@ -91,7 +91,10 @@ echo -e "Executable file has been created"
 CONFIG_DIR=$DIST_DIR/build/tmp/$PKG_NAME
 mkdir -p $CONFIG_DIR
 
-cp $BASE_DIR/../src/main.lua $CONFIG_DIR/main.lua
+LUA_FILE=$CONFIG_DIR/main.lua
+cp $BASE_DIR/../src/main.lua $LUA_FILE
+
+sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $LUA_FILE
 
 echo -e "Main lua file has been created"
 

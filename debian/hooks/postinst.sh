@@ -58,6 +58,12 @@ su $SUDO_USER -c "pip3 install ruamel.yaml --upgrade"
 
 echo -e "Python dependencies have been installed"
 
+echo -e "Installing lua third-party dependencies..."
+
+luarocks install yaml
+
+echo -e "Lua dependencies have been installed"
+
 echo -e "Exiting post installation script"
 
 exit 0

@@ -7,4 +7,4 @@ description: 'An opinionated tool to manage and configure conky for developers'
 builds:
   debian:
     arch: 'all'
-    depends: 'python3, python3-pip, conky, conky-all'
+    depends: 'python3, python3-pip, luarocks, conky, conky-all'
