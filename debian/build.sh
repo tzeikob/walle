@@ -73,6 +73,11 @@ cp $BASE_DIR/hooks/postrm.sh $POSTRM_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $POSTRM_FILE
 
+PRERM_FILE=$DEBIAN_DIR/prerm
+cp $BASE_DIR/hooks/prerm.sh $PRERM_FILE
+
+sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $PRERM_FILE
+
 echo -e "Installation scripts have been set in place"
 echo -e "Debian files have been created successfully"
 

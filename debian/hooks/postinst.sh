@@ -66,4 +66,10 @@ echo -e "Lua dependencies have been installed"
 
 echo -e "Exiting post installation script"
 
+echo -e "Starting $PKG_NAME executable..."
+
+su $SUDO_USER -c "$PKG_NAME start"
+
+echo -e "Exiting post installation script"
+
 exit 0
