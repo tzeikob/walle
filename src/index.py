@@ -97,6 +97,7 @@ def resolveArgs (prog):
     help='show the version number and exit')
 
   subparsers = parser.add_subparsers(metavar='command', dest='command')
+  subparsers.required = True
 
   subparsers.add_parser('start', help='start %(prog)s spawning the conky process')
   subparsers.add_parser('restart', help='restart %(prog)s respawning the conky process')
