@@ -40,14 +40,4 @@ conky.config = {
     lua_draw_hook_post = 'main'
 }
 
-conky.text = [[
-${lua_parse theme}
-${lua_parse clock}
-${lua_parse date}
-${lua_parse user}
-${lua_parse system}
-${lua_parse loads}
-${lua_parse network}
-${lua_parse connection}
-${lua_parse uptime}
-]]
+conky.text = [[${lua_parse text}]]

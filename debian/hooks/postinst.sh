@@ -18,9 +18,6 @@ mkdir -p $CONFIG_DIR
 mv $TEMP_DIR/config.yml $CONFIG_DIR/config.yml
 mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
-# Move language files
-mv $TEMP_DIR/langs $CONFIG_DIR
-
 # Move main lua file
 LUA_FILE=$CONFIG_DIR/main.lua
 mv $TEMP_DIR/main.lua $LUA_FILE
@@ -60,6 +57,7 @@ echo -e "Python dependencies have been installed"
 
 echo -e "Installing lua third-party dependencies..."
 
+luarocks install luafilesystem
 luarocks install yaml
 
 echo -e "Lua dependencies have been installed"

@@ -1,6 +1,7 @@
 -- Main lua file of the conky config file
 
 -- Load third-party dependencies
+lfs = require "lfs"
 yaml = require "yaml"
 
 -- Global file and dir paths
@@ -8,7 +9,6 @@ pkg_name = "#PKG_NAME"
 user_home = "/home/#USER"
 wallpapers_dir = user_home .. "/pictures/wallpapers"
 base_dir = user_home .. "/.config/" .. pkg_name
-langs_dir = base_dir .. "/langs"
 config_file = base_dir .. "/config.yml"
 
 -- Load the config file
@@ -16,28 +16,10 @@ file = io.open (config_file, "r")
 cfg = yaml.load (file:read ("*a"))
 file:close ()
 
--- Global configuration properties
+-- Global variables
 status = "init"
 wallpapers = {}
-i18n = {}
-
--- Extra conky variables resolved at initialization
-statics = {
-  rls_name = "",
-  rls_version = "", 
-  rls_codename = "",
-  rls_arch = ""
-}
-
--- Extra conky variables resolved at interval
-vars = {
-  time_p = "",
-  time_P = "",
-  month_name = "",
-  day_name = "",
-  net_name = "",
-  net_ip = ""
-}
+vars = {}
 
 -- Splits the string by the given delimiter
 function string:split (delimiter, lazy)
@@ -105,6 +87,46 @@ function interval (cycles, updates, operation)
   end
 end
 
+-- Interpolates all matches with vars into the given line
+function string:interpolate ()
+  for key, value in pairs (vars) do
+    if value == nil or value == "" then
+      value = "..."
+    end
+
+    self = self:gsub ("$_" .. key, value)
+  end
+
+  return self
+end
+
+-- Resolves all extra interpolation variables
+function resolve ()
+  -- Resolve the date and time vars
+  local date = os.date ("%H %M %A %d %B %Y")
+  local parts = date:split (" ")
+  local time_p = tonumber (parts[1]) < 12 and "am" or "pm"
+  vars["time_p"] = time_p
+  vars["time_p_up"] = time_p:upper ()
+  vars["hour"] = parts[1]
+  vars["minute"] = parts[2]
+  vars["day_name"] = parts[3]
+  vars["day"] = parts[4]
+  vars["month_name"] = parts[5]
+  vars["year"] = parts[6]
+
+  -- Resolve release and system vars
+  local lsb_release = "lsb_release --short -icr"
+  local output = lsb_release:exec ()
+  local parts = output:split ("\n")
+  vars["rls_name"] = parts[1]
+  vars["rls_version"] = parts[2]
+  vars["rls_codename"] = parts[3]
+
+  local uname = "uname -p | sed -z '$ s/\\n$//'"
+  vars["rls_arch"] = uname:exec ()
+end
+
 -- Resolves the current network interface and ip
 function resolveConnection ()
   local route = "ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}'"
@@ -112,12 +134,15 @@ function resolveConnection ()
   local parts = output:split (',')
 
   -- Update the network dynamic interpolation variables
-  vars["net_name"] = parts[1]
-  vars["net_ip"] = parts[2]
+  if parts[1] ~= nil and parts[1] ~= "" then
+    vars["net_name"] = parts[1]
+    vars["net_ip"] = parts[2]
 
-  if vars["net_name"] ~= nil and vars["net_name"] ~= "" then
     log ("Network resolved to '" .. vars["net_name"] .. "'")
   else
+    vars["net_name"] = ""
+    vars["net_ip"] = ""
+
     log ("Unable to resolve network")
   end
 end
@@ -137,11 +162,11 @@ function updateWallpaper ()
     local screensaver = 'gsettings set org.gnome.desktop.screensaver picture-uri "file://' .. pic .. '"'
     screensaver:exec ()
 
-    log ("Wallpaper has been updated to '" .. pic .. "'")
+    log ("Wallpaper has been changed to '" .. pic .. "'")
   end
 end
 
--- Main lua function called by conkyrc
+-- Main lua function called by conky
 function conky_main ()
   -- Abort if the conky window is not rendered
   if conky_window == nil then
@@ -153,9 +178,9 @@ function conky_main ()
 
   interval (10, updates, resolveConnection)
 
-  local wallIntervalInSecs = tonumber (cfg["theme"]["wall"])
-  if wallIntervalInSecs > 0 then
-    interval (wallIntervalInSecs, updates, updateWallpaper)
+  local secs = tonumber (cfg["system"]["wallpaper"])
+  if secs > 0 then
+    interval (secs, updates, updateWallpaper)
   end
 
   -- Mark conky as running in subsequent cycles
@@ -164,131 +189,55 @@ function conky_main ()
   end
 end
 
--- Returns a left aligned conky text line
-function text (line, font, interpolate)
-  -- Resolve instantly date and time literals
-  local time_p = tonumber (os.date("%H")) < 12 and "am" or "pm"
-  vars["time_p"] = i18n["date.time." .. time_p]
-  vars["time_P"] = i18n["date.time." .. time_p:upper ()]
-  vars["day_name"] = i18n["date.day." .. os.date("%w")]
-  vars["month_name"] = i18n["date.month." .. os.date("%m")]
+-- Returns the text to be rendered by the conky
+function conky_text ()
+  -- Resolve interpolation variables
+  resolve ()
+  resolveConnection ()
 
-  -- Interpolate any given dynamic variables
-  if interpolate then
-    for varKey, varValue in pairs(vars) do
-      line = line:gsub ("$_" .. varKey, varValue)
-    end
+  local text = ""
+
+  -- Build mode line
+  local modeLine = "${color white}"
+  if cfg["theme"]["mode"] == "dark" then
+    modeLine = "${color black}"
   end
 
-  if font ~= nil then
-    return "${font " .. font .. "}" .. "$alignr " .. line .. "$font"
+  text = text .. modeLine .. "\n"
+
+  -- Build clock line
+  local clockLine = cfg["theme"]["clock"]["text"]
+  clockLine = clockLine:interpolate ()
+  clockLine = "${font " .. cfg["theme"]["clock"]["font"] .. "}" .. "$alignr " .. clockLine
+
+  text = text .. clockLine .. "\n"
+
+  -- Build date line
+  local dateLine = cfg["theme"]["date"]["text"]
+  dateLine = dateLine:interpolate ()
+  dateLine = "${font " .. cfg["theme"]["date"]["font"] .. "}" .. "$alignr " .. dateLine
+
+  text = text .. dateLine .. "\n"
+
+  -- Build text lines
+  for _, line in ipairs (cfg["theme"]["text"]["lines"]) do
+    line = line:interpolate ()
+    line = "${font " .. cfg["theme"]["text"]["font"] .. "}" .. "$alignr " .. line
+
+    text = text .. line .. "\n"
   end
 
-  return "$alignr " .. line
+  text:trim ()
+
+  return text
 end
 
--- Resolves the theme color to conky
-function conky_theme ()
-  if cfg["theme"]["color"] == "dark" then
-    return "${color black}"
-  end
-
-  return "${color white}"
-end
-
--- Exposes the clock time to conky
-function conky_clock ()
-  return text (i18n["text.line.clock"], cfg["theme"]["fonts"]["time"], true)
-end
-
--- Exposes the date to conky
-function conky_date ()
-  return text (i18n["text.line.date"], cfg["theme"]["fonts"]["date"], true)
-end
-
--- Exposes the user line to conky
-function conky_user ()
-  return text (i18n["text.line.user"], cfg["theme"]["fonts"]["text"], true)
-end
-
--- Exposes the running system info to the conky
-function conky_system ()
-  return text (i18n["text.line.system"], cfg["theme"]["fonts"]["text"], true)
-end
-
--- Exposes the loads and sensors data to the conky
-function conky_loads ()
-  return text (i18n["text.line.loads"], cfg["theme"]["fonts"]["text"], true)
-end
-
--- Exposes the network speeds to the conky
-function conky_network ()
-  return text (i18n["text.line.network"], cfg["theme"]["fonts"]["text"], true)
-end
-
--- Exposes the connection status to the conky
-function conky_connection ()
-  local line = i18n["text.line.connection.online"]
-
-  if vars["net_ip"] == nil or vars["net_ip"] == "" then
-    line = i18n["text.line.connection.offline"]
-  end
-
-  return text (line, cfg["theme"]["fonts"]["text"], true)
-end
-
--- Exposes the uptime to the conky
-function conky_uptime ()
-  return text (i18n["text.line.uptime"], cfg["theme"]["fonts"]["text"], true)
-end
-
--- Initialize release static interpolation variables
-local lsb_release = "lsb_release --short -icr"
-local output = lsb_release:exec ()
-local parts = output:split ("\n")
-
-statics["rls_name"] = parts[1]
-statics["rls_version"] = parts[2]
-statics["rls_codename"] = parts[3]
-
-local uname = "uname -p | sed -z '$ s/\\n$//'"
-local output = uname:exec ()
-
-statics["rls_arch"] = output
-
-log ("Resolved release interpolation statics")
-
--- Load the i18n texts corresponding to the choosen lang
-local lines = io.lines (langs_dir .. "/" .. cfg['system']['lang'] .. ".dict")
-
-for line in lines do
-  if line:matches ("^[a-zA-Z0-9-_][a-zA-Z0-9-_\.]* *=.*") then
-    local parts = line:split ("=", true)
-    local key, value = parts[1]:trim (), parts[2]:trim ()
-
-    -- Interpolate any given static variables
-    for varKey, varValue in pairs (statics) do
-      value = value:gsub ("$_" .. varKey, varValue)
-    end
-
-    i18n[key] = value
-  end
-end
-
-log ("Set languge to '" .. cfg['system']['lang'] .. ".dict'")
-
--- Collect the file path of any image file found in the wallpapers dir
-local re = ".*.\\(jpe?g\\|png\\)$"
-local find = 'find ' .. wallpapers_dir .. ' -type f -regex "' .. re .. '" 2> /dev/null || echo ""'
-local output = find:exec ()
-local paths = output:split ('\n')
-
--- Filter out empty paths
-for _, path in ipairs (paths) do
-  if path ~= "" then
+-- Collect all the images in the wallpapers directory
+for file in lfs.dir (wallpapers_dir) do
+  if file:matches("jpeg$") or file:matches("jpg$") or file:matches("png$") then
+    path = wallpapers_dir .. "/" .. file
     table.insert (wallpapers, path)
+
     log ("Found image '" .. path .. "'")
   end
 end
-
-log ("Found " .. table.getn (wallpapers) .. " images under '" .. wallpapers_dir .. "'")
