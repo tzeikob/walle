@@ -49,16 +49,16 @@ def abort (message, errcode):
   logger.error('Error: ' + message)
   sys.exit(errcode)
 
-# Asserts if the given value is a seconds value: value
-def posInt (value):
+# Asserts if the given value is a zero positive integer: value
+def zeroPosInt (value):
   try:
     number = int(value)
     if number < 0:
-      raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
+      raise argparse.ArgumentTypeError("'%s' is not a zero positive int value" % value)
 
     return number
   except ValueError:
-    raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
+    raise argparse.ArgumentTypeError("'%s' is not a zero positive int value" % value)
 
 # Asserts if the given value is a conky valid font style value: value
 def fontStyle (value):
@@ -131,13 +131,13 @@ def resolveArgs (prog):
 
   configParser.add_argument(
     '-w', '--wallpaper',
-    type=posInt,
+    type=zeroPosInt,
     metavar='secs',
     help='set the interval time the wallpaper should rotate by')
 
   configParser.add_argument(
     '--monitor',
-    type=posInt,
+    type=zeroPosInt,
     metavar='index',
     help='set the monitor index the conky should render at')
 
