@@ -1,22 +1,24 @@
 version: '#PKG_VERSION'
 system:
-  wallpaper: 0
   monitor: 0
   debug: disabled
 theme:
   mode: light
-  clock:
-    font : ''
-    text: '${time %H:%M}'
-  date:
-    font: ''
-    text: '$_day_name $_month_name ${time %e, %Y}'
-  text:
-    font: ''
-    lines:
-      - 'Logged as $user_names at $nodename'
-      - 'Running $_rls_arch on $_rls_name $_rls_codename'
-      - 'CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%'
-      - 'Up ${upspeedf $_net_name}KiB Down ${downspeedf $_net_name}KiB'
-      - 'Connected to $_net_name with $_net_ip'
-      - 'So far $uptime_short uptime!'
+  wallpaper: 0
+  lines:
+    - font : ''
+      text: '${time %H:%M}'
+    - font: ''
+      text: '$_day_name $_month_name ${time %e, %Y}'
+    - font: ''
+      text: 'Logged as $user_names at $nodename'
+    - font: ''
+      text: 'Running $_rls_arch on $_rls_name $_rls_codename'
+    - font: ''
+      text: 'CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%'
+    - font: ''
+      text: 'Up ${upspeedf $_net_name}KiB Down ${downspeedf $_net_name}KiB'
+    - font: ''
+      text: 'Connected to $_net_name with $_net_ip'
+    - font: ''
+      text: 'So far $uptime_short uptime!'

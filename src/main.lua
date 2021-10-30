@@ -178,7 +178,7 @@ function conky_main ()
 
   interval (10, updates, resolveConnection)
 
-  local secs = tonumber (cfg["system"]["wallpaper"])
+  local secs = tonumber (cfg["theme"]["wallpaper"])
   if secs > 0 then
     interval (secs, updates, updateWallpaper)
   end
@@ -205,24 +205,10 @@ function conky_text ()
 
   text = text .. modeLine .. "\n"
 
-  -- Build clock line
-  local clockLine = cfg["theme"]["clock"]["text"]
-  clockLine = clockLine:interpolate ()
-  clockLine = "${font " .. cfg["theme"]["clock"]["font"] .. "}" .. "$alignr " .. clockLine
-
-  text = text .. clockLine .. "\n"
-
-  -- Build date line
-  local dateLine = cfg["theme"]["date"]["text"]
-  dateLine = dateLine:interpolate ()
-  dateLine = "${font " .. cfg["theme"]["date"]["font"] .. "}" .. "$alignr " .. dateLine
-
-  text = text .. dateLine .. "\n"
-
   -- Build text lines
-  for _, line in ipairs (cfg["theme"]["text"]["lines"]) do
-    line = line:interpolate ()
-    line = "${font " .. cfg["theme"]["text"]["font"] .. "}" .. "$alignr " .. line
+  for _, item in ipairs (cfg["theme"]["lines"]) do
+    local itext = item["text"]:interpolate ()
+    local line = "${font " .. item["font"] .. "}" .. "$alignr " .. itext
 
     text = text .. line .. "\n"
   end

@@ -60,6 +60,17 @@ def zeroPosInt (value):
   except ValueError:
     raise argparse.ArgumentTypeError("'%s' is not a zero positive int value" % value)
 
+# Asserts if the given value is a positive integer: value
+def posInt (value):
+  try:
+    number = int(value)
+    if number <= 0:
+      raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
+
+    return number
+  except ValueError:
+    raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
+
 # Asserts if the given value is a conky valid font style value: value
 def fontStyle (value):
   if not re.match(r'^[a-zA-Z0-9]([a-zA-Z0-9_\- ])*(:bold)?(:italic)?(:size=[1-9][0-9]?[0-9]?)?$', value):
@@ -71,7 +82,16 @@ def fontStyle (value):
 def readConfig ():
   try:
     with open(CONFIG_FILE_PATH) as config_file:
-      return yaml.load(config_file)
+      cfg = yaml.load(config_file)
+
+      # Recover string scalar values
+      cfg['version'] = scalar(cfg['version'])
+
+      for i, line in enumerate(cfg['theme']['lines']):
+        cfg['theme']['lines'][i]['font'] = scalar(line['font'])
+        cfg['theme']['lines'][i]['text'] = scalar(line['text'])
+
+      return cfg
   except EnvironmentError:
     abort('failed to read the config file', 1)
 
@@ -112,24 +132,6 @@ def resolveArgs (prog):
     help="set the theme color mode to 'light' or 'dark'")
 
   configParser.add_argument(
-    '-c', '--clock',
-    type=fontStyle,
-    metavar='font',
-    help='set the font and style used in time line')
-
-  configParser.add_argument(
-    '-d', '--date',
-    type=fontStyle,
-    metavar='font',
-    help='set the font and style used in date line')
-
-  configParser.add_argument(
-    '-t', '--text',
-    type=fontStyle,
-    metavar='font',
-    help='set the font and style used in the text lines')
-
-  configParser.add_argument(
     '-w', '--wallpaper',
     type=zeroPosInt,
     metavar='secs',
@@ -146,6 +148,49 @@ def resolveArgs (prog):
     choices=['enabled', 'disabled'],
     metavar='mode',
     help="set debug mode to 'enabled' or 'disabled'")
+
+  addParser = subparsers.add_parser('add', help='add a conky text line')
+
+  addParser.add_argument(
+    '-t', '--text',
+    metavar='text',
+    required=True,
+    help='a conky text line')
+
+  addParser.add_argument(
+    '-f', '--font',
+    type=fontStyle,
+    metavar='font',
+    help='a font style the text line should appear with')
+
+  updateParser = subparsers.add_parser('update', help='update a conky text line')
+
+  updateParser.add_argument(
+    '-l', '--line',
+    type=posInt,
+    metavar='index',
+    required=True,
+    help='the index of the text line to update')
+
+  updateParser.add_argument(
+    '-t', '--text',
+    metavar='text',
+    help='a conky text line')
+  
+  updateParser.add_argument(
+    '-f', '--font',
+    type=fontStyle,
+    metavar='font',
+    help='a font style the text line should appear with')
+
+  removeParser = subparsers.add_parser('remove', help='remove a conky text line')
+
+  removeParser.add_argument(
+    '-l', '--line',
+    type=posInt,
+    metavar='index',
+    required=True,
+    help='the index of the text line to remove')
 
   return parser.parse_args()
 
@@ -271,28 +316,11 @@ elif args.command == 'stop':
 elif args.command == 'restart':
   restart()
 elif args.command == 'config':
-  config['version'] = scalar(config['version'])
-
   if args.mode != None:
     config['theme']['mode'] = args.mode
 
-  if args.clock != None:
-    config['theme']['clock']['font'] = scalar(args.clock)
-  else:
-    config['theme']['clock']['font'] = scalar(config['theme']['clock']['font'])
-
-  if args.date != None:
-    config['theme']['date']['font'] = scalar(args.date)
-  else:
-    config['theme']['date']['font'] = scalar(config['theme']['date']['font'])
-
-  if args.text != None:
-    config['theme']['text']['font'] = scalar(args.text)
-  else:
-    config['theme']['text']['font'] = scalar(config['theme']['text']['font'])
-
   if args.wallpaper != None:
-    config['system']['wallpaper'] = args.wallpaper
+    config['theme']['wallpaper'] = args.wallpaper
 
   if args.monitor != None:
     config['system']['monitor'] = args.monitor
@@ -305,5 +333,37 @@ elif args.command == 'config':
 
   if isUp():
     restart()
+elif args.command == 'add':
+  config['theme']['lines'].append({
+    'font': scalar(args.font) if args.font else scalar(''),
+    'text': scalar(args.text)
+  })
+
+  writeConfig(config)
+elif args.command == 'update':
+  idx = args.line - 1
+
+  if idx < len(config['theme']['lines']):
+    if not args.font and not args.text:
+      abort('at least one of --text or --font arg must be given', 1)
+
+    if args.font:
+      config['theme']['lines'][idx]['font'] = scalar(args.font)
+    
+    if args.text:
+      config['theme']['lines'][idx]['text'] = scalar(args.text)
+  else:
+    abort("no text line with index '" + str(args.line) + "'", 1)
+
+  writeConfig(config)
+elif args.command == 'remove':
+  idx = args.line - 1
+
+  if idx < len(config['theme']['lines']):
+    del config['theme']['lines'][idx]
+  else:
+    abort("no text line with index '" + str(args.line) + "'", 1)
+
+  writeConfig(config)
 
 sys.exit(0)
