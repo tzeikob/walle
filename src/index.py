@@ -298,26 +298,27 @@ elif args.command == 'restart':
   restart()
 elif args.command == 'config':
   if args.mode != None:
-    config['theme']['mode'] = args.mode
+    config['theme']['mode'] = args.mode.strip()
 
   if args.wallpaper != None:
-    config['theme']['wallpaper'] = args.wallpaper
+    config['theme']['wallpaper'] = args.wallpaper.strip()
   
   if args.head != None:
-    config['theme']['fonts']['head'] = args.head
+    config['theme']['fonts']['head'] = args.head.strip()
   
   if args.subhead != None:
-    config['theme']['fonts']['subhead'] = args.subhead
+    config['theme']['fonts']['subhead'] = args.subhead.strip()
   
   if args.body != None:
-    config['theme']['fonts']['body'] = args.body
+    config['theme']['fonts']['body'] = args.body.strip()
 
   if args.monitor != None:
-    config['system']['monitor'] = args.monitor
-    writeConkyMonitor(args.monitor)
+    monitor = args.monitor.strip()
+    config['system']['monitor'] = monitor
+    writeConkyMonitor(monitor)
 
   if args.debug != None:
-    config['system']['debug'] = args.debug
+    config['system']['debug'] = args.debug.strip()
 
   writeConfig(config)
 
