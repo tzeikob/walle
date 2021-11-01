@@ -312,7 +312,6 @@ elif args.command == 'reset':
   if isUp():
     restart()
 elif args.command == 'config':
-  print (args)
   if args.mode != None:
     config['theme']['mode'] = args.mode.strip()
 

@@ -116,6 +116,11 @@ cp $BASE_DIR/../src/config.yml $CONFIG_FILE
 sed -i "s/#PKG_VERSION/$(esc "$PKG_VERSION")/g" $CONFIG_FILE
 
 echo -e "Config file has been created"
+
+cp $BASE_DIR/ui/gnome.lua $CONFIG_DIR/ui.lua
+
+echo -e "UI lua file has been created"
+
 echo -e "Package files have been bundled successfully"
 
 echo -e "Calculating the package files size \U1F4AC"

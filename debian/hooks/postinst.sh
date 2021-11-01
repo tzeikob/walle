@@ -25,6 +25,9 @@ mv $TEMP_DIR/main.lua $LUA_FILE
 # Set the user name in the main lua file
 sed -i "s/#USER/$SUDO_USER/g" $LUA_FILE
 
+# Move the ui lua file
+mv $TEMP_DIR/ui.lua $CONFIG_DIR/ui.lua
+
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
 

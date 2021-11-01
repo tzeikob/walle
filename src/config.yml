@@ -11,7 +11,7 @@ theme:
     body: ''
 text:
   head: '${time %H:%M}'
-  subhead: '$_day_name $_month_name ${time %e, %Y}'
+  subhead: '$_day_name $_month_name${time %e, %Y}'
   body:
     - 'Logged as $user_names at $nodename'
     - 'Running $_rls_arch on $_rls_name $_rls_codename'
