@@ -128,6 +128,7 @@ def resolveArgs (prog):
   subparsers.add_parser('start', help='start %(prog)s spawning the conky process')
   subparsers.add_parser('restart', help='restart %(prog)s respawning the conky process')
   subparsers.add_parser('stop', help='stop %(prog)s killing the conky process')
+  subparsers.add_parser('reset', help='reset %(prog)s back to default settings')
 
   configParser = subparsers.add_parser('config', help='configure %(prog)s and restart the conky process')
 
@@ -296,24 +297,39 @@ elif args.command == 'stop':
   stop()
 elif args.command == 'restart':
   restart()
+elif args.command == 'reset':
+  config['system']['monitor'] = 0
+  config['system']['debug'] = 'disabled'
+  config['theme']['mode'] = 'light'
+  config['theme']['wallpaper'] = 0
+  config['theme']['fonts']['head'] = ''
+  config['theme']['fonts']['subhead'] = ''
+  config['theme']['fonts']['body'] = ''
+
+  writeConkyMonitor(0)
+  writeConfig(config)
+
+  if isUp():
+    restart()
 elif args.command == 'config':
+  print (args)
   if args.mode != None:
     config['theme']['mode'] = args.mode.strip()
 
   if args.wallpaper != None:
-    config['theme']['wallpaper'] = args.wallpaper.strip()
-  
+    config['theme']['wallpaper'] = args.wallpaper
+
   if args.head != None:
     config['theme']['fonts']['head'] = args.head.strip()
-  
+
   if args.subhead != None:
     config['theme']['fonts']['subhead'] = args.subhead.strip()
-  
+
   if args.body != None:
     config['theme']['fonts']['body'] = args.body.strip()
 
   if args.monitor != None:
-    monitor = args.monitor.strip()
+    monitor = args.monitor
     config['system']['monitor'] = monitor
     writeConkyMonitor(monitor)
 
