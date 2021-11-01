@@ -205,12 +205,27 @@ function conky_text ()
 
   text = text .. modeLine .. "\n"
 
-  -- Build text lines
-  for _, item in ipairs (cfg["theme"]["lines"]) do
-    local itext = item["text"]:interpolate ()
-    local line = "${font " .. item["font"] .. "}" .. "$alignr " .. itext
+  -- Build head line
+  local headFont = cfg['theme']['fonts']['head']
+  local head = cfg['text']['head']:interpolate ()
+  local headLine = "${font " .. headFont .. "}" .. "$alignr " .. head .. "${font}"
 
-    text = text .. line .. "\n"
+  text = text .. headLine .. "\n"
+
+  -- Build sub-head line
+  local subheadFont = cfg['theme']['fonts']['subhead']
+  local subhead = cfg['text']['subhead']:interpolate ()
+  local subheadLine = "${font " .. subheadFont .. "}" .. "$alignr " .. subhead .. "${font}"
+  
+    text = text .. subheadLine .. "\n"
+
+  -- Build body lines
+  local bodyFont = cfg['theme']['fonts']['body']
+  for _, bodyLine in ipairs (cfg["text"]["body"]) do
+    bodyLine = bodyLine:interpolate ()
+    bodyLine = "${font " .. bodyFont .. "}" .. "$alignr " .. bodyLine .. "${font}"
+
+    text = text .. bodyLine .. "\n"
   end
 
   text:trim ()

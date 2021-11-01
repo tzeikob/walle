@@ -40,4 +40,6 @@ conky.config = {
     lua_draw_hook_post = 'main'
 }
 
-conky.text = [[${lua_parse text}]]
+conky.text = [[
+${lua_parse text}
+]]

@@ -87,9 +87,15 @@ def readConfig ():
       # Recover string scalar values
       cfg['version'] = scalar(cfg['version'])
 
-      for i, line in enumerate(cfg['theme']['lines']):
-        cfg['theme']['lines'][i]['font'] = scalar(line['font'])
-        cfg['theme']['lines'][i]['text'] = scalar(line['text'])
+      cfg['theme']['fonts']['head'] = scalar(cfg['theme']['fonts']['head'])
+      cfg['theme']['fonts']['subhead'] = scalar(cfg['theme']['fonts']['subhead'])
+      cfg['theme']['fonts']['body'] = scalar(cfg['theme']['fonts']['body'])
+
+      cfg['text']['head'] = scalar(cfg['text']['head'])
+      cfg['text']['subhead'] = scalar(cfg['text']['subhead'])
+
+      for i, line in enumerate(cfg['text']['body']):
+        cfg['text']['body'][i] = scalar(line)
 
       return cfg
   except EnvironmentError:
@@ -136,6 +142,24 @@ def resolveArgs (prog):
     type=zeroPosInt,
     metavar='secs',
     help='set the interval time the wallpaper should rotate by')
+  
+  configParser.add_argument(
+    '--head',
+    type=fontStyle,
+    metavar='font',
+    help='a font style the head line should appear with')
+  
+  configParser.add_argument(
+    '--subhead',
+    type=fontStyle,
+    metavar='font',
+    help='a font style the sub-head line should appear with')
+  
+  configParser.add_argument(
+    '--body',
+    type=fontStyle,
+    metavar='font',
+    help='a font style each body line should appear with')
 
   configParser.add_argument(
     '--monitor',
@@ -148,49 +172,6 @@ def resolveArgs (prog):
     choices=['enabled', 'disabled'],
     metavar='mode',
     help="set debug mode to 'enabled' or 'disabled'")
-
-  addParser = subparsers.add_parser('add', help='add a conky text line')
-
-  addParser.add_argument(
-    '-t', '--text',
-    metavar='text',
-    required=True,
-    help='a conky text line')
-
-  addParser.add_argument(
-    '-f', '--font',
-    type=fontStyle,
-    metavar='font',
-    help='a font style the text line should appear with')
-
-  updateParser = subparsers.add_parser('update', help='update a conky text line')
-
-  updateParser.add_argument(
-    '-l', '--line',
-    type=posInt,
-    metavar='index',
-    required=True,
-    help='the index of the text line to update')
-
-  updateParser.add_argument(
-    '-t', '--text',
-    metavar='text',
-    help='a conky text line')
-  
-  updateParser.add_argument(
-    '-f', '--font',
-    type=fontStyle,
-    metavar='font',
-    help='a font style the text line should appear with')
-
-  removeParser = subparsers.add_parser('remove', help='remove a conky text line')
-
-  removeParser.add_argument(
-    '-l', '--line',
-    type=posInt,
-    metavar='index',
-    required=True,
-    help='the index of the text line to remove')
 
   return parser.parse_args()
 
@@ -321,6 +302,15 @@ elif args.command == 'config':
 
   if args.wallpaper != None:
     config['theme']['wallpaper'] = args.wallpaper
+  
+  if args.head != None:
+    config['theme']['fonts']['head'] = args.head
+  
+  if args.subhead != None:
+    config['theme']['fonts']['subhead'] = args.subhead
+  
+  if args.body != None:
+    config['theme']['fonts']['body'] = args.body
 
   if args.monitor != None:
     config['system']['monitor'] = args.monitor
@@ -333,37 +323,5 @@ elif args.command == 'config':
 
   if isUp():
     restart()
-elif args.command == 'add':
-  config['theme']['lines'].append({
-    'font': scalar(args.font) if args.font else scalar(''),
-    'text': scalar(args.text)
-  })
-
-  writeConfig(config)
-elif args.command == 'update':
-  idx = args.line - 1
-
-  if idx < len(config['theme']['lines']):
-    if not args.font and not args.text:
-      abort('at least one of --text or --font arg must be given', 1)
-
-    if args.font:
-      config['theme']['lines'][idx]['font'] = scalar(args.font)
-    
-    if args.text:
-      config['theme']['lines'][idx]['text'] = scalar(args.text)
-  else:
-    abort("no text line with index '" + str(args.line) + "'", 1)
-
-  writeConfig(config)
-elif args.command == 'remove':
-  idx = args.line - 1
-
-  if idx < len(config['theme']['lines']):
-    del config['theme']['lines'][idx]
-  else:
-    abort("no text line with index '" + str(args.line) + "'", 1)
-
-  writeConfig(config)
 
 sys.exit(0)
