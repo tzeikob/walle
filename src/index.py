@@ -91,12 +91,6 @@ def readConfig ():
       cfg['theme']['fonts']['subhead'] = scalar(cfg['theme']['fonts']['subhead'])
       cfg['theme']['fonts']['body'] = scalar(cfg['theme']['fonts']['body'])
 
-      cfg['text']['head'] = scalar(cfg['text']['head'])
-      cfg['text']['subhead'] = scalar(cfg['text']['subhead'])
-
-      for i, line in enumerate(cfg['text']['body']):
-        cfg['text']['body'][i] = scalar(line)
-
       return cfg
   except EnvironmentError:
     abort('failed to read the config file', 1)

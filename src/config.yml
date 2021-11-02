@@ -9,13 +9,3 @@ theme:
     head: ''
     subhead: ''
     body: ''
-text:
-  head: '${time %H:%M}'
-  subhead: '$_day_name $_month_name${time %e, %Y}'
-  body:
-    - 'Logged as $user_names at $nodename'
-    - 'Running $_rls_arch on $_rls_name $_rls_codename'
-    - 'CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%'
-    - 'Up ${upspeedf $_net_name}KiB Down ${downspeedf $_net_name}KiB'
-    - 'Connected to $_net_name with $_net_ip'
-    - 'So far $uptime_short uptime!'

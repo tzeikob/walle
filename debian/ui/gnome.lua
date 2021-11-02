@@ -11,14 +11,18 @@ end
 
 -- Updates the system's wallpaper
 function updateWallpaper (path)
-  local background = 'gsettings set org.gnome.desktop.background picture-uri "file://' .. path .. '"'
-  background:exec ()
+  if path ~= nil and path ~= "" then
+    local background = 'gsettings set org.gnome.desktop.background picture-uri "file://' .. path .. '"'
+    background:exec ()
+  end
 end
 
 -- Updates the system's lock screen wallpaper
 function updateLockScreen (path)
-  local screensaver = 'gsettings set org.gnome.desktop.screensaver picture-uri "file://' .. path .. '"'
-  screensaver:exec ()
+  if path ~= nil and path ~= "" then
+    local screensaver = 'gsettings set org.gnome.desktop.screensaver picture-uri "file://' .. path .. '"'
+    screensaver:exec ()
+  end
 end
 
 return {

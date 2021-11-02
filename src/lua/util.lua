@@ -1,5 +1,43 @@
 -- A lua library for various util functions
 
+lfs = require "lfs"
+yaml = require "yaml"
+
+-- Returns the name of the given day with 0-6 means sunday-saturday
+function day (index)
+  local days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
+
+  if index < 0 or index >= table.getn (days) then
+    return ""
+  end
+
+  return days[index + 1]
+end
+
+-- Returns the name of the given month with 1-12 means jan-dec
+function month (index)
+  local months = {
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  }
+
+  if index < 1 or index > table.getn (months) then
+    return ""
+  end
+
+  return months[index]
+end
+
 -- Splits the string by the given delimiter
 function split (str, delimiter, lazy)
   local result = {}
@@ -56,9 +94,35 @@ function exec (command)
   return output
 end
 
+-- Returns the list of files filtered by the given patterns
+function list (path, ...)
+  local paths = {}
+  
+  for file in lfs.dir (path) do
+    if matches (file, ...) then
+      table.insert (paths, path .. "/" .. file)
+    end
+  end
+
+  return paths
+end
+
+-- Loads the given yaml file into a dictionary object
+function load_yaml (path)
+  local file = io.open (path, "r")
+  local dict = yaml.load (file:read ("*a"))
+  file:close ()
+
+  return dict
+end
+
 return {
+  day = day,
+  month = month,
   split = split,
   matches = matches,
   trim = trim,
-  exec = exec
+  exec = exec,
+  list = list,
+  yaml = load_yaml
 }
