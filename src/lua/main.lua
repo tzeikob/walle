@@ -25,61 +25,12 @@ package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 lfs = require "lfs"
 yaml = require "yaml"
 ui = require "ui"
+util = require "util"
 
 -- Load the config file
 file = io.open (CONFIG_DIR, "r")
 cfg = yaml.load (file:read ("*a"))
 file:close ()
-
--- Splits the string by the given delimiter
-function string:split (delimiter, lazy)
-  local result = {}
-  local from = 1
-  local delim_from, delim_to = string.find (self, delimiter, from)
-
-  while delim_from do
-    table.insert (result, string.sub (self, from , delim_from - 1))
-    from = delim_to + 1
-
-    -- Split only by the first occurence if lazy is given
-    if lazy then
-      break
-    end
-
-    delim_from, delim_to = string.find (self, delimiter, from)
-  end
-
-  table.insert (result, string.sub (self, from))
-
-  return result
-end
-
--- Checks if the string matches the given pattern
-function string:matches (pattern)
-  if self ~= nil then
-    return string.find (self, pattern)
-  end
-
-  return self
-end
-
--- Trims any whitespace of the string
-function string:trim ()
-  if self ~= nil then
-    return self:gsub ("^%s*(.-)%s*$", "%1")
-  end
-
-  return self
-end
-
--- Executes a native system command given as string
-function string:exec ()
-  local file = io.popen (self)
-  local output = file:read ("*a")
-  file:close ()
-
-  return output
-end
 
 -- Logs a message if logging level is on debug mode
 function log (message)
@@ -106,7 +57,7 @@ function resolve (...)
   for _, scope in ipairs ({...}) do
     -- Set the current date and time text variables
     if scope == "datetime" or scope == "all" then
-      local date = os.date ("%H %w %m"):split (" ")
+      local date = util.split (os.date ("%H %w %m"), " ")
 
       local time_p = "pm"
       if tonumber (date[1]) < 12 then
@@ -125,14 +76,14 @@ function resolve (...)
     -- Set the system's release and user variables
     if scope == "release" or scope == "all" then
       local lsb_release = "lsb_release --short -icr"
-      local parts = lsb_release:exec ():split ("\n")
+      local parts = util.split (util.exec (lsb_release), "\n")
 
       vars["rls_name"] = parts[1]
       vars["rls_version"] = parts[2]
       vars["rls_codename"] = parts[3]
 
       local uname = "uname -p | sed -z '$ s/\\n$//'"
-      vars["rls_arch"] = uname:exec ()
+      vars["rls_arch"] = util.exec (uname)
 
       log ("Release and system variables have been resolved")
     end
@@ -140,7 +91,7 @@ function resolve (...)
     -- Set the currnet network variables
     if scope == "network" or scope == "all" then
       local route = "ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}'"
-      local parts = route:exec ():split (",")
+      local parts = util.split (util.exec (route), ",")
 
       if parts[1] ~= nil and parts[1] ~= "" then
         vars["net_name"] = parts[1]
@@ -241,14 +192,14 @@ function conky_text ()
     text = text .. bodyLine .. "\n"
   end
 
-  text:trim ()
+  text = util.trim (text)
 
   return text
 end
 
 -- Collect all the paths of images in the wallpapers dir
 for file in lfs.dir (WALLPAPERS_DIR) do
-  if file:matches("jpeg$") or file:matches("jpg$") or file:matches("png$") then
+  if util.matches(file, "jpeg$", "jpg$", "png$") then
     path = WALLPAPERS_DIR .. "/" .. file
     table.insert (wallpapers, path)
 

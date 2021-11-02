@@ -18,15 +18,15 @@ mkdir -p $CONFIG_DIR
 mv $TEMP_DIR/config.yml $CONFIG_DIR/config.yml
 mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
-# Move main lua file
+# Move lua files
 LUA_FILE=$CONFIG_DIR/main.lua
 mv $TEMP_DIR/main.lua $LUA_FILE
 
 # Set the user name in the main lua file
 sed -i "s/#USER/$SUDO_USER/g" $LUA_FILE
 
-# Move the ui lua file
 mv $TEMP_DIR/ui.lua $CONFIG_DIR/ui.lua
+mv $TEMP_DIR/util.lua $CONFIG_DIR/util.lua
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR

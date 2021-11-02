@@ -91,36 +91,34 @@ cp $BASE_DIR/../src/index.py $BIN_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $BIN_FILE
 
-echo -e "Executable file has been created"
+echo -e "Executable file has been bundled"
 
-CONFIG_DIR=$DIST_DIR/build/tmp/$PKG_NAME
-mkdir -p $CONFIG_DIR
+TEMP_DIR=$DIST_DIR/build/tmp/$PKG_NAME
+mkdir -p $TEMP_DIR
 
-LUA_FILE=$CONFIG_DIR/main.lua
-cp $BASE_DIR/../src/main.lua $LUA_FILE
+LUA_FILE=$TEMP_DIR/main.lua
+cp $BASE_DIR/../src/lua/main.lua $LUA_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $LUA_FILE
 
-echo -e "Main lua file has been created"
+cp $BASE_DIR/../src/lua/util.lua $TEMP_DIR/util.lua
+cp $BASE_DIR/ui/gnome.lua $TEMP_DIR/ui.lua
 
-CONKYRC_FILE=$CONFIG_DIR/.conkyrc
+echo -e "Lua files have been bundled"
+
+CONKYRC_FILE=$TEMP_DIR/.conkyrc
 cp $BASE_DIR/../src/.conkyrc $CONKYRC_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $CONKYRC_FILE
 
-echo -e "Conkyrc file has been created"
+echo -e "Conkyrc file has been bundle"
 
-CONFIG_FILE=$CONFIG_DIR/config.yml
+CONFIG_FILE=$TEMP_DIR/config.yml
 cp $BASE_DIR/../src/config.yml $CONFIG_FILE
 
 sed -i "s/#PKG_VERSION/$(esc "$PKG_VERSION")/g" $CONFIG_FILE
 
-echo -e "Config file has been created"
-
-cp $BASE_DIR/ui/gnome.lua $CONFIG_DIR/ui.lua
-
-echo -e "UI lua file has been created"
-
+echo -e "Config file has been bundled"
 echo -e "Package files have been bundled successfully"
 
 echo -e "Calculating the package files size \U1F4AC"

@@ -1,4 +1,4 @@
--- UI desktop library for debian gnome operations
+-- A lua library file for debian gnome ui opertaions
 
 -- Executes a native system command given as string
 function string:exec ()
