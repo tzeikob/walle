@@ -1,10 +1,5 @@
 -- Main lua file of the conky config file
 
--- Load third-party dependencies
-lfs = require "lfs"
-yaml = require "yaml"
-ui = require "ui"
-
 -- Global constants
 PKG_NAME = "#PKG_NAME"
 USER_HOME = "/home/#USER"
@@ -22,6 +17,14 @@ MONTHS = {
 status = "init"
 wallpapers = {}
 vars = {}
+
+-- Add base directory to lua package path
+package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
+
+-- Load third-party dependencies
+lfs = require "lfs"
+yaml = require "yaml"
+ui = require "ui"
 
 -- Load the config file
 file = io.open (CONFIG_DIR, "r")
