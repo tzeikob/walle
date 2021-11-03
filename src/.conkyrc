@@ -41,13 +41,17 @@ conky.config = {
 }
 
 conky.text = [[
-${lua_parse theme}
-${lua_parse clock}
-${lua_parse date}
-${lua_parse user}
-${lua_parse system}
-${lua_parse loads}
-${lua_parse network}
-${lua_parse connection}
-${lua_parse uptime}
+${lua eval color mode}
+${lua eval font head}${alignr}${time %H:%M}${font}
+${lua eval font subhead}${alignr}${lua var day_name} ${lua var month_name}${time %e, %Y}${font}
+${lua eval font body}${alignr}Logged as $user_names at $nodename${font}
+${lua eval font body}${alignr}Running ${lua var rls_arch} on ${lua var rls_name} ${lua var rls_codename}${font}
+${lua eval font body}${alignr}CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%${font}
+${lua eval font body}${alignr}Up ${lua eval upspeedf net_name}KiB Down ${lua eval downspeedf net_name}KiB${font}
+${if_empty ${lua var net_name}}\
+    ${lua eval font body}${alignr}Connection is down!${font}\
+${else}\
+    ${lua eval font body}${alignr}Local address ${lua var net_ip}${font}\
+${endif}
+${lua eval font body}${alignr}Uptime $uptime_short${font}
 ]]

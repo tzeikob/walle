@@ -18,15 +18,18 @@ mkdir -p $CONFIG_DIR
 mv $TEMP_DIR/config.yml $CONFIG_DIR/config.yml
 mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
-# Move language files
-mv $TEMP_DIR/langs $CONFIG_DIR
-
-# Move main lua file
+# Move lua files
 LUA_FILE=$CONFIG_DIR/main.lua
 mv $TEMP_DIR/main.lua $LUA_FILE
 
 # Set the user name in the main lua file
 sed -i "s/#USER/$SUDO_USER/g" $LUA_FILE
+
+mv $TEMP_DIR/ui.lua $CONFIG_DIR/ui.lua
+mv $TEMP_DIR/util.lua $CONFIG_DIR/util.lua
+
+# Create the wallpapers folder
+mkdir -p $CONFIG_DIR/wallpapers
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
@@ -60,6 +63,7 @@ echo -e "Python dependencies have been installed"
 
 echo -e "Installing lua third-party dependencies..."
 
+luarocks install luafilesystem
 luarocks install yaml
 
 echo -e "Lua dependencies have been installed"

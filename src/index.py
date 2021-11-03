@@ -49,11 +49,22 @@ def abort (message, errcode):
   logger.error('Error: ' + message)
   sys.exit(errcode)
 
-# Asserts if the given value is a seconds value: value
-def posInt (value):
+# Asserts if the given value is a zero positive integer: value
+def zeroPosInt (value):
   try:
     number = int(value)
     if number < 0:
+      raise argparse.ArgumentTypeError("'%s' is not a zero positive int value" % value)
+
+    return number
+  except ValueError:
+    raise argparse.ArgumentTypeError("'%s' is not a zero positive int value" % value)
+
+# Asserts if the given value is a positive integer: value
+def posInt (value):
+  try:
+    number = int(value)
+    if number <= 0:
       raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
 
     return number
@@ -71,7 +82,16 @@ def fontStyle (value):
 def readConfig ():
   try:
     with open(CONFIG_FILE_PATH) as config_file:
-      return yaml.load(config_file)
+      cfg = yaml.load(config_file)
+
+      # Recover string scalar values
+      cfg['version'] = scalar(cfg['version'])
+
+      cfg['theme']['fonts']['head'] = scalar(cfg['theme']['fonts']['head'])
+      cfg['theme']['fonts']['subhead'] = scalar(cfg['theme']['fonts']['subhead'])
+      cfg['theme']['fonts']['body'] = scalar(cfg['theme']['fonts']['body'])
+
+      return cfg
   except EnvironmentError:
     abort('failed to read the config file', 1)
 
@@ -102,48 +122,43 @@ def resolveArgs (prog):
   subparsers.add_parser('start', help='start %(prog)s spawning the conky process')
   subparsers.add_parser('restart', help='restart %(prog)s respawning the conky process')
   subparsers.add_parser('stop', help='stop %(prog)s killing the conky process')
+  subparsers.add_parser('reset', help='reset %(prog)s back to default settings')
 
   configParser = subparsers.add_parser('config', help='configure %(prog)s and restart the conky process')
 
   configParser.add_argument(
-    '-c', '--color',
+    '-m', '--mode',
     choices=['light', 'dark'],
     metavar='mode',
     help="set the theme color mode to 'light' or 'dark'")
 
   configParser.add_argument(
-    '-w', '--wall',
-    type=posInt,
+    '-w', '--wallpaper',
+    type=zeroPosInt,
     metavar='secs',
     help='set the interval time the wallpaper should rotate by')
-
+  
   configParser.add_argument(
-    '-t', '--time',
+    '--head',
     type=fontStyle,
     metavar='font',
-    help='set the font and style used in time line')
-
+    help='a font style the head line should appear with')
+  
   configParser.add_argument(
-    '-d', '--date',
+    '--subhead',
     type=fontStyle,
     metavar='font',
-    help='set the font and style used in date line')
-
+    help='a font style the sub-head line should appear with')
+  
   configParser.add_argument(
-    '-x', '--text',
+    '--body',
     type=fontStyle,
     metavar='font',
-    help='set the font and style used in the text lines')
-
-  configParser.add_argument(
-    '-l', '--lang',
-    choices=['en', 'el'],
-    metavar='code',
-    help='set the language code texts should appear in')
+    help='a font style each body line should appear with')
 
   configParser.add_argument(
     '--monitor',
-    type=posInt,
+    type=zeroPosInt,
     metavar='index',
     help='set the monitor index the conky should render at')
 
@@ -276,39 +291,43 @@ elif args.command == 'stop':
   stop()
 elif args.command == 'restart':
   restart()
+elif args.command == 'reset':
+  config['system']['monitor'] = 0
+  config['system']['debug'] = 'disabled'
+  config['theme']['mode'] = 'light'
+  config['theme']['wallpaper'] = 0
+  config['theme']['fonts']['head'] = ''
+  config['theme']['fonts']['subhead'] = ''
+  config['theme']['fonts']['body'] = ''
+
+  writeConkyMonitor(0)
+  writeConfig(config)
+
+  if isUp():
+    restart()
 elif args.command == 'config':
-  config['version'] = scalar(config['version'])
+  if args.mode != None:
+    config['theme']['mode'] = args.mode.strip()
 
-  if args.color != None:
-    config['theme']['color'] = args.color
-  
-  if args.wall != None:
-    config['theme']['wall'] = args.wall
+  if args.wallpaper != None:
+    config['theme']['wallpaper'] = args.wallpaper
 
-  if args.time != None:
-    config['theme']['fonts']['time'] = scalar(args.time)
-  else:
-    config['theme']['fonts']['time'] = scalar(config['theme']['fonts']['time'])
+  if args.head != None:
+    config['theme']['fonts']['head'] = args.head.strip()
 
-  if args.date != None:
-    config['theme']['fonts']['date'] = scalar(args.date)
-  else:
-    config['theme']['fonts']['date'] = scalar(config['theme']['fonts']['date'])
+  if args.subhead != None:
+    config['theme']['fonts']['subhead'] = args.subhead.strip()
 
-  if args.text != None:
-    config['theme']['fonts']['text'] = scalar(args.text)
-  else:
-    config['theme']['fonts']['text'] = scalar(config['theme']['fonts']['text'])
-
-  if args.lang != None:
-    config['system']['lang'] = args.lang
+  if args.body != None:
+    config['theme']['fonts']['body'] = args.body.strip()
 
   if args.monitor != None:
-    config['system']['monitor'] = args.monitor
-    writeConkyMonitor(args.monitor)
+    monitor = args.monitor
+    config['system']['monitor'] = monitor
+    writeConkyMonitor(monitor)
 
   if args.debug != None:
-    config['system']['debug'] = args.debug
+    config['system']['debug'] = args.debug.strip()
 
   writeConfig(config)
 
