@@ -29,6 +29,19 @@ end
 -- Resolves the interpolation vars within the given scopes
 function resolve (...)
   for _, scope in ipairs ({...}) do
+    -- Set the theme variables
+    if scope == "theme" or scope == "all" then
+      vars["mode"] = "white"
+
+      if config["theme"]["mode"] == "dark" then
+        vars["mode"] = "black"
+      end
+
+      vars["head"] = config["theme"]["fonts"]["head"]
+      vars["subhead"] = config["theme"]["fonts"]["subhead"]
+      vars["body"] = config["theme"]["fonts"]["body"]
+    end
+
     -- Set the current date and time text variables
     if scope == "datetime" or scope == "all" then
       local date = util.split (os.date ("%H %w %m"), " ")
@@ -131,35 +144,34 @@ function conky_main ()
   end
 end
 
--- Returns the theme mode color
-function conky_mode ()
-  if config["theme"]["mode"] == "dark" then
-    return "${color black}"
-  end
-
-  return "${color white}"
-end
-
--- Returns the font corresponding to the given section
-function conky_font (section)
-  local font = config["theme"]["fonts"][section]
-
-  if font == nil then
-    font = ""
-  end
-
-  return "${font " .. font .. "}"
-end
-
--- Return the interpolation var of the given key
+-- Returns the value of the var mapped by the given key
 function conky_var (key)
   local value = vars[key]
 
   if value == nil then
-    return "$" .. key
+    return key
   end
 
   return value
+end
+
+-- Returns the evaluated conkyrc command along with any vars
+function conky_eval (command, ...)
+  local text = "${" .. command
+
+  for _, key in ipairs ({...}) do
+    local value = vars[key]
+
+    if value == nil then
+      value = key
+    end
+
+    text = text .. " " .. value
+  end
+
+  text = text .. "}"
+
+  return conky_parse(text)
 end
 
 -- Resolve immediately all interoplation variables

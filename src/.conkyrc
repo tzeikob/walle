@@ -41,17 +41,17 @@ conky.config = {
 }
 
 conky.text = [[
-${lua_parse mode}
-${lua_parse font head}${alignr}${time %H:%M}${font}
-${lua_parse font subhead}${alignr}${lua_parse var day_name} ${lua_parse var month_name}${time %e, %Y}${font}
-${lua_parse font body}${alignr}Logged as $user_names at $nodename${font}
-${lua_parse font body}${alignr}Running ${lua_parse var rls_arch} on ${lua_parse var rls_name} ${lua_parse var rls_codename}${font}
-${lua_parse font body}${alignr}CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%${font}
-${lua_parse font body}${alignr}Up ${upspeedf $_net_name}KiB Down ${downspeedf $_net_name}KiB${font}
-${if_empty ${lua_parse var net_name}}\
-    ${lua_parse font body}${alignr}Connection is down!${font}\
+${lua eval color mode}
+${lua eval font head}${alignr}${time %H:%M}${font}
+${lua eval font subhead}${alignr}${lua var day_name} ${lua var month_name}${time %e, %Y}${font}
+${lua eval font body}${alignr}Logged as $user_names at $nodename${font}
+${lua eval font body}${alignr}Running ${lua var rls_arch} on ${lua var rls_name} ${lua var rls_codename}${font}
+${lua eval font body}${alignr}CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%${font}
+${lua eval font body}${alignr}Up ${lua eval upspeedf net_name}KiB Down ${lua eval downspeedf net_name}KiB${font}
+${if_empty ${lua var net_name}}\
+    ${lua eval font body}${alignr}Connection is down!${font}\
 ${else}\
-    ${lua_parse font body}${alignr}Local address ${lua_parse var net_ip}${font}\
+    ${lua eval font body}${alignr}Local address ${lua var net_ip}${font}\
 ${endif}
-${lua_parse font body}${alignr}So far $uptime_short uptime!${font}
+${lua eval font body}${alignr}Uptime $uptime_short${font}
 ]]
