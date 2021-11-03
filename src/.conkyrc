@@ -48,6 +48,10 @@ ${lua_parse font body}${alignr}Logged as $user_names at $nodename${font}
 ${lua_parse font body}${alignr}Running ${lua_parse var rls_arch} on ${lua_parse var rls_name} ${lua_parse var rls_codename}${font}
 ${lua_parse font body}${alignr}CPU $cpu% Mem $memperc% Disk ${fs_used_perc /}%${font}
 ${lua_parse font body}${alignr}Up ${upspeedf $_net_name}KiB Down ${downspeedf $_net_name}KiB${font}
-${lua_parse font body}${alignr}Connected to ${lua_parse var net_name} with ${lua_parse var net_ip}${font}
+${if_empty ${lua_parse var net_name}}\
+    ${lua_parse font body}${alignr}Connection is down!${font}\
+${else}\
+    ${lua_parse font body}${alignr}Local address ${lua_parse var net_ip}${font}\
+${endif}
 ${lua_parse font body}${alignr}So far $uptime_short uptime!${font}
 ]]
