@@ -155,9 +155,9 @@ function conky_var (key)
   return value
 end
 
--- Returns the evaluated conkyrc command along with any vars
-function conky_eval (command, ...)
-  local text = "${" .. command
+-- Returns the evaluated conkyrc object along with any vars
+function conky_eval (object, ...)
+  local text = "${" .. object
 
   for _, key in ipairs ({...}) do
     local value = vars[key]
