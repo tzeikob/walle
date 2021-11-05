@@ -28,9 +28,6 @@ sed -i "s/#USER/$SUDO_USER/g" $LUA_FILE
 mv $TEMP_DIR/ui.lua $CONFIG_DIR/ui.lua
 mv $TEMP_DIR/util.lua $CONFIG_DIR/util.lua
 
-# Create the wallpapers folder
-mkdir -p $CONFIG_DIR/wallpapers
-
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
 

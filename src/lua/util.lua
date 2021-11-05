@@ -96,8 +96,13 @@ end
 
 -- Returns the list of files filtered by the given patterns
 function list (path, ...)
+  -- Return if no such path exists
+  if not lfs.chdir(path) then
+    return {}
+  end
+
   local paths = {}
-  
+
   for file in lfs.dir (path) do
     if matches (file, ...) then
       table.insert (paths, path .. "/" .. file)

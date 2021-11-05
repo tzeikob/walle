@@ -9,9 +9,9 @@ import re
 import getpass
 import logging
 import argparse
-from pathlib import Path
 import ruamel.yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as scalar
+from pathlib import Path
 
 PKG_NAME = '#PKG_NAME'
 HOME = str(Path.home())
@@ -87,6 +87,7 @@ def readConfig ():
       # Recover string scalar values
       cfg['version'] = scalar(cfg['version'])
 
+      cfg['theme']['wallpapers']['path'] = scalar(cfg['theme']['wallpapers']['path'])
       cfg['theme']['fonts']['head'] = scalar(cfg['theme']['fonts']['head'])
       cfg['theme']['fonts']['subhead'] = scalar(cfg['theme']['fonts']['subhead'])
       cfg['theme']['fonts']['body'] = scalar(cfg['theme']['fonts']['body'])
@@ -133,10 +134,15 @@ def resolveArgs (prog):
     help="set the theme color mode to 'light' or 'dark'")
 
   configParser.add_argument(
-    '-w', '--wallpaper',
+    '-w', '--wallpapers',
+    metavar='path',
+    help='set the path to a folder containing wallpaper image files')
+
+  configParser.add_argument(
+    '-i', '--interval',
     type=zeroPosInt,
     metavar='secs',
-    help='set the interval time the wallpaper should rotate by')
+    help='set the interval in secs the wallpaper should randomly rotate by')
   
   configParser.add_argument(
     '--head',
@@ -295,7 +301,8 @@ elif args.command == 'reset':
   config['system']['monitor'] = 0
   config['system']['debug'] = 'disabled'
   config['theme']['mode'] = 'light'
-  config['theme']['wallpaper'] = 0
+  config['theme']['wallpapers']['path'] = ''
+  config['theme']['wallpapers']['interval'] = 0
   config['theme']['fonts']['head'] = ''
   config['theme']['fonts']['subhead'] = ''
   config['theme']['fonts']['body'] = ''
@@ -309,8 +316,11 @@ elif args.command == 'config':
   if args.mode != None:
     config['theme']['mode'] = args.mode.strip()
 
-  if args.wallpaper != None:
-    config['theme']['wallpaper'] = args.wallpaper
+  if args.wallpapers != None:
+    config['theme']['wallpapers']['path'] = args.wallpapers
+  
+  if args.interval != None:
+    config['theme']['wallpapers']['interval'] = args.interval
 
   if args.head != None:
     config['theme']['fonts']['head'] = args.head.strip()

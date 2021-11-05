@@ -4,7 +4,9 @@ system:
   debug: disabled
 theme:
   mode: light
-  wallpaper: 0
+  wallpapers:
+    path: ''
+    interval: 0
   fonts:
     head: ''
     subhead: ''

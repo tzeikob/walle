@@ -12,8 +12,14 @@ util = require "util"
 -- Load configuration into a dict object
 config = util.yaml (BASE_DIR .. "/config.yml")
 
--- Load the the file paths of any wallpapers
-wallpapers = util.list (BASE_DIR .. "/wallpapers", "jpeg$", "jpg$", "png$")
+-- Load the file paths of any wallpapers
+path = config["theme"]["wallpapers"]["path"]
+
+if path == nil or path == "" then
+  path = BASE_DIR .. "/wallpapers"
+end
+
+wallpapers = util.list (path, "jpeg$", "jpg$", "png$")
 
 -- Initialize global variables
 status = "init"
@@ -130,7 +136,7 @@ function conky_main ()
   resolveAt (10, "datetime")
   resolveAt (10, "network")
 
-  local secs = tonumber (config["theme"]["wallpaper"])
+  local secs = tonumber (config["theme"]["wallpapers"]['interval'])
   if secs > 0 then
     if resolveAt (secs, "wallpaper") then
       ui.updateWallpaper (vars["wallpaper"])
