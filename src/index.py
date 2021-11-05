@@ -174,6 +174,19 @@ def resolveArgs (prog):
     metavar='mode',
     help="set debug mode to 'enabled' or 'disabled'")
 
+  presetParser = subparsers.add_parser('preset', help='save or load %(prog)s preset files')
+  presetGroup = presetParser.add_mutually_exclusive_group()
+
+  presetGroup.add_argument(
+    '--save',
+    metavar='path',
+    help="set the file path the preset will be saved in")
+
+  presetGroup.add_argument(
+    '--load',
+    metavar='path',
+    help="set the file path the preset will be loaded from")
+
   return parser.parse_args()
 
 # Read the pid of the pid file
@@ -275,6 +288,41 @@ def writeConkyMonitor (index):
   with open(CONKYRC_FILE_PATH, 'w') as conkyrc_file:
     conkyrc_file.write(newContent)
 
+# Dumps the theme part of the config as a preset file
+def savePreset (config, path):
+  try:
+    with open(path, 'w') as preset_file:
+      preset = {
+        'version': config['version'],
+        'theme': {
+          'mode': config['theme']['mode'],
+          'fonts': {
+            'head': config['theme']['fonts']['head'],
+            'subhead': config['theme']['fonts']['subhead'],
+            'body': config['theme']['fonts']['body']
+          }
+        }
+      }
+
+      yaml.dump(preset, preset_file)
+  except EnvironmentError:
+    abort('failed to save preset to file', 1)
+
+# Loads the preset file into the config
+def loadPreset (path, config):
+  try:
+    with open(path) as preset_file:
+      preset = yaml.load(preset_file)
+
+      config['theme']['mode'] = preset['theme']['mode']
+      config['theme']['fonts']['head'] = scalar(preset['theme']['fonts']['head'])
+      config['theme']['fonts']['subhead'] = scalar(preset['theme']['fonts']['subhead'])
+      config['theme']['fonts']['body'] = scalar(preset['theme']['fonts']['body'])
+
+      return config
+  except EnvironmentError:
+    abort('failed to read the preset file', 1)
+
 # Initialize logger
 logger = Logger(LOG_FILE_PATH)
 
@@ -343,5 +391,14 @@ elif args.command == 'config':
 
   if isUp():
     restart()
+elif args.command == 'preset':
+  if args.save:
+    savePreset(config, args.save)
+  elif args.load:
+    config = loadPreset(args.load, config)
+    writeConfig(config)
+
+    if isUp():
+      restart()
 
 sys.exit(0)
