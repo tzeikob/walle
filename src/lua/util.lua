@@ -61,6 +61,15 @@ function split (str, delimiter, lazy)
   return result
 end
 
+-- Change the first character to upper case
+function cap (str)
+  if str == nil or str == "" then
+    return str
+  end
+
+  return (str:gsub ("^%l", string.upper))
+end
+
 -- Checks if the string matches the given patterns
 function matches (str, ...)
   if str ~= nil then
@@ -125,6 +134,7 @@ return {
   day = day,
   month = month,
   split = split,
+  cap = cap,
   matches = matches,
   trim = trim,
   exec = exec,

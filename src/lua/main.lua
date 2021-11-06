@@ -71,9 +71,9 @@ function resolve (...)
       local lsb_release = "lsb_release --short -icr"
       lsb_release = util.split (util.exec (lsb_release), "\n")
 
-      vars["rls_name"] = lsb_release[1]
+      vars["rls_name"] = util.cap (lsb_release[1])
       vars["rls_version"] = lsb_release[2]
-      vars["rls_codename"] = lsb_release[3]
+      vars["rls_codename"] = util.cap (lsb_release[3])
 
       local uname = "uname -p | sed -z '$ s/\\n$//'"
       vars["rls_arch"] = util.exec (uname)
