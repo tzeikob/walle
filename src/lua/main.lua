@@ -97,6 +97,13 @@ function resolve (...)
 
         log ("Unable to resolve network variables")
       end
+
+      local dig = "dig +short myip.opendns.com @resolver1.opendns.com"
+      local public_ip = util.trim (util.exec (dig))
+
+      if public_ip ~= nil and public_ip ~= "" then
+        vars["public_ip"] = public_ip
+      end
     end
 
     -- Set the next random wallpaper

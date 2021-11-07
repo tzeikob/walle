@@ -51,7 +51,8 @@ ${lua eval font body}${alignr}Up ${lua eval upspeedf net_name}KiB/s Down ${lua e
 ${if_empty ${lua var net_name}}\
     ${lua eval font body}${alignr}Connection is down!${font}\
 ${else}\
-    ${lua eval font body}${alignr}Connected to ${lua var net_ip}${font}\
+    ${lua eval font body}${alignr}Local Address ${lua var net_ip}${font}
+    ${lua eval font body}${alignr}Public Address ${lua var public_ip}${font}\
 ${endif}
 ${lua eval font body}${alignr}System is up for $uptime_short${font}
 ]]
