@@ -103,6 +103,12 @@ function resolve (...)
 
       if public_ip ~= nil and public_ip ~= "" then
         vars["public_ip"] = public_ip
+
+        log ("Public IP address resolved to '" .. vars["public_ip"] .. "'")
+      else
+        vars["public_ip"] = ""
+
+        log ("Unable to resolve the public IP address")
       end
     end
 
