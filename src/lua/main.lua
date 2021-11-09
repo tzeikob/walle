@@ -13,7 +13,7 @@ util = require "util"
 config = util.yaml (BASE_DIR .. "/config.yml")
 
 -- Load the file paths of any wallpapers
-path = config["theme"]["wallpapers"]["path"]
+path = config["system"]["wallpapers"]["path"]
 
 if path == nil or path == "" then
   path = BASE_DIR .. "/wallpapers"
@@ -43,9 +43,26 @@ function resolve (...)
         vars["mode"] = "black"
       end
 
-      vars["head"] = config["theme"]["fonts"]["head"]
-      vars["subhead"] = config["theme"]["fonts"]["subhead"]
-      vars["body"] = config["theme"]["fonts"]["body"]
+      vars["font_name"] = "DejaVu Sans Mono"
+      vars["font_bold"] = false
+      vars["font_italic"] = false
+      vars["font_size"] = 12
+
+      local font = config["theme"]["font"]
+      local parts = util.split (font, ":")
+
+      for _, part in ipairs (parts) do
+        if util.matches (part, "bold") then
+          vars["font_bold"] = true
+        elseif util.matches (part, "italic") then
+          vars["font_italic"] = true
+        elseif util.matches (part, "size=.+") then
+          local size = util.split (part, "=")[2]
+          vars["font_size"] = tonumber (size)
+        elseif part ~= "" then
+          vars["font_name"] = part
+        end
+      end
     end
 
     -- Set the current date and time text variables
@@ -149,7 +166,7 @@ function conky_main ()
   resolveAt (10, "datetime")
   resolveAt (10, "network")
 
-  local secs = tonumber (config["theme"]["wallpapers"]['interval'])
+  local secs = tonumber (config["system"]["wallpapers"]['interval'])
   if secs > 0 then
     if resolveAt (secs, "wallpaper") then
       ui.updateWallpaper (vars["wallpaper"])
@@ -174,6 +191,35 @@ function conky_var (key)
   return value
 end
 
+-- Returns the prefix style for text lines
+function conky_line (section)
+  local text = "${font " .. vars["font_name"]
+
+  if vars["font_bold"] then
+    text = text .. ":bold"
+  end
+
+  if vars["font_italic"] then
+    text = text .. ":italic"
+  end
+
+  local size = vars["font_size"]
+
+  if section == "head" then
+    size = size * 1.35
+  end
+
+  text = text .. ":size=" .. size .. "}"
+  text = text .. "${alignr}"
+
+  return conky_parse (text)
+end
+
+-- Returns the postfix ending for text lines
+function conky_end ()
+  return conky_parse ("${font}")
+end
+
 -- Returns the evaluated conkyrc object along with any vars
 function conky_eval (object, ...)
   local text = "${" .. object
@@ -190,7 +236,7 @@ function conky_eval (object, ...)
 
   text = text .. "}"
 
-  return conky_parse(text)
+  return conky_parse (text)
 end
 
 -- Resolve immediately all interoplation variables

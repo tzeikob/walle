@@ -87,10 +87,8 @@ def readConfig ():
       # Recover string scalar values
       cfg['version'] = scalar(cfg['version'])
 
-      cfg['theme']['wallpapers']['path'] = scalar(cfg['theme']['wallpapers']['path'])
-      cfg['theme']['fonts']['head'] = scalar(cfg['theme']['fonts']['head'])
-      cfg['theme']['fonts']['subhead'] = scalar(cfg['theme']['fonts']['subhead'])
-      cfg['theme']['fonts']['body'] = scalar(cfg['theme']['fonts']['body'])
+      cfg['system']['wallpapers']['path'] = scalar(cfg['system']['wallpapers']['path'])
+      cfg['theme']['font'] = scalar(cfg['theme']['font'])
 
       return cfg
   except EnvironmentError:
@@ -134,6 +132,12 @@ def resolveArgs (prog):
     help="set the theme color mode to 'light' or 'dark'")
 
   configParser.add_argument(
+    '-f', '--font',
+    type=fontStyle,
+    metavar='font',
+    help='set the font style the text should appear with')
+
+  configParser.add_argument(
     '-w', '--wallpapers',
     metavar='path',
     help='set the path to a folder containing wallpaper image files')
@@ -143,24 +147,6 @@ def resolveArgs (prog):
     type=zeroPosInt,
     metavar='secs',
     help='set the interval in secs the wallpaper should randomly rotate by')
-  
-  configParser.add_argument(
-    '--head',
-    type=fontStyle,
-    metavar='font',
-    help='a font style the head line should appear with')
-  
-  configParser.add_argument(
-    '--subhead',
-    type=fontStyle,
-    metavar='font',
-    help='a font style the sub-head line should appear with')
-  
-  configParser.add_argument(
-    '--body',
-    type=fontStyle,
-    metavar='font',
-    help='a font style each body line should appear with')
 
   configParser.add_argument(
     '--monitor',
@@ -296,11 +282,7 @@ def savePreset (config, path):
         'version': config['version'],
         'theme': {
           'mode': config['theme']['mode'],
-          'fonts': {
-            'head': config['theme']['fonts']['head'],
-            'subhead': config['theme']['fonts']['subhead'],
-            'body': config['theme']['fonts']['body']
-          }
+          'font': config['theme']['font']
         }
       }
 
@@ -315,9 +297,7 @@ def loadPreset (path, config):
       preset = yaml.load(preset_file)
 
       config['theme']['mode'] = preset['theme']['mode']
-      config['theme']['fonts']['head'] = scalar(preset['theme']['fonts']['head'])
-      config['theme']['fonts']['subhead'] = scalar(preset['theme']['fonts']['subhead'])
-      config['theme']['fonts']['body'] = scalar(preset['theme']['fonts']['body'])
+      config['theme']['font'] = scalar(preset['theme']['font'])
 
       return config
   except EnvironmentError:
@@ -347,13 +327,11 @@ elif args.command == 'restart':
   restart()
 elif args.command == 'reset':
   config['system']['monitor'] = 0
+  config['system']['wallpapers']['path'] = ''
+  config['system']['wallpapers']['interval'] = 0
   config['system']['debug'] = 'disabled'
   config['theme']['mode'] = 'light'
-  config['theme']['wallpapers']['path'] = ''
-  config['theme']['wallpapers']['interval'] = 0
-  config['theme']['fonts']['head'] = ''
-  config['theme']['fonts']['subhead'] = ''
-  config['theme']['fonts']['body'] = ''
+  config['theme']['font'] = ''
 
   writeConkyMonitor(0)
   writeConfig(config)
@@ -364,20 +342,14 @@ elif args.command == 'config':
   if args.mode != None:
     config['theme']['mode'] = args.mode.strip()
 
+  if args.font != None:
+    config['theme']['font'] = args.font.strip()
+
   if args.wallpapers != None:
-    config['theme']['wallpapers']['path'] = args.wallpapers
+    config['system']['wallpapers']['path'] = args.wallpapers
   
   if args.interval != None:
-    config['theme']['wallpapers']['interval'] = args.interval
-
-  if args.head != None:
-    config['theme']['fonts']['head'] = args.head.strip()
-
-  if args.subhead != None:
-    config['theme']['fonts']['subhead'] = args.subhead.strip()
-
-  if args.body != None:
-    config['theme']['fonts']['body'] = args.body.strip()
+    config['system']['wallpapers']['interval'] = args.interval
 
   if args.monitor != None:
     monitor = args.monitor

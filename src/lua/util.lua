@@ -78,11 +78,9 @@ function matches (str, ...)
         return true
       end
     end
-
-    return false
   end
 
-  return str
+  return false
 end
 
 -- Trims any whitespace of the string
