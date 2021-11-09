@@ -102,6 +102,29 @@ def writeConfig (config):
   except EnvironmentError:
     abort('failed to write to config file', 1)
 
+# Write the given settings to conkyrc file
+def writeConkyConfig (settings):
+  if not os.path.exists(CONKYRC_FILE_PATH):
+    abort('failed to write settings: missing conkyrc file', 1)
+
+  newContent = ''
+
+  with open(CONKYRC_FILE_PATH, 'r') as conkyrc_file:
+    for line in conkyrc_file:
+      for key in settings:
+        if re.match(r'^[ ]*{}[ ]*=[ ]*.+,[ ]*$'.format(key), line):
+          value = settings[key]
+
+          if type(value) is str:
+            value = "'" + value + "'"
+
+          line = '    ' + key + ' = ' + str(value) + ',\n'
+
+      newContent += line
+
+  with open(CONKYRC_FILE_PATH, 'w') as conkyrc_file:
+    conkyrc_file.write(newContent)
+
 # Resolves the given arguments schema: prog
 def resolveArgs (prog):
   parser = argparse.ArgumentParser(
@@ -258,22 +281,6 @@ def restart():
   else:
     start()
 
-# Write the conky monitor directly to the conkyrc file
-def writeConkyMonitor (index):
-  if not os.path.exists(CONKYRC_FILE_PATH):
-    abort('failed to write monitor index: missing conkyrc file', 1)
-
-  newContent = ''
-
-  with open(CONKYRC_FILE_PATH, 'r') as conkyrc_file:
-    for line in conkyrc_file:
-      if re.match(r'^[ ]*xinerama_head[ ]*=[ ]*[0-9]+[ ]*,[ ]*$', line):
-        line = '    xinerama_head = ' + str(index) + ',\n'
-      newContent += line
-
-  with open(CONKYRC_FILE_PATH, 'w') as conkyrc_file:
-    conkyrc_file.write(newContent)
-
 # Dumps the theme part of the config as a preset file
 def savePreset (config, path):
   try:
@@ -333,8 +340,14 @@ elif args.command == 'reset':
   config['theme']['mode'] = 'light'
   config['theme']['font'] = ''
 
-  writeConkyMonitor(0)
   writeConfig(config)
+
+  writeConkyConfig({
+    'xinerama_head': 0,
+    'default_color': 'white',
+    'default_outline_color': 'white',
+    'default_shade_color': 'white'
+    })
 
   if isUp():
     restart()
@@ -342,19 +355,30 @@ elif args.command == 'config':
   if args.mode != None:
     config['theme']['mode'] = args.mode.strip()
 
+    color = 'white'
+    if config['theme']['mode'] == 'dark':
+      color = 'black'
+
+    writeConkyConfig({
+      'default_color': color,
+      'default_outline_color': color,
+      'default_shade_color': color
+      })
+
+
   if args.font != None:
     config['theme']['font'] = args.font.strip()
 
   if args.wallpapers != None:
     config['system']['wallpapers']['path'] = args.wallpapers
-  
+
   if args.interval != None:
     config['system']['wallpapers']['interval'] = args.interval
 
   if args.monitor != None:
     monitor = args.monitor
     config['system']['monitor'] = monitor
-    writeConkyMonitor(monitor)
+    writeConkyConfig({'xinerama_head': monitor})
 
   if args.debug != None:
     config['system']['debug'] = args.debug.strip()

@@ -41,7 +41,6 @@ conky.config = {
 }
 
 conky.text = [[
-${lua eval color mode}
 ${lua line head}${time %H:%M}${lua end}
 ${lua line}${lua var month_name}${time %e, %Y}${lua end}
 ${lua line}Logged as $user_names in $nodename${lua end}
