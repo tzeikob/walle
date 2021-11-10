@@ -95,6 +95,8 @@ function resolve (...)
       local uname = "uname -p | sed -z '$ s/\\n$//'"
       vars["rls_arch"] = util.exec (uname)
 
+      vars["name"] = config["system"]["name"]
+
       log ("Release and system variables have been resolved")
     end
 

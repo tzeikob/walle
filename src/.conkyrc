@@ -41,8 +41,10 @@ conky.config = {
 }
 
 conky.text = [[
-${lua line head}${time %H:%M}${lua end}
-${lua line}${lua var month_name}${time %e, %Y}${lua end}
+${if_empty ${lua var name}}\
+${else}\
+    ${lua line head}${lua var name}${lua end}\
+${endif}
 ${lua line}Logged as $user_names in $nodename${lua end}
 ${lua line}Running ${lua var rls_name} ${lua var rls_codename} v${lua var rls_version}${lua end}
 ${lua line}Process $cpu% Mem $memperc% Disk ${fs_used_perc /}%${lua end}
