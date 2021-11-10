@@ -96,6 +96,8 @@ function resolve (...)
       vars["rls_arch"] = util.exec (uname)
 
       vars["name"] = config["system"]["name"]
+      vars["user"] = util.trim (util.exec ("echo $(whoami)"))
+      vars["host"] = util.trim (util.exec ("echo $(hostname)"))
 
       log ("Release and system variables have been resolved")
     end
@@ -107,28 +109,45 @@ function resolve (...)
 
       if route[1] ~= nil and route[1] ~= "" then
         vars["net_name"] = route[1]
-        vars["net_ip"] = route[2]
+        vars["lan_ip"] = route[2]
+
+        local dig = "dig +short myip.opendns.com @resolver1.opendns.com"
+        local net_ip = util.trim (util.exec (dig))
+
+        if net_ip ~= nil and net_ip ~= "" then
+          vars["net_ip"] = net_ip
+
+          log ("Public IP address resolved to '" .. vars["net_ip"] .. "'")
+        else
+          vars["net_ip"] = "x.x.x.x"
+
+          log ("Unable to resolve the public IP address")
+        end
+
+        local net_proc = "cat /proc/net/dev | awk '/" .. vars["net_name"] .. "/ {printf \"%s %s\",  $2, $10}'"
+        local bytes = util.split (util.trim (util.exec (net_proc)), " ")
+
+        vars["down_bytes"] = util.round (tonumber (bytes[1]) / (1024 * 1024 * 1024), 1)
+        vars["up_bytes"] = util.round (tonumber (bytes[2]) / (1024 * 1024 * 1024), 1)
 
         log ("Network variables resolved to '" .. vars["net_name"] .. "'")
       else
         vars["net_name"] = ""
-        vars["net_ip"] = ""
+        vars["lan_ip"] = "x.x.x.x"
+        vars["net_ip"] = "x.x.x.x"
+        vars["down_bytes"] = 0
+        vars["up_bytes"] = 0
 
         log ("Unable to resolve network variables")
       end
+    end
 
-      local dig = "dig +short myip.opendns.com @resolver1.opendns.com"
-      local public_ip = util.trim (util.exec (dig))
-
-      if public_ip ~= nil and public_ip ~= "" then
-        vars["public_ip"] = public_ip
-
-        log ("Public IP address resolved to '" .. vars["public_ip"] .. "'")
-      else
-        vars["public_ip"] = ""
-
-        log ("Unable to resolve the public IP address")
-      end
+    -- Set the current system load values
+    if scope == "load" or scope == "all" then
+      -- Todo: read load data
+      vars["cpu_load"] = "cpu_load"
+      vars["mem_load"] = "mem_load"
+      vars["disk_load"] = "disk_load"
     end
 
     -- Set the next random wallpaper
@@ -165,7 +184,7 @@ function conky_main ()
     return
   end
 
-  resolveAt (10, "datetime")
+  resolveAt (10, "load")
   resolveAt (10, "network")
 
   local secs = tonumber (config["system"]["wallpapers"]['interval'])
@@ -182,63 +201,53 @@ function conky_main ()
   end
 end
 
--- Returns the value of the var mapped by the given key
-function conky_var (key)
-  local value = vars[key]
+-- Parses the given text subjects into conky at the given scale
+function text (scale, ...)
+  local ctx = "${alignr}"
 
-  if value == nil then
-    return key
-  end
-
-  return value
-end
-
--- Returns the prefix style for text lines
-function conky_line (section)
-  local text = "${font " .. vars["font_name"]
+  ctx = ctx .. "${font " .. vars["font_name"]
 
   if vars["font_bold"] then
-    text = text .. ":bold"
+    ctx = ctx .. ":bold"
   end
 
   if vars["font_italic"] then
-    text = text .. ":italic"
+    ctx = ctx .. ":italic"
   end
 
   local size = vars["font_size"]
 
-  if section == "head" then
-    size = size * 1.35
+  if scale > 1 then
+    size = size * scale
   end
 
-  text = text .. ":size=" .. size .. "}"
-  text = text .. "${alignr}"
+  ctx = ctx .. ":size=" .. size .. "}"
 
-  return conky_parse (text)
-end
+  -- Interpolate each var in every given subject
+  for _, subject in ipairs ({...}) do
+    local prefix, key, postfix = subject:match ("'(.*)${([a-z_]+)}(.*)'")
 
--- Returns the postfix ending for text lines
-function conky_end ()
-  return conky_parse ("${font}")
-end
-
--- Returns the evaluated conkyrc object along with any vars
-function conky_eval (object, ...)
-  local text = "${" .. object
-
-  for _, key in ipairs ({...}) do
     local value = vars[key]
-
     if value == nil then
       value = key
     end
 
-    text = text .. " " .. value
+    ctx = ctx .. " " .. prefix .. value .. postfix
   end
 
-  text = text .. "}"
+  ctx = ctx .. "${font}"
 
-  return conky_parse (text)
+  return conky_parse (ctx)
+end
+
+-- Returns the conky parsed text of a head line
+function conky_head (...)
+  return text (1.45, ...)
+end
+
+-- Returns the conky parsed text of a line
+function conky_line (...)
+  return text (1, ...)
 end
 
 -- Resolve immediately all interoplation variables

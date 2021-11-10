@@ -128,6 +128,13 @@ function load_yaml (path)
   return dict
 end
 
+-- Round the given value to the given number of decimal places
+function round (value, precision)
+  local mult = 10^(precision or 0)
+
+  return math.floor(value * mult + 0.5) / mult
+end
+
 return {
   day = day,
   month = month,
@@ -137,5 +144,6 @@ return {
   trim = trim,
   exec = exec,
   list = list,
-  yaml = load_yaml
+  yaml = load_yaml,
+  round = round
 }
