@@ -3,41 +3,6 @@
 lfs = require "lfs"
 yaml = require "yaml"
 
--- Returns the name of the given day with 0-6 means sunday-saturday
-function day (index)
-  local days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
-
-  if index < 0 or index >= table.getn (days) then
-    return ""
-  end
-
-  return days[index + 1]
-end
-
--- Returns the name of the given month with 1-12 means jan-dec
-function month (index)
-  local months = {
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  }
-
-  if index < 1 or index > table.getn (months) then
-    return ""
-  end
-
-  return months[index]
-end
-
 -- Splits the string by the given delimiter
 function split (str, delimiter, lazy)
   local result = {}
@@ -136,8 +101,6 @@ function round (value, precision)
 end
 
 return {
-  day = day,
-  month = month,
   split = split,
   cap = cap,
   matches = matches,

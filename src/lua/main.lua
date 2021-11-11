@@ -8,6 +8,7 @@ package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 
 ui = require "ui"
 util = require "util"
+core = require "core"
 
 -- Load configuration into a dict object
 config = util.yaml (BASE_DIR .. "/config.yml")
@@ -65,81 +66,34 @@ function resolve (...)
       end
     end
 
-    -- Set the current date and time text variables
-    if scope == "datetime" or scope == "all" then
-      local date = util.split (os.date ("%H %w %m"), " ")
-
-      local time_p = "pm"
-      if tonumber (date[1]) < 12 then
-        time_p = "am"
-      end
-
-      vars["time_p"] = time_p
-      vars["time_p_up"] = time_p:upper ()
-
-      vars["day_name"] = util.day (tonumber (date[2]))
-      vars["month_name"] = util.month (tonumber (date[3]))
-
-      log ("Date and time variables have been resolved")
-    end
-
     -- Set the system's release and user variables
-    if scope == "release" or scope == "all" then
-      local lsb_release = "lsb_release --short -icr"
-      lsb_release = util.split (util.exec (lsb_release), "\n")
+    if scope == "system" or scope == "all" then
+      local release = core.release ()
 
-      vars["rls_name"] = util.cap (lsb_release[1])
-      vars["rls_version"] = lsb_release[2]
-      vars["rls_codename"] = util.cap (lsb_release[3])
+      vars["rls_name"] = util.cap (release["name"])
+      vars["rls_version"] = release["version"]
+      vars["rls_codename"] = util.cap (release["codename"])
+      vars["rls_arch"] = release["arch"]
 
-      local uname = "uname -p | sed -z '$ s/\\n$//'"
-      vars["rls_arch"] = util.exec (uname)
+      vars["user"] = core.user ()
+      vars["hostname"] = core.hostname ()
 
       vars["name"] = config["system"]["name"]
-      vars["user"] = util.trim (util.exec ("echo $(whoami)"))
-      vars["host"] = util.trim (util.exec ("echo $(hostname)"))
 
       log ("Release and system variables have been resolved")
     end
 
     -- Set the currnet network variables
     if scope == "network" or scope == "all" then
-      local route = "ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}'"
-      route = util.split (util.exec (route), ",")
+      local network = core.network ()
 
-      if route[1] ~= nil and route[1] ~= "" then
-        vars["net_name"] = route[1]
-        vars["lan_ip"] = route[2]
+      vars["net_name"] = network["net_name"]
+      vars["lan_ip"] = network["lan_ip"]
+      vars["net_ip"] = network["net_ip"]
+      vars["down_bytes"] = network["down_bytes"]
+      vars["up_bytes"] = network["up_bytes"]
 
-        local dig = "dig +short myip.opendns.com @resolver1.opendns.com"
-        local net_ip = util.trim (util.exec (dig))
-
-        if net_ip ~= nil and net_ip ~= "" then
-          vars["net_ip"] = net_ip
-
-          log ("Public IP address resolved to '" .. vars["net_ip"] .. "'")
-        else
-          vars["net_ip"] = "x.x.x.x"
-
-          log ("Unable to resolve the public IP address")
-        end
-
-        local net_proc = "cat /proc/net/dev | awk '/" .. vars["net_name"] .. "/ {printf \"%s %s\",  $2, $10}'"
-        local bytes = util.split (util.trim (util.exec (net_proc)), " ")
-
-        vars["down_bytes"] = util.round (tonumber (bytes[1]) / (1024 * 1024 * 1024), 1)
-        vars["up_bytes"] = util.round (tonumber (bytes[2]) / (1024 * 1024 * 1024), 1)
-
-        log ("Network variables resolved to '" .. vars["net_name"] .. "'")
-      else
-        vars["net_name"] = ""
-        vars["lan_ip"] = "x.x.x.x"
-        vars["net_ip"] = "x.x.x.x"
-        vars["down_bytes"] = 0
-        vars["up_bytes"] = 0
-
-        log ("Unable to resolve network variables")
-      end
+      log ("Network variables resolved to '" .. vars["net_name"] .. "'")
     end
 
     -- Set the current system load values

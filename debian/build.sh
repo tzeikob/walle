@@ -102,6 +102,7 @@ cp $BASE_DIR/../src/lua/main.lua $LUA_FILE
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $LUA_FILE
 
 cp $BASE_DIR/../src/lua/util.lua $TEMP_DIR/util.lua
+cp $BASE_DIR/../src/lua/core.lua $TEMP_DIR/core.lua
 cp $BASE_DIR/ui/gnome.lua $TEMP_DIR/ui.lua
 
 echo -e "Lua files have been bundled"
