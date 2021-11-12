@@ -168,18 +168,18 @@ function conky_main ()
   end
 end
 
--- Parses the given text subjects into conky at the given scale
-function text (scale, ...)
-  local ctx = "${alignr}"
+-- Converts the given text as a conkyrc text line
+function ln (scale, text)
+  local line = "${alignr}"
 
-  ctx = ctx .. "${font " .. vars["font_name"]
+  line = line .. "${font " .. vars["font_name"]
 
   if vars["font_bold"] then
-    ctx = ctx .. ":bold"
+    line = line .. ":bold"
   end
 
   if vars["font_italic"] then
-    ctx = ctx .. ":italic"
+    line = line .. ":italic"
   end
 
   local size = vars["font_size"]
@@ -188,33 +188,21 @@ function text (scale, ...)
     size = size * scale
   end
 
-  ctx = ctx .. ":size=" .. size .. "}"
+  line = line .. ":size=" .. size .. "}" .. text .. "${font}" .. "\n"
 
-  -- Interpolate each var in every given subject
-  for _, subject in ipairs ({...}) do
-    local prefix, key, postfix = subject:match ("'(.*)${([a-z_]+)}(.*)'")
-
-    local value = vars[key]
-    if value == nil then
-      value = key
-    end
-
-    ctx = ctx .. " " .. prefix .. value .. postfix
-  end
-
-  ctx = ctx .. "${font}"
-
-  return conky_parse (ctx)
+  return line
 end
 
--- Returns the conky parsed text of a head line
-function conky_head (...)
-  return text (1.45, ...)
-end
+-- Builds and returns the conky text
+function conky_text ()
+  local text = ln (1.45, vars["head"])
+  text = text .. ln (1, "U-" .. vars["user"] .. " H-" .. vars["hostname"])
+  text = text .. ln (1, "OS-" .. vars["rls_name"] .. " " .. vars["rls_codename"] .. " v" .. vars["rls_version"])
+  text = text .. ln (1, "LAN-" .. vars["lan_ip"])
+  text = text .. ln (1, "NET-" .. vars["net_ip"])
+  text = text .. ln (1, "T-" .. vars["up_bytes"] .. "GiB R-" .. vars["down_bytes"] .. "GiB")
 
--- Returns the conky parsed text of a line
-function conky_line (...)
-  return text (1, ...)
+  return conky_parse (text)
 end
 
 -- Resolve immediately all interoplation variables

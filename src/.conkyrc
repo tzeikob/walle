@@ -40,14 +40,4 @@ conky.config = {
     lua_draw_hook_post = 'main'
 }
 
-conky.text = [[
-${lua head '${head}'}
-${lua line 'U-${user}' 'H-${hostname}'}
-${lua line 'OS-${rls_codename}' 'v${rls_version}'}
-${lua line 'LAN-${lan_ip}'}
-${lua line 'NET-${net_ip}'}
-${lua line 'UP-${up_bytes}GiB' 'DW-${down_bytes}GiB'}
-${lua line 'UP-${up_speed}KiB/s' 'DW-${down_speed}KiB/s'}
-${lua line 'L-${cpu_load}%' 'M-${mem_load}%' 'D-${disk_load}%'}
-${lua line 'UT-${uptime}'}
-]]
+conky.text = [[${lua text}]]
