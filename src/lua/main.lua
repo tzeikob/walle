@@ -85,8 +85,6 @@ function resolve (...)
       vars["user"] = core.user ()
       vars["hostname"] = core.hostname ()
 
-      vars["name"] = config["system"]["name"]
-
       local hw = core.hw ()
 
       vars["cpu_name"] = hw["cpu_name"]
