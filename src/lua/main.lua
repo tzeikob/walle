@@ -38,6 +38,13 @@ function resolve (...)
   for _, scope in ipairs ({...}) do
     -- Set the theme variables
     if scope == "theme" or scope == "all" then
+      vars["head"] = config["head"]
+
+      -- Set head line a random name if no head is given
+      if vars["head"] == nil or vars["head"] == "" then
+        vars["head"] = core.petname ()
+      end
+
       vars["mode"] = "white"
 
       if config["theme"]["mode"] == "dark" then

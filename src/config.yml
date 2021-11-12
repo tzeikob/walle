@@ -1,6 +1,6 @@
 version: '#PKG_VERSION'
+head: ''
 system:
-  name: ''
   monitor: 0
   wallpapers:
     path: ''

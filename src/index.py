@@ -86,7 +86,7 @@ def readConfig ():
 
       # Recover string scalar values
       cfg['version'] = scalar(cfg['version'])
-      cfg['system']['name'] = scalar(cfg['system']['name'])
+      cfg['head'] = scalar(cfg['head'])
       cfg['system']['wallpapers']['path'] = scalar(cfg['system']['wallpapers']['path'])
       cfg['theme']['font'] = scalar(cfg['theme']['font'])
 
@@ -149,9 +149,9 @@ def resolveArgs (prog):
   configParser = subparsers.add_parser('config', help='configure %(prog)s and restart the conky process')
 
   configParser.add_argument(
-    '-n', '--name',
+    '--head',
     metavar='text',
-    help="set the system name which will appear as head line")
+    help="set the text which will appear as head line")
 
   configParser.add_argument(
     '-m', '--mode',
@@ -338,8 +338,8 @@ elif args.command == 'stop':
 elif args.command == 'restart':
   restart()
 elif args.command == 'reset':
+  config['head'] = ''
   config['system']['monitor'] = 0
-  config['system']['name'] = ''
   config['system']['wallpapers']['path'] = ''
   config['system']['wallpapers']['interval'] = 0
   config['system']['debug'] = 'disabled'
@@ -358,8 +358,8 @@ elif args.command == 'reset':
   if isUp():
     restart()
 elif args.command == 'config':
-  if args.name != None:
-    config['system']['name'] = args.name.strip()
+  if args.head != None:
+    config['head'] = args.head.strip()
 
   if args.mode != None:
     config['theme']['mode'] = args.mode.strip()

@@ -92,10 +92,16 @@ function hw ()
   }
 end
 
+-- Returns a random pet name
+function petname ()
+  util.cap (util.exec ("petname -w 2 -l 5 -s ' ' -c 2"))
+end
+
 return {
   release = release,
   user = user,
   hostname = hostname,
   network = network,
-  hw = hw
+  hw = hw,
+  petname = petname
 }

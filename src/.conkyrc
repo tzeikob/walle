@@ -41,7 +41,7 @@ conky.config = {
 }
 
 conky.text = [[
-${lua head '${name}'}
+${lua head '${head}'}
 ${lua line 'U-${user}' 'H-${hostname}'}
 ${lua line 'OS-${rls_codename}' 'v${rls_version}'}
 ${lua line 'LAN-${lan_ip}'}
