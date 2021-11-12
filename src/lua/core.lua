@@ -94,7 +94,7 @@ end
 
 -- Returns a random pet name
 function petname ()
-  util.cap (util.exec ("petname -w 2 -l 5 -s ' ' -c 2"))
+  return util.cap (util.exec ("petname -w 2 -l 5 -s ' ' -c 2"))
 end
 
 return {
