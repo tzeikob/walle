@@ -63,7 +63,7 @@ function exec (command)
   local output = file:read ("*a")
   file:close ()
 
-  return output
+  return trim (output)
 end
 
 -- Returns the list of files filtered by the given patterns

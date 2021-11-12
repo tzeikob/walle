@@ -66,7 +66,7 @@ function resolve (...)
       end
     end
 
-    -- Set the system's release and user variables
+    -- Set the system's variables
     if scope == "system" or scope == "all" then
       local release = core.release ()
 
@@ -80,7 +80,15 @@ function resolve (...)
 
       vars["name"] = config["system"]["name"]
 
-      log ("Release and system variables have been resolved")
+      local hw = core.hw ()
+
+      vars["cpu_name"] = hw["cpu_name"]
+      vars["cpu_cores"] = hw["cpu_cores"]
+      vars["cpu_freq"] = hw["cpu_freq"]
+      vars["mobo_name"] = hw["mobo_name"]
+      vars["gpu_name"] = hw["gpu_name"]
+
+      log ("System variables have been resolved")
     end
 
     -- Set the currnet network variables

@@ -20,12 +20,12 @@ end
 
 -- Returns the name of the current logged in user
 function user ()
-  return util.trim (util.exec ("echo $(whoami)"))
+  return util.exec ("echo $(whoami)")
 end
 
 -- Returns the name of the host
 function hostname ()
-  return util.trim (util.exec ("echo $(hostname)"))
+  return util.exec ("echo $(hostname)")
 end
 
 -- Returns the network interface data
@@ -46,14 +46,14 @@ function network ()
     result["lan_ip"] = route[2]
 
     local dig = "dig +short myip.opendns.com @resolver1.opendns.com"
-    local net_ip = util.trim (util.exec (dig))
+    local net_ip = util.exec (dig)
 
     if net_ip ~= nil and net_ip ~= "" then
       result["net_ip"] = net_ip
     end
 
     local net_proc = "cat /proc/net/dev | awk '/" .. result["net_name"] .. "/ {printf \"%s %s\",  $2, $10}'"
-    local bytes = util.split (util.trim (util.exec (net_proc)), " ")
+    local bytes = util.split (util.exec (net_proc), " ")
 
     result["down_bytes"] = util.round (tonumber (bytes[1]) / (1024 * 1024 * 1024), 1)
     result["up_bytes"] = util.round (tonumber (bytes[2]) / (1024 * 1024 * 1024), 1)
@@ -62,9 +62,40 @@ function network ()
   return result
 end
 
+-- Returns the hardware info data
+function hw ()
+  local cpu_name = util.exec ("lscpu | grep 'Model name'")
+  cpu_name = util.trim (util.split (cpu_name, ":")[2])
+
+  local cpu_cores = util.exec ("lscpu | grep 'Core(s)'")
+  cpu_cores = util.trim (util.split (cpu_cores, ":")[2])
+
+  local cpu_freq = util.exec ("lscpu | grep 'CPU max MHz'")
+  cpu_freq = util.trim (util.split (cpu_freq, ":")[2])
+  cpu_freq = util.split (cpu_freq, "%.")[1]
+
+  local mobo_name = util.exec ("cat /sys/devices/virtual/dmi/id/board_name")
+
+  local gpu_name = ""
+
+  local isNvidia = util.exec ("lsmod | grep nvidia_uvm")
+  if isNvidia ~= nil and isNvidia ~= "" then
+    gpu_name = util.exec ("nvidia-smi --query-gpu=gpu_name --format=csv,noheader")
+  end
+
+  return {
+    cpu_name = cpu_name,
+    cpu_cores = cpu_cores,
+    cpu_freq = cpu_freq,
+    mobo_name = mobo_name,
+    gpu_name = gpu_name
+  }
+end
+
 return {
   release = release,
   user = user,
   hostname = hostname,
-  network = network
+  network = network,
+  hw = hw
 }
