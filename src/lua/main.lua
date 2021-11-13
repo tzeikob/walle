@@ -168,6 +168,19 @@ function conky_main ()
   end
 end
 
+-- Returns the given text after interpolating any given vars
+function ie (text)
+  local matches = string.gmatch (text, '${([a-zA-Z_]+)}')
+  
+  for key in matches do
+    if vars[key] ~= nil then
+      text = string.gsub (text, '${' .. key .. '}', vars[key])
+    end
+  end
+
+  return text
+end
+
 -- Converts the given text as a conkyrc text line
 function ln (scale, text)
   local line = "${alignr}"
@@ -195,12 +208,14 @@ end
 
 -- Builds and returns the conky text
 function conky_text ()
-  local text = ln (1.45, vars["head"])
-  text = text .. ln (1, "U-" .. vars["user"] .. " H-" .. vars["hostname"])
-  text = text .. ln (1, "OS-" .. vars["rls_name"] .. " " .. vars["rls_codename"] .. " v" .. vars["rls_version"])
-  text = text .. ln (1, "LAN-" .. vars["lan_ip"])
-  text = text .. ln (1, "NET-" .. vars["net_ip"])
-  text = text .. ln (1, "T-" .. vars["up_bytes"] .. "GiB R-" .. vars["down_bytes"] .. "GiB")
+  local text = ""
+
+  text = text .. ln (1.4, ie ("${head}"))
+  text = text .. ln (1.0, ie ("U-${user} H-${hostname}"))
+  text = text .. ln (1.0, ie ("OS-${rls_name} ${rls_codename} v${rls_version}"))
+  text = text .. ln (1.0, ie ("LAN-${lan_ip}"))
+  text = text .. ln (1.0, ie ("NET-${net_ip}"))
+  text = text .. ln (1.0, ie ("S-${up_bytes}GiB R-${down_bytes}GiB"))
 
   return conky_parse (text)
 end
