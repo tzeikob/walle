@@ -109,6 +109,17 @@ function resolve (...)
       log ("Network variables resolved to '" .. vars["net_name"] .. "'")
     end
 
+    -- Set the uptime variable
+    if scope == "uptime" or scope == "all" then
+      local uptime = core.uptime ()
+
+      local hours = string.format ("%02d", uptime["hours"])
+      local mins = string.format ("%02d", uptime["mins"])
+      local secs = string.format ("%02d", uptime["secs"])
+
+      vars["uptime"] = hours .. ":" .. mins .. ":" .. secs
+    end
+
     -- Set the current system load values
     if scope == "load" or scope == "all" then
       -- Todo: read load data
@@ -151,6 +162,7 @@ function conky_main ()
     return
   end
 
+  resolveAt (1, "uptime")
   resolveAt (10, "load")
   resolveAt (10, "network")
 
@@ -216,6 +228,7 @@ function conky_text ()
   text = text .. ln (1.0, ie ("LAN-${lan_ip}"))
   text = text .. ln (1.0, ie ("NET-${net_ip}"))
   text = text .. ln (1.0, ie ("S-${up_bytes}GiB R-${down_bytes}GiB"))
+  text = text .. ln (1.0, ie ("UP-T+${uptime}"))
 
   return conky_parse (text)
 end

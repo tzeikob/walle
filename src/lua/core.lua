@@ -92,6 +92,30 @@ function hw ()
   }
 end
 
+-- Returns the uptime in hours, mins and secs
+function uptime ()
+  local output = exec ("cat /proc/uptime")
+  local secs = tonumber (split (output, " ")[1])
+
+  local hours = math.floor (secs / 3600)
+  if hours > 0 then
+    secs = secs - (hours * 3600)
+  end
+
+  local mins = math.floor (secs / 60)
+  if mins > 0 then
+    secs = secs - (mins * 60)
+  end
+
+  secs = math.floor (secs)
+
+  return {
+    hours = hours,
+    mins = mins,
+    secs = secs
+  }
+end
+
 -- Returns a random pet name
 function petname ()
   return util.cap (util.exec ("petname -w 2 -l 5 -s ' ' -c 2"))
@@ -103,5 +127,6 @@ return {
   hostname = hostname,
   network = network,
   hw = hw,
+  uptime = uptime,
   petname = petname
 }
