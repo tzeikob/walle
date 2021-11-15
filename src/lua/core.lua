@@ -55,8 +55,8 @@ function network ()
     local net_proc = "cat /proc/net/dev | awk '/" .. result["net_name"] .. "/ {printf \"%s %s\",  $2, $10}'"
     local bytes = util.split (util.exec (net_proc), " ")
 
-    result["down_bytes"] = util.round (tonumber (bytes[1]) / (1024 * 1024 * 1024), 1)
-    result["up_bytes"] = util.round (tonumber (bytes[2]) / (1024 * 1024 * 1024), 1)
+    result["down_bytes"] = tonumber (bytes[1])
+    result["up_bytes"] = tonumber (bytes[2])
   end
 
   return result

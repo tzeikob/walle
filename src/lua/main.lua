@@ -34,7 +34,17 @@ function log (message)
 end
 
 -- Resolves the interpolation vars within the given scopes
-function resolve (...)
+function resolve (cycles, ...)
+  if cycles > 0 then
+    local updates = tonumber (conky_parse ("${updates}"))
+    local timer = (updates % cycles)
+
+    -- Break if not in given cycles or not at start up
+    if timer ~= 0 and status ~= "init" then
+      return false
+    end
+  end
+
   for _, scope in ipairs ({...}) do
     -- Set the theme variables
     if scope == "theme" or scope == "all" then
@@ -103,8 +113,35 @@ function resolve (...)
       vars["net_name"] = network["net_name"]
       vars["lan_ip"] = network["lan_ip"]
       vars["net_ip"] = network["net_ip"]
+
+      -- Calculate network speeds
+      vars["down_speed"] = "0.00"
+      vars["up_speed"] = "0.00"
+
+      if cycles > 0 then
+        local down_bytes_prev = 0
+        local up_bytes_prev = 0
+
+        local down_bytes = network["down_bytes"]
+        local up_bytes = network["up_bytes"]
+
+        if vars["down_bytes"] ~= nil then
+          down_bytes_prev = vars["down_bytes"]
+          up_bytes_prev = vars["up_bytes"]
+        end
+
+        local down_speed = util.to_mbits (down_bytes - down_bytes_prev) / cycles
+        vars["down_speed"] = string.format ("%.2f", util.round (down_speed, 2))
+
+        local up_speed = util.to_mbits (up_bytes - up_bytes_prev) / cycles
+        vars["up_speed"] = string.format ("%.2f", util.round (up_speed, 2))
+      end
+
       vars["down_bytes"] = network["down_bytes"]
+      vars["down_mbytes"] = util.round (util.to_mbytes (vars["down_bytes"]))
+
       vars["up_bytes"] = network["up_bytes"]
+      vars["up_mbytes"] = util.round (util.to_mbytes (vars["up_bytes"]))
 
       log ("Network variables resolved to '" .. vars["net_name"] .. "'")
     end
@@ -140,20 +177,8 @@ function resolve (...)
       end
     end
   end
-end
 
--- Resolves the given scope only at the given number of cycles
-function resolveAt (cycles, scope)
-  local updates = tonumber (conky_parse ("${updates}"))
-  local timer = (updates % cycles)
-
-  if timer == 0 or status == "init" then
-    resolve (scope)
-
-    return true
-  else
-    return false
-  end
+  return true
 end
 
 -- Main lua function called by conky
@@ -162,13 +187,13 @@ function conky_main ()
     return
   end
 
-  resolveAt (1, "uptime")
-  resolveAt (10, "load")
-  resolveAt (10, "network")
+  resolve (1, "uptime")
+  resolve (10, "load")
+  resolve (10, "network")
 
   local secs = tonumber (config["system"]["wallpapers"]['interval'])
   if secs > 0 then
-    if resolveAt (secs, "wallpaper") then
+    if resolve (secs, "wallpaper") then
       ui.updateWallpaper (vars["wallpaper"])
       ui.updateLockScreen (vars["wallpaper"])
     end
@@ -228,12 +253,12 @@ function conky_text ()
   text = text .. ln (1.0, ie ("NETWORK ${net_name}"))
   text = text .. ln (1.0, ie ("LAN ${lan_ip}"))
   text = text .. ln (1.0, ie ("NET ${net_ip}"))
-  text = text .. ln (1.0, ie ("SENT ${up_bytes}GiB"))
-  text = text .. ln (1.0, ie ("RECEIVED ${down_bytes}GiB"))
+  text = text .. ln (1.0, ie ("SENT ${up_mbytes}MB RECEIVED ${down_mbytes}MB"))
+  text = text .. ln (1.0, ie ("UP ${up_speed}Mbps DOWN ${down_speed}Mbps"))
   text = text .. ln (1.0, ie ("UPTIME T+${uptime}"))
 
   return conky_parse (text)
 end
 
 -- Resolve immediately all interoplation variables
-resolve ("all")
+resolve (0, "all")

@@ -100,6 +100,26 @@ function round (value, precision)
   return math.floor(value * mult + 0.5) / mult
 end
 
+-- Converts bytes to kilo bits
+function to_kbits (bytes)
+  return (bytes * 8) / 1024
+end
+
+-- Converts bytes to mega bits
+function to_mbits (bytes)
+  return (bytes * 8) / (1024 * 1024)
+end
+
+-- Converts bytes to giga bits
+function to_gbits (bytes)
+  return (bytes * 8) / (1024 * 1024 * 1024)
+end
+
+-- Converts bytes to mega bytes
+function to_mbytes (bytes)
+  return bytes / (1024 * 1024)
+end
+
 return {
   split = split,
   cap = cap,
@@ -108,5 +128,9 @@ return {
   exec = exec,
   list = list,
   yaml = load_yaml,
-  round = round
+  round = round,
+  to_kbits = to_kbits,
+  to_mbits = to_mbits,
+  to_gbits = to_gbits,
+  to_mbytes = to_mbytes
 }
