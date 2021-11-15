@@ -223,12 +223,14 @@ function conky_text ()
   local text = ""
 
   text = text .. ln (1.4, ie ("${head}"))
-  text = text .. ln (1.0, ie ("U-${user} H-${hostname}"))
-  text = text .. ln (1.0, ie ("OS-${rls_name} ${rls_codename} v${rls_version}"))
-  text = text .. ln (1.0, ie ("LAN-${lan_ip}"))
-  text = text .. ln (1.0, ie ("NET-${net_ip}"))
-  text = text .. ln (1.0, ie ("S-${up_bytes}GiB R-${down_bytes}GiB"))
-  text = text .. ln (1.0, ie ("UP-T+${uptime}"))
+  text = text .. ln (1.0, ie ("USER ${user} HOST ${hostname}"))
+  text = text .. ln (1.0, ie ("DISTRO ${rls_name} ${rls_codename}"))
+  text = text .. ln (1.0, ie ("NETWORK ${net_name}"))
+  text = text .. ln (1.0, ie ("LAN ${lan_ip}"))
+  text = text .. ln (1.0, ie ("NET ${net_ip}"))
+  text = text .. ln (1.0, ie ("SENT ${up_bytes}GiB"))
+  text = text .. ln (1.0, ie ("RECEIVED ${down_bytes}GiB"))
+  text = text .. ln (1.0, ie ("UPTIME T+${uptime}"))
 
   return conky_parse (text)
 end
