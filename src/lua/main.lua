@@ -110,9 +110,14 @@ function resolve (cycles, ...)
     if scope == "network" or scope == "all" then
       local network = core.network ()
 
+      -- Update the net ip and isp if connected to a new network
+      if network["net_name"] ~= vars["net_name"] then
+        vars["net_ip"] = "x.x.x.x"
+        vars["isp_org"] = "n/a"
+      end
+
       vars["net_name"] = network["net_name"]
       vars["lan_ip"] = network["lan_ip"]
-      vars["net_ip"] = network["net_ip"]
 
       -- Calculate network speeds
       vars["down_speed"] = "0.00"
@@ -144,6 +149,14 @@ function resolve (cycles, ...)
       vars["up_mbytes"] = util.round (util.to_mbytes (vars["up_bytes"]))
 
       log ("Network variables resolved to '" .. vars["net_name"] .. "'")
+    end
+
+    -- Set the current ISP variables
+    if scope == "isp" or scope == "all" then
+      local isp = core.isp ()
+
+      vars["net_ip"] = isp["ip"]
+      vars["isp_org"] = isp["org"]
     end
 
     -- Set the uptime variable
@@ -194,6 +207,7 @@ function conky_main ()
   resolve (1, "uptime")
   resolve (10, "load")
   resolve (10, "network")
+  resolve (120, "isp")
 
   local secs = tonumber (config["system"]["wallpapers"]['interval'])
   if secs > 0 then
@@ -256,6 +270,7 @@ function conky_text ()
   text = text .. ln (1.0, ie ("DISTRO ${rls_name} ${rls_codename}"))
   text = text .. ln (1.0, ie ("NETWORK ${net_name}"))
   text = text .. ln (1.0, ie ("LAN ${lan_ip}"))
+  text = text .. ln (1.0, ie ("ISP ${isp_org}"))
   text = text .. ln (1.0, ie ("NET ${net_ip}"))
   text = text .. ln (1.0, ie ("SENT ${up_mbytes}MB RECEIVED ${down_mbytes}MB"))
   text = text .. ln (1.0, ie ("UP ${up_speed}Mbps DOWN ${down_speed}Mbps"))

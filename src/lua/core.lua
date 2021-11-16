@@ -1,6 +1,7 @@
 -- A lua library for various system and os native operations
 
 util = require "util"
+json = require "cjson"
 
 -- Returns information of the release
 function release ()
@@ -33,7 +34,6 @@ function network ()
   local result = {
     net_name = "n/a",
     lan_ip = "x.x.x.x",
-    net_ip = "x.x.x.x",
     down_bytes = 0,
     up_bytes = 0
   }
@@ -45,18 +45,39 @@ function network ()
     result["net_name"] = route[1]
     result["lan_ip"] = route[2]
 
-    local dig = "dig +short myip.opendns.com @resolver1.opendns.com"
-    local net_ip = util.exec (dig)
-
-    if net_ip ~= nil and net_ip ~= "" then
-      result["net_ip"] = net_ip
-    end
-
     local net_proc = "cat /proc/net/dev | awk '/" .. result["net_name"] .. "/ {printf \"%s %s\",  $2, $10}'"
     local bytes = util.split (util.exec (net_proc), " ")
 
     result["down_bytes"] = tonumber (bytes[1])
     result["up_bytes"] = tonumber (bytes[2])
+  end
+
+  return result
+end
+
+-- Returns the ISP information data
+function isp ()
+  local result = {
+    ip = "x.x.x.x",
+    org = "n/a"
+  }
+
+  local response = util.exec ("curl -s https://ipinfo.io/")
+
+  if response ~= nil and response ~= "" then
+    local status, info = pcall (function () return json.decode (response) end)
+
+    if status then
+      local ip = info["ip"]
+      if ip ~= nil and ip ~= "" then
+        result["ip"] = ip
+      end
+      
+      local org = info["org"]
+      if org ~= nil and org ~= "" then
+        result["org"] = org
+      end
+    end
   end
 
   return result
@@ -126,6 +147,7 @@ return {
   user = user,
   hostname = hostname,
   network = network,
+  isp = isp,
   hw = hw,
   uptime = uptime,
   petname = petname

@@ -63,6 +63,7 @@ echo -e "Installing lua third-party dependencies..."
 
 luarocks install luafilesystem
 luarocks install yaml
+luarocks install lua-cjson
 
 echo -e "Lua dependencies have been installed"
 
