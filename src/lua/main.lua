@@ -24,6 +24,7 @@ wallpapers = util.list (path, "jpeg$", "jpg$", "png$")
 
 -- Initialize global variables
 status = "init"
+loop = 0
 vars = {}
 
 -- Logs a message if logging level is on debug mode
@@ -36,8 +37,7 @@ end
 -- Resolves the interpolation vars within the given scopes
 function resolve (cycles, ...)
   if cycles > 0 then
-    local updates = tonumber (conky_parse ("${updates}"))
-    local timer = (updates % cycles)
+    local timer = (loop % cycles)
 
     -- Break if not in given cycles or not at start up
     if timer ~= 0 and status ~= "init" then
@@ -187,6 +187,10 @@ function conky_main ()
     return
   end
 
+  -- Update the current conky loop index
+  loop = tonumber (conky_parse ("${updates}"))
+
+  -- Try to resolve various interpolation variables
   resolve (1, "uptime")
   resolve (10, "load")
   resolve (10, "network")
