@@ -196,8 +196,8 @@ function conky_main ()
   -- Try to resolve various interpolation variables
   resolve (1, "uptime")
   resolve (10, "load")
-  resolve (10, "network")
-  resolve (120, "isp")
+  resolve (9, "network")
+  resolve (61, "isp")
 
   local secs = tonumber (config["system"]["wallpapers"]['interval'])
   if secs > 0 then
