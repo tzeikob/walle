@@ -8,7 +8,7 @@ function release ()
   local lsb_release = "lsb_release --short -icr"
   lsb_release = util.split (util.exec (lsb_release), "\n")
 
-  uname = "uname -p | sed -z '$ s/\\n$//'"
+  local uname = "uname -p | sed -z '$ s/\\n$//'"
   uname = util.exec (uname)
 
   return {
@@ -32,8 +32,8 @@ end
 -- Returns the network interface data
 function network ()
   local result = {
-    net_name = "n/a",
-    lan_ip = "x.x.x.x",
+    net_name = "",
+    lan_ip = "",
     down_bytes = 0,
     up_bytes = 0
   }
@@ -41,7 +41,7 @@ function network ()
   local route = "ip route get 8.8.8.8 | awk -- '{printf \"%s,%s\", $5, $7}'"
   route = util.split (util.exec (route), ",")
 
-  if route[1] ~= nil and route[1] ~= "" then
+  if util.is_not_empty (route[1]) then
     result["net_name"] = route[1]
     result["lan_ip"] = route[2]
 
@@ -58,24 +58,22 @@ end
 -- Returns the ISP information data
 function isp ()
   local result = {
-    ip = "x.x.x.x",
-    org = "n/a"
+    ip = "",
+    org = ""
   }
 
   local response = util.exec ("curl -s https://ipinfo.io/")
 
-  if response ~= nil and response ~= "" then
+  if util.is_not_empty (response) then
     local status, info = pcall (function () return json.decode (response) end)
 
     if status then
-      local ip = info["ip"]
-      if ip ~= nil and ip ~= "" then
-        result["ip"] = ip
+      if util.is_not_empty (info["ip"]) then
+        result["ip"] = info["ip"]
       end
-      
-      local org = info["org"]
-      if org ~= nil and org ~= "" then
-        result["org"] = org
+
+      if util.is_not_empty (info["org"]) then
+        result["org"] = info["org"]
       end
     end
   end
@@ -100,7 +98,8 @@ function hw ()
   local gpu_name = ""
 
   local isNvidia = util.exec ("lsmod | grep nvidia_uvm")
-  if isNvidia ~= nil and isNvidia ~= "" then
+
+  if util.is_not_empty (isNvidia) then
     gpu_name = util.exec ("nvidia-smi --query-gpu=gpu_name --format=csv,noheader")
   end
 

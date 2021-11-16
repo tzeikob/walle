@@ -120,6 +120,25 @@ function to_mbytes (bytes)
   return bytes / (1024 * 1024)
 end
 
+-- Check if the given value is nil or empty
+function is_empty (value)
+  return value == nil or value == ""
+end
+
+-- Check if the given value is not nil and not empty
+function is_not_empty (value)
+  return not is_empty (value)
+end
+
+-- Returns the given value if not empty, otherwise the default
+function default_to (value, default)
+  if is_empty (value) then
+    return default
+  end
+
+  return value
+end
+
 return {
   split = split,
   cap = cap,
@@ -132,5 +151,8 @@ return {
   to_kbits = to_kbits,
   to_mbits = to_mbits,
   to_gbits = to_gbits,
-  to_mbytes = to_mbytes
+  to_mbytes = to_mbytes,
+  is_empty = is_empty,
+  is_not_empty = is_not_empty,
+  default_to = default_to
 }

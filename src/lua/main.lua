@@ -16,7 +16,7 @@ config = util.yaml (BASE_DIR .. "/config.yml")
 -- Load the file paths of any wallpapers
 path = config["system"]["wallpapers"]["path"]
 
-if path == nil or path == "" then
+if util.is_empty (path) then
   path = BASE_DIR .. "/wallpapers"
 end
 
@@ -48,12 +48,7 @@ function resolve (cycles, ...)
   for _, scope in ipairs ({...}) do
     -- Set the theme variables
     if scope == "theme" or scope == "all" then
-      vars["head"] = config["head"]
-
-      -- Set head line a random name if no head is given
-      if vars["head"] == nil or vars["head"] == "" then
-        vars["head"] = core.petname ()
-      end
+      vars["head"] = util.default_to (config["head"], core.petname ())
 
       vars["mode"] = "white"
 
@@ -112,34 +107,29 @@ function resolve (cycles, ...)
 
       -- Update the net ip and isp if connected to a new network
       if network["net_name"] ~= vars["net_name"] then
-        vars["net_ip"] = "x.x.x.x"
-        vars["isp_org"] = "n/a"
+        vars["net_ip"] = ""
+        vars["isp_org"] = ""
       end
 
       vars["net_name"] = network["net_name"]
       vars["lan_ip"] = network["lan_ip"]
 
-      -- Calculate network speeds
-      vars["down_speed"] = "0.00"
-      vars["up_speed"] = "0.00"
+      -- Calculate network upload and download speeds
+      vars["down_speed"] = 0
+      vars["up_speed"] = 0
 
-      if cycles > 0 then
-        local down_bytes_prev = 0
-        local up_bytes_prev = 0
+      if util.is_not_empty (vars["net_name"]) and cycles > 0 then
+        local bytes_prev = vars["down_bytes"] > 0 and vars["down_bytes"] or network["down_bytes"]
+        local bytes_now = network["down_bytes"]
 
-        local down_bytes = network["down_bytes"]
-        local up_bytes = network["up_bytes"]
+        local down_speed = util.to_mbits (bytes_now - bytes_prev) / cycles
+        vars["down_speed"] = util.round (down_speed, 2)
 
-        if vars["down_bytes"] ~= nil then
-          down_bytes_prev = vars["down_bytes"]
-          up_bytes_prev = vars["up_bytes"]
-        end
+        bytes_prev = vars["up_bytes"] > 0 and vars["up_bytes"] or network["up_bytes"]
+        bytes_now = network["up_bytes"]
 
-        local down_speed = util.to_mbits (down_bytes - down_bytes_prev) / cycles
-        vars["down_speed"] = string.format ("%.2f", util.round (down_speed, 2))
-
-        local up_speed = util.to_mbits (up_bytes - up_bytes_prev) / cycles
-        vars["up_speed"] = string.format ("%.2f", util.round (up_speed, 2))
+        local up_speed = util.to_mbits (bytes_now - bytes_prev) / cycles
+        vars["up_speed"] = util.round (up_speed, 2)
       end
 
       vars["down_bytes"] = network["down_bytes"]
