@@ -165,6 +165,14 @@ function resolve (cycles, ...)
       vars["cpu_load"] = conky_parse ("$cpu")
       vars["mem_load"] = conky_parse ("$memperc")
       vars["disk_load"] = conky_parse ("${fs_used_perc /}")
+
+      local gpu = core.gpu ()
+
+      vars["gpu_name"] = gpu["name"]
+      vars["gpu_util"] = gpu["util"]
+      vars["gpu_mem"] = gpu["mem"]
+      vars["gpu_mem_util"] = gpu["mem_util"]
+      vars["gpu_temp"] = gpu["temp"]
     end
 
     -- Set the next random wallpaper
@@ -257,7 +265,8 @@ function conky_text ()
   text = text .. ln (1.4, ie ("${head}"))
   text = text .. ln (1.0, ie ("USER ${user} HOST ${hostname}"))
   text = text .. ln (1.0, ie ("DISTRO ${rls_name} ${rls_codename}"))
-  text = text .. ln (1.0, ie ("CPU ${cpu_load}% MEMORY ${mem_load}% DISK ${disk_load}%"))
+  text = text .. ln (1.0, ie ("CPU ${cpu_load}% MEM ${mem_load}% DISK ${disk_load}%"))
+  text = text .. ln (1.0, ie ("GPU ${gpu_util}% MEM ${gpu_mem}MB TEMP ${gpu_temp}°C"))
   text = text .. ln (1.0, ie ("NETWORK ${net_name}"))
   text = text .. ln (1.0, ie ("LAN ${lan_ip}"))
   text = text .. ln (1.0, ie ("ISP ${isp_org}"))

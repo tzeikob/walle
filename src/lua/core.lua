@@ -112,6 +112,34 @@ function hw ()
   }
 end
 
+-- Returns the GPU data and current loads
+function gpu ()
+  local result = {
+    name = "",
+    util = 0,
+    mem = 0,
+    mem_util = 0,
+    temp = 0
+  }
+
+  -- Check if an nvidia card is installed
+  local isNvidia = util.exec ("lsmod | grep nvidia_uvm")
+
+  if util.is_not_empty (isNvidia) then
+    local opts = "gpu_name,utilization.gpu,memory.used,utilization.memory,temperature.gpu"
+    local cmd = "nvidia-smi --query-gpu=" .. opts .. " --format=csv,noheader"
+    local output = util.split (util.exec (cmd), ",")
+
+    result["name"] = util.trim (output[1])
+    result["util"] = util.split (util.trim (output[2]), " ")[1]
+    result["mem"] = util.split (util.trim (output[3]), " ")[1]
+    result["mem_util"] = util.split (util.trim (output[4]), " ")[1]
+    result["temp"] = util.trim (output[5])
+  end
+
+  return result
+end
+
 -- Returns the uptime in hours, mins and secs
 function uptime ()
   local output = exec ("cat /proc/uptime")
@@ -148,6 +176,7 @@ return {
   network = network,
   isp = isp,
   hw = hw,
+  gpu = gpu,
   uptime = uptime,
   petname = petname
 }
