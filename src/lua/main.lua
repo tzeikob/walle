@@ -161,11 +161,10 @@ function resolve (cycles, ...)
     end
 
     -- Set the current system load values
-    if scope == "load" or scope == "all" then
-      -- Todo: read load data
-      vars["cpu_load"] = "cpu_load"
-      vars["mem_load"] = "mem_load"
-      vars["disk_load"] = "disk_load"
+    if scope == "loads" or scope == "all" then
+      vars["cpu_load"] = conky_parse ("$cpu")
+      vars["mem_load"] = conky_parse ("$memperc")
+      vars["disk_load"] = conky_parse ("${fs_used_perc /}")
     end
 
     -- Set the next random wallpaper
@@ -195,7 +194,7 @@ function conky_main ()
 
   -- Try to resolve various interpolation variables
   resolve (1, "uptime")
-  resolve (10, "load")
+  resolve (4, "loads")
   resolve (9, "network")
   resolve (61, "isp")
 
@@ -258,6 +257,7 @@ function conky_text ()
   text = text .. ln (1.4, ie ("${head}"))
   text = text .. ln (1.0, ie ("USER ${user} HOST ${hostname}"))
   text = text .. ln (1.0, ie ("DISTRO ${rls_name} ${rls_codename}"))
+  text = text .. ln (1.0, ie ("CPU ${cpu_load}% MEMORY ${mem_load}% DISK ${disk_load}%"))
   text = text .. ln (1.0, ie ("NETWORK ${net_name}"))
   text = text .. ln (1.0, ie ("LAN ${lan_ip}"))
   text = text .. ln (1.0, ie ("ISP ${isp_org}"))
