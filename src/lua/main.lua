@@ -175,6 +175,14 @@ function resolve (cycles, ...)
       vars["gpu_temp"] = gpu["temp"]
     end
 
+    -- Set the current system thermal calues
+    if scope == "thermals" or scope == "all" then
+      local thermals = core.thermals ()
+
+      vars["thermals_cpus"] = thermals["cpus"]
+      vars["thermals_chipset"] = thermals["chipset"]
+    end
+
     -- Set the next random wallpaper
     if scope == "wallpaper" or scope == "all" then
       local len = table.getn (wallpapers)
@@ -203,6 +211,7 @@ function conky_main ()
   -- Try to resolve various interpolation variables
   resolve (1, "uptime")
   resolve (4, "loads")
+  resolve (3, "thermals")
   resolve (9, "network")
   resolve (61, "isp")
 
@@ -266,6 +275,7 @@ function conky_text ()
   text = text .. ln (1.0, ie ("USER ${user} HOST ${hostname}"))
   text = text .. ln (1.0, ie ("DISTRO ${rls_name} ${rls_codename}"))
   text = text .. ln (1.0, ie ("CPU ${cpu_load}% MEM ${mem_load}% DISK ${disk_load}%"))
+  text = text .. ln (1.0, ie ("CPU1 ".. vars["thermals_cpus"][1] .. "°C" .. " CPU2 ".. vars["thermals_cpus"][2] .. "°C"))
   text = text .. ln (1.0, ie ("GPU ${gpu_util}% MEM ${gpu_mem}MB TEMP ${gpu_temp}°C"))
   text = text .. ln (1.0, ie ("NETWORK ${net_name}"))
   text = text .. ln (1.0, ie ("LAN ${lan_ip}"))

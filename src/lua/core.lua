@@ -112,6 +112,25 @@ function hw ()
   }
 end
 
+-- Returns the system thermal sensors
+function thermals ()
+  local result = {
+    cpus = {},
+    chipset = 0
+  }
+
+  -- Resolve any AMD CPU thermal values
+  local index = 0
+  while util.exec ("cat /sys/class/hwmon/hwmon" .. index .. "/name") == "k10temp" do
+    local temp = util.exec ("cat /sys/class/hwmon/hwmon" .. index .. "/temp1_input")
+    table.insert(result["cpus"], util.round (tonumber (temp) / 1000, 1))
+
+    index = index + 1
+  end
+
+  return result
+end
+
 -- Returns the GPU data and current loads
 function gpu ()
   local result = {
@@ -176,6 +195,7 @@ return {
   network = network,
   isp = isp,
   hw = hw,
+  thermals = thermals,
   gpu = gpu,
   uptime = uptime,
   petname = petname
