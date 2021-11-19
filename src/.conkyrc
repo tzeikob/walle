@@ -40,19 +40,4 @@ conky.config = {
     lua_draw_hook_post = 'main'
 }
 
-conky.text = [[
-${lua eval color mode}
-${lua eval font head}${alignr}${time %H:%M}${font}
-${lua eval font subhead}${alignr}${lua var month_name}${time %e, %Y}${font}
-${lua eval font body}${alignr}Logged as $user_names in $nodename${font}
-${lua eval font body}${alignr}Running ${lua var rls_name} ${lua var rls_codename} v${lua var rls_version}${font}
-${lua eval font body}${alignr}Process $cpu% Mem $memperc% Disk ${fs_used_perc /}%${font}
-${lua eval font body}${alignr}Up ${lua eval upspeedf net_name}KiB/s Down ${lua eval downspeedf net_name}KiB/s${font}
-${if_empty ${lua var net_name}}\
-    ${lua eval font body}${alignr}Connection is down!${font}\
-${else}\
-    ${lua eval font body}${alignr}Local Address ${lua var net_ip}${font}
-    ${lua eval font body}${alignr}Public Address ${lua var public_ip}${font}\
-${endif}
-${lua eval font body}${alignr}System is up for $uptime_short${font}
-]]
+conky.text = [[${lua text}]]

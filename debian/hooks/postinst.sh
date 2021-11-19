@@ -27,6 +27,7 @@ sed -i "s/#USER/$SUDO_USER/g" $LUA_FILE
 
 mv $TEMP_DIR/ui.lua $CONFIG_DIR/ui.lua
 mv $TEMP_DIR/util.lua $CONFIG_DIR/util.lua
+mv $TEMP_DIR/core.lua $CONFIG_DIR/core.lua
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
@@ -62,6 +63,7 @@ echo -e "Installing lua third-party dependencies..."
 
 luarocks install luafilesystem
 luarocks install yaml
+luarocks install lua-cjson
 
 echo -e "Lua dependencies have been installed"
 

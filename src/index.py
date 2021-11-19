@@ -86,11 +86,9 @@ def readConfig ():
 
       # Recover string scalar values
       cfg['version'] = scalar(cfg['version'])
-
-      cfg['theme']['wallpapers']['path'] = scalar(cfg['theme']['wallpapers']['path'])
-      cfg['theme']['fonts']['head'] = scalar(cfg['theme']['fonts']['head'])
-      cfg['theme']['fonts']['subhead'] = scalar(cfg['theme']['fonts']['subhead'])
-      cfg['theme']['fonts']['body'] = scalar(cfg['theme']['fonts']['body'])
+      cfg['head'] = scalar(cfg['head'])
+      cfg['system']['wallpapers']['path'] = scalar(cfg['system']['wallpapers']['path'])
+      cfg['theme']['font'] = scalar(cfg['theme']['font'])
 
       return cfg
   except EnvironmentError:
@@ -103,6 +101,29 @@ def writeConfig (config):
       yaml.dump(config, config_file)
   except EnvironmentError:
     abort('failed to write to config file', 1)
+
+# Write the given settings to conkyrc file
+def writeConkyConfig (settings):
+  if not os.path.exists(CONKYRC_FILE_PATH):
+    abort('failed to write settings: missing conkyrc file', 1)
+
+  newContent = ''
+
+  with open(CONKYRC_FILE_PATH, 'r') as conkyrc_file:
+    for line in conkyrc_file:
+      for key in settings:
+        if re.match(r'^[ ]*{}[ ]*=[ ]*.+,[ ]*$'.format(key), line):
+          value = settings[key]
+
+          if type(value) is str:
+            value = "'" + value + "'"
+
+          line = '    ' + key + ' = ' + str(value) + ',\n'
+
+      newContent += line
+
+  with open(CONKYRC_FILE_PATH, 'w') as conkyrc_file:
+    conkyrc_file.write(newContent)
 
 # Resolves the given arguments schema: prog
 def resolveArgs (prog):
@@ -128,10 +149,21 @@ def resolveArgs (prog):
   configParser = subparsers.add_parser('config', help='configure %(prog)s and restart the conky process')
 
   configParser.add_argument(
+    '--head',
+    metavar='text',
+    help="set the text which will appear as head line")
+
+  configParser.add_argument(
     '-m', '--mode',
     choices=['light', 'dark'],
     metavar='mode',
     help="set the theme color mode to 'light' or 'dark'")
+
+  configParser.add_argument(
+    '-f', '--font',
+    type=fontStyle,
+    metavar='font',
+    help='set the font style the text should appear with')
 
   configParser.add_argument(
     '-w', '--wallpapers',
@@ -143,24 +175,6 @@ def resolveArgs (prog):
     type=zeroPosInt,
     metavar='secs',
     help='set the interval in secs the wallpaper should randomly rotate by')
-  
-  configParser.add_argument(
-    '--head',
-    type=fontStyle,
-    metavar='font',
-    help='a font style the head line should appear with')
-  
-  configParser.add_argument(
-    '--subhead',
-    type=fontStyle,
-    metavar='font',
-    help='a font style the sub-head line should appear with')
-  
-  configParser.add_argument(
-    '--body',
-    type=fontStyle,
-    metavar='font',
-    help='a font style each body line should appear with')
 
   configParser.add_argument(
     '--monitor',
@@ -272,22 +286,6 @@ def restart():
   else:
     start()
 
-# Write the conky monitor directly to the conkyrc file
-def writeConkyMonitor (index):
-  if not os.path.exists(CONKYRC_FILE_PATH):
-    abort('failed to write monitor index: missing conkyrc file', 1)
-
-  newContent = ''
-
-  with open(CONKYRC_FILE_PATH, 'r') as conkyrc_file:
-    for line in conkyrc_file:
-      if re.match(r'^[ ]*xinerama_head[ ]*=[ ]*[0-9]+[ ]*,[ ]*$', line):
-        line = '    xinerama_head = ' + str(index) + ',\n'
-      newContent += line
-
-  with open(CONKYRC_FILE_PATH, 'w') as conkyrc_file:
-    conkyrc_file.write(newContent)
-
 # Dumps the theme part of the config as a preset file
 def savePreset (config, path):
   try:
@@ -296,11 +294,7 @@ def savePreset (config, path):
         'version': config['version'],
         'theme': {
           'mode': config['theme']['mode'],
-          'fonts': {
-            'head': config['theme']['fonts']['head'],
-            'subhead': config['theme']['fonts']['subhead'],
-            'body': config['theme']['fonts']['body']
-          }
+          'font': config['theme']['font']
         }
       }
 
@@ -315,9 +309,7 @@ def loadPreset (path, config):
       preset = yaml.load(preset_file)
 
       config['theme']['mode'] = preset['theme']['mode']
-      config['theme']['fonts']['head'] = scalar(preset['theme']['fonts']['head'])
-      config['theme']['fonts']['subhead'] = scalar(preset['theme']['fonts']['subhead'])
-      config['theme']['fonts']['body'] = scalar(preset['theme']['fonts']['body'])
+      config['theme']['font'] = scalar(preset['theme']['font'])
 
       return config
   except EnvironmentError:
@@ -346,43 +338,56 @@ elif args.command == 'stop':
 elif args.command == 'restart':
   restart()
 elif args.command == 'reset':
+  config['head'] = ''
   config['system']['monitor'] = 0
+  config['system']['wallpapers']['path'] = ''
+  config['system']['wallpapers']['interval'] = 0
   config['system']['debug'] = 'disabled'
   config['theme']['mode'] = 'light'
-  config['theme']['wallpapers']['path'] = ''
-  config['theme']['wallpapers']['interval'] = 0
-  config['theme']['fonts']['head'] = ''
-  config['theme']['fonts']['subhead'] = ''
-  config['theme']['fonts']['body'] = ''
+  config['theme']['font'] = ''
 
-  writeConkyMonitor(0)
   writeConfig(config)
+
+  writeConkyConfig({
+    'xinerama_head': 0,
+    'default_color': 'white',
+    'default_outline_color': 'white',
+    'default_shade_color': 'white'
+    })
 
   if isUp():
     restart()
 elif args.command == 'config':
+  if args.head != None:
+    config['head'] = args.head.strip()
+
   if args.mode != None:
     config['theme']['mode'] = args.mode.strip()
 
+    color = 'white'
+    if config['theme']['mode'] == 'dark':
+      color = 'black'
+
+    writeConkyConfig({
+      'default_color': color,
+      'default_outline_color': color,
+      'default_shade_color': color
+      })
+
+
+  if args.font != None:
+    config['theme']['font'] = args.font.strip()
+
   if args.wallpapers != None:
-    config['theme']['wallpapers']['path'] = args.wallpapers
-  
+    config['system']['wallpapers']['path'] = args.wallpapers
+
   if args.interval != None:
-    config['theme']['wallpapers']['interval'] = args.interval
-
-  if args.head != None:
-    config['theme']['fonts']['head'] = args.head.strip()
-
-  if args.subhead != None:
-    config['theme']['fonts']['subhead'] = args.subhead.strip()
-
-  if args.body != None:
-    config['theme']['fonts']['body'] = args.body.strip()
+    config['system']['wallpapers']['interval'] = args.interval
 
   if args.monitor != None:
     monitor = args.monitor
     config['system']['monitor'] = monitor
-    writeConkyMonitor(monitor)
+    writeConkyConfig({'xinerama_head': monitor})
 
   if args.debug != None:
     config['system']['debug'] = args.debug.strip()

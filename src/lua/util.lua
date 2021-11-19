@@ -3,41 +3,6 @@
 lfs = require "lfs"
 yaml = require "yaml"
 
--- Returns the name of the given day with 0-6 means sunday-saturday
-function day (index)
-  local days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
-
-  if index < 0 or index >= table.getn (days) then
-    return ""
-  end
-
-  return days[index + 1]
-end
-
--- Returns the name of the given month with 1-12 means jan-dec
-function month (index)
-  local months = {
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  }
-
-  if index < 1 or index > table.getn (months) then
-    return ""
-  end
-
-  return months[index]
-end
-
 -- Splits the string by the given delimiter
 function split (str, delimiter, lazy)
   local result = {}
@@ -78,11 +43,9 @@ function matches (str, ...)
         return true
       end
     end
-
-    return false
   end
 
-  return str
+  return false
 end
 
 -- Trims any whitespace of the string
@@ -100,7 +63,7 @@ function exec (command)
   local output = file:read ("*a")
   file:close ()
 
-  return output
+  return trim (output)
 end
 
 -- Returns the list of files filtered by the given patterns
@@ -130,14 +93,66 @@ function load_yaml (path)
   return dict
 end
 
+-- Round the given value to the given number of decimal places
+function round (value, precision)
+  local mult = 10^(precision or 0)
+
+  return math.floor(value * mult + 0.5) / mult
+end
+
+-- Converts bytes to kilo bits
+function to_kbits (bytes)
+  return (bytes * 8) / 1024
+end
+
+-- Converts bytes to mega bits
+function to_mbits (bytes)
+  return (bytes * 8) / (1024 * 1024)
+end
+
+-- Converts bytes to giga bits
+function to_gbits (bytes)
+  return (bytes * 8) / (1024 * 1024 * 1024)
+end
+
+-- Converts bytes to mega bytes
+function to_mbytes (bytes)
+  return bytes / (1024 * 1024)
+end
+
+-- Check if the given value is nil or empty
+function is_empty (value)
+  return value == nil or value == ""
+end
+
+-- Check if the given value is not nil and not empty
+function is_not_empty (value)
+  return not is_empty (value)
+end
+
+-- Returns the given value if not empty, otherwise the default
+function default_to (value, default)
+  if is_empty (value) then
+    return default
+  end
+
+  return value
+end
+
 return {
-  day = day,
-  month = month,
   split = split,
   cap = cap,
   matches = matches,
   trim = trim,
   exec = exec,
   list = list,
-  yaml = load_yaml
+  yaml = load_yaml,
+  round = round,
+  to_kbits = to_kbits,
+  to_mbits = to_mbits,
+  to_gbits = to_gbits,
+  to_mbytes = to_mbytes,
+  is_empty = is_empty,
+  is_not_empty = is_not_empty,
+  default_to = default_to
 }
