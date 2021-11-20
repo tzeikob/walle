@@ -86,9 +86,11 @@ echo -e "Debian files have been created successfully"
 
 echo -e "Bundling the package files \U1F4AC"
 
+SERVICE_DIR=$DIST_DIR/build/etc/systemd/system
 INSTALLATION_DIR=$DIST_DIR/build/usr/share/$PKG_NAME
 BIN_DIR=$INSTALLATION_DIR/bin
 
+mkdir -p $SERVICE_DIR
 mkdir -p $INSTALLATION_DIR
 mkdir -p $BIN_DIR
 
@@ -98,6 +100,20 @@ cp $BASE_DIR/../src/bin.py $BIN_FILE
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $BIN_FILE
 
 echo -e "Executable file has been bundled"
+
+SERVICE_EXEC_FILE=$BIN_DIR/resolve
+cp $BASE_DIR/../src/resolve.py $SERVICE_EXEC_FILE
+
+sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $SERVICE_EXEC_FILE
+
+echo -e "Service executable file has been bundled"
+
+SERVICE_FILE=$SERVICE_DIR/$PKG_NAME.service
+cp $BASE_DIR/../resources/systemd $SERVICE_FILE
+
+sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $SERVICE_FILE
+
+echo -e "Service file has been bundled"
 
 LUA_FILE=$INSTALLATION_DIR/main.lua
 cp $BASE_DIR/../src/lua/main.lua $LUA_FILE

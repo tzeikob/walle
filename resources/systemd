@@ -1,0 +1,11 @@
+[Unit]
+Description=#PKG_NAME resolve service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/python3 /usr/share/#PKG_NAME/bin/resolve
+
+[Install]
+WantedBy=multi-user.target

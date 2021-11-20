@@ -62,9 +62,19 @@ luarocks install lua-cjson
 
 echo -e "Lua dependencies have been installed"
 
+echo -e "Starting resolve service..."
+
+systemctl daemon-reload
+systemctl enable $PKG_NAME.service
+systemctl start $PKG_NAME.service
+
+echo -e "Resolve service has been started"
+
 echo -e "Starting $PKG_NAME executable..."
 
 su $SUDO_USER -c "$PKG_NAME start"
+
+echo -e "Executable has been started"
 
 echo -e "Exiting post installation script"
 

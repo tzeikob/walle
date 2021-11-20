@@ -11,8 +11,9 @@ AUTOSTART_DIR=$HOME_DIR/.config/autostart
 echo -e "Startig post remove script"
 
 rm -f /usr/bin/$PKG_NAME
+rm -rf /usr/share/$PKG_NAME
 
-echo -e "Executable symbolic link file has been removed"
+echo -e "Installation remnant files have been removed"
 
 # Remove config folder
 rm -rf $CONFIG_DIR
