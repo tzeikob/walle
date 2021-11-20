@@ -27,14 +27,17 @@ abort () {
   exit $errcode
 }
 
+# Escape slashes in paths: path
+esc () {
+  local path=$1
+
+  echo $path | sed 's/\//\\\//g'
+}
+
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
   abort "don't run this script as root user" 1
 fi
-
-# Source utility methods
-source $BASE_DIR/../src/util/core.sh
-source $BASE_DIR/../src/util/text.sh
 
 # Clean any build files
 rm -rf $DIST_DIR
@@ -90,7 +93,7 @@ mkdir -p $INSTALLATION_DIR
 mkdir -p $BIN_DIR
 
 BIN_FILE=$BIN_DIR/$PKG_NAME
-cp $BASE_DIR/../src/index.py $BIN_FILE
+cp $BASE_DIR/../src/bin.py $BIN_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $BIN_FILE
 
@@ -108,14 +111,14 @@ cp $BASE_DIR/ui/gnome.lua $INSTALLATION_DIR/ui.lua
 echo -e "Lua files have been bundled"
 
 CONKYRC_FILE=$INSTALLATION_DIR/.conkyrc
-cp $BASE_DIR/../src/.conkyrc $CONKYRC_FILE
+cp $BASE_DIR/../resources/.conkyrc $CONKYRC_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $CONKYRC_FILE
 
 echo -e "Conkyrc file has been bundle"
 
 CONFIG_FILE=$INSTALLATION_DIR/config.yml
-cp $BASE_DIR/../src/config.yml $CONFIG_FILE
+cp $BASE_DIR/../resources/config.yml $CONFIG_FILE
 
 sed -i "s/#PKG_VERSION/$(esc "$PKG_VERSION")/g" $CONFIG_FILE
 
