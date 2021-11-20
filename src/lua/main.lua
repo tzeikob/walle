@@ -1,7 +1,9 @@
 -- Main lua file of the conky config file
 
--- Resolved base path at build time
-BASE_DIR = "/home/#USER/.config/#PKG_NAME"
+-- Resolved base and config paths at build time
+PKG_NAME = "#PKG_NAME"
+BASE_DIR = "/usr/share/" .. PKG_NAME
+CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
 
 -- Add base directory to lua package path
 package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
@@ -11,13 +13,13 @@ util = require "util"
 core = require "core"
 
 -- Load configuration into a dict object
-config = util.yaml (BASE_DIR .. "/config.yml")
+config = util.yaml (CONFIG_DIR .. "/config.yml")
 
 -- Load the file paths of any wallpapers
 path = config["system"]["wallpapers"]["path"]
 
 if util.is_empty (path) then
-  path = BASE_DIR .. "/wallpapers"
+  path = CONFIG_DIR .. "/wallpapers"
 end
 
 wallpapers = util.list (path, "jpeg$", "jpg$", "png$")

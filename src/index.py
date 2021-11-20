@@ -14,8 +14,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as scalar
 from pathlib import Path
 
 PKG_NAME = '#PKG_NAME'
-HOME = str(Path.home())
-BASE_DIR = HOME + '/.config/' + PKG_NAME
+BASE_DIR = os.path.expanduser("~") + '/.config/' + PKG_NAME
 CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
 CONKYRC_FILE_PATH = BASE_DIR + '/.conkyrc'
 LOG_FILE_PATH = BASE_DIR + '/all.log'

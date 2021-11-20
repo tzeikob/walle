@@ -4,30 +4,25 @@
 set -e
 
 PKG_NAME="#PKG_NAME"
+INSTALLATION_DIR=/usr/share/$PKG_NAME
 HOME_DIR=/home/$SUDO_USER
 CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
 AUTOSTART_DIR=$HOME_DIR/.config/autostart
-TEMP_DIR=/tmp/$PKG_NAME
 
 echo -e "Startig post installation script"
+
+# Create the executable's symbolic link file
+ln -s $INSTALLATION_DIR/bin/$PKG_NAME /usr/bin/$PKG_NAME
+
+# Set the user name in the main lua file
+sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/main.lua
 
 # Create config folder
 mkdir -p $CONFIG_DIR
 
-# Move config files to the config folder
-mv $TEMP_DIR/config.yml $CONFIG_DIR/config.yml
-mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
-
-# Move lua files
-LUA_FILE=$CONFIG_DIR/main.lua
-mv $TEMP_DIR/main.lua $LUA_FILE
-
-# Set the user name in the main lua file
-sed -i "s/#USER/$SUDO_USER/g" $LUA_FILE
-
-mv $TEMP_DIR/ui.lua $CONFIG_DIR/ui.lua
-mv $TEMP_DIR/util.lua $CONFIG_DIR/util.lua
-mv $TEMP_DIR/core.lua $CONFIG_DIR/core.lua
+# Copy config files to config folder
+cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml
+cp $INSTALLATION_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR

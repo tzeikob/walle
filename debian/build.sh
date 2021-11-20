@@ -83,7 +83,10 @@ echo -e "Debian files have been created successfully"
 
 echo -e "Bundling the package files \U1F4AC"
 
-BIN_DIR=$DIST_DIR/build/usr/bin
+INSTALLATION_DIR=$DIST_DIR/build/usr/share/$PKG_NAME
+BIN_DIR=$INSTALLATION_DIR/bin
+
+mkdir -p $INSTALLATION_DIR
 mkdir -p $BIN_DIR
 
 BIN_FILE=$BIN_DIR/$PKG_NAME
@@ -93,28 +96,25 @@ sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $BIN_FILE
 
 echo -e "Executable file has been bundled"
 
-TEMP_DIR=$DIST_DIR/build/tmp/$PKG_NAME
-mkdir -p $TEMP_DIR
-
-LUA_FILE=$TEMP_DIR/main.lua
+LUA_FILE=$INSTALLATION_DIR/main.lua
 cp $BASE_DIR/../src/lua/main.lua $LUA_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $LUA_FILE
 
-cp $BASE_DIR/../src/lua/util.lua $TEMP_DIR/util.lua
-cp $BASE_DIR/../src/lua/core.lua $TEMP_DIR/core.lua
-cp $BASE_DIR/ui/gnome.lua $TEMP_DIR/ui.lua
+cp $BASE_DIR/../src/lua/util.lua $INSTALLATION_DIR/util.lua
+cp $BASE_DIR/../src/lua/core.lua $INSTALLATION_DIR/core.lua
+cp $BASE_DIR/ui/gnome.lua $INSTALLATION_DIR/ui.lua
 
 echo -e "Lua files have been bundled"
 
-CONKYRC_FILE=$TEMP_DIR/.conkyrc
+CONKYRC_FILE=$INSTALLATION_DIR/.conkyrc
 cp $BASE_DIR/../src/.conkyrc $CONKYRC_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $CONKYRC_FILE
 
 echo -e "Conkyrc file has been bundle"
 
-CONFIG_FILE=$TEMP_DIR/config.yml
+CONFIG_FILE=$INSTALLATION_DIR/config.yml
 cp $BASE_DIR/../src/config.yml $CONFIG_FILE
 
 sed -i "s/#PKG_VERSION/$(esc "$PKG_VERSION")/g" $CONFIG_FILE
