@@ -11,14 +11,20 @@ AUTOSTART_DIR=$HOME_DIR/.config/autostart
 
 echo -e "Startig post installation script"
 
-# Create the executable's symbolic link file
-ln -s $INSTALLATION_DIR/bin/$PKG_NAME /usr/bin/$PKG_NAME
-
-# Set the user name in the main lua file
+# Set the current sudo user to files need user's name
+sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/bin/resolve.py
+sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/$PKG_NAME.service
 sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/main.lua
 
-# Create config folder
+# Create the executable's symbolic link file
+ln -s $INSTALLATION_DIR/bin/$PKG_NAME.py /usr/bin/$PKG_NAME
+
+# Create resolve service symbolic link file
+ln -s $INSTALLATION_DIR/$PKG_NAME.service /etc/systemd/system/$PKG_NAME.service
+
+# Create config folders
 mkdir -p $CONFIG_DIR
+mkdir -p $CONFIG_DIR/logs
 
 # Copy config files to config folder
 cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml

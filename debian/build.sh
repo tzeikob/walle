@@ -86,29 +86,27 @@ echo -e "Debian files have been created successfully"
 
 echo -e "Bundling the package files \U1F4AC"
 
-SERVICE_DIR=$DIST_DIR/build/etc/systemd/system
 INSTALLATION_DIR=$DIST_DIR/build/usr/share/$PKG_NAME
-BIN_DIR=$INSTALLATION_DIR/bin
-
-mkdir -p $SERVICE_DIR
 mkdir -p $INSTALLATION_DIR
+
+BIN_DIR=$INSTALLATION_DIR/bin
 mkdir -p $BIN_DIR
 
-BIN_FILE=$BIN_DIR/$PKG_NAME
+BIN_FILE=$BIN_DIR/$PKG_NAME.py
 cp $BASE_DIR/../src/bin.py $BIN_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $BIN_FILE
 
-echo -e "Executable file has been bundled"
-
-SERVICE_EXEC_FILE=$BIN_DIR/resolve
+SERVICE_EXEC_FILE=$BIN_DIR/resolve.py
 cp $BASE_DIR/../src/resolve.py $SERVICE_EXEC_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $SERVICE_EXEC_FILE
 
-echo -e "Service executable file has been bundled"
+cp $BASE_DIR/../src/util.py $BIN_DIR/util.py
 
-SERVICE_FILE=$SERVICE_DIR/$PKG_NAME.service
+echo -e "Binary files have been bundled"
+
+SERVICE_FILE=$INSTALLATION_DIR/$PKG_NAME.service
 cp $BASE_DIR/../resources/systemd $SERVICE_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $SERVICE_FILE

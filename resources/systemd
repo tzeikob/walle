@@ -4,8 +4,9 @@ After=multi-user.target
 
 [Service]
 Type=simple
+User=#USER
 Restart=always
-ExecStart=/usr/share/#PKG_NAME/bin/resolve >> /usr/share/#PKG_NAME/resolve.log
+ExecStart=/usr/share/#PKG_NAME/bin/resolve.py
 
 [Install]
 WantedBy=multi-user.target
