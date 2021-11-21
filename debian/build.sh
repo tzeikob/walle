@@ -113,14 +113,17 @@ sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $SERVICE_FILE
 
 echo -e "Service file has been bundled"
 
-LUA_FILE=$INSTALLATION_DIR/main.lua
+LUA_DIR=$INSTALLATION_DIR/lua
+mkdir -p $LUA_DIR
+
+LUA_FILE=$LUA_DIR/main.lua
 cp $BASE_DIR/../src/lua/main.lua $LUA_FILE
 
 sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $LUA_FILE
 
-cp $BASE_DIR/../src/lua/util.lua $INSTALLATION_DIR/util.lua
-cp $BASE_DIR/../src/lua/core.lua $INSTALLATION_DIR/core.lua
-cp $BASE_DIR/ui/gnome.lua $INSTALLATION_DIR/ui.lua
+cp $BASE_DIR/../src/lua/util.lua $LUA_DIR/util.lua
+cp $BASE_DIR/../src/lua/core.lua $LUA_DIR/core.lua
+cp $BASE_DIR/ui/gnome.lua $LUA_DIR/ui.lua
 
 echo -e "Lua files have been bundled"
 

@@ -2,7 +2,7 @@
 
 -- Resolved base and config paths at build time
 PKG_NAME = "#PKG_NAME"
-BASE_DIR = "/usr/share/" .. PKG_NAME
+BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
 CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
 
 -- Add base directory to lua package path

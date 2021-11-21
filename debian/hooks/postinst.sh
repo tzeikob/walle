@@ -14,7 +14,7 @@ echo -e "Startig post installation script"
 # Set the current sudo user to files need user's name
 sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/bin/resolve.py
 sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/$PKG_NAME.service
-sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/main.lua
+sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/lua/main.lua
 
 # Create the executable's symbolic link file
 ln -s $INSTALLATION_DIR/bin/$PKG_NAME.py /usr/bin/$PKG_NAME
