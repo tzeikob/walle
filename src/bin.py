@@ -17,7 +17,7 @@ BASE_DIR = os.path.expanduser("~") + '/.config/' + PKG_NAME
 CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
 CONKYRC_FILE_PATH = BASE_DIR + '/.conkyrc'
 LOG_FILE_PATH = BASE_DIR + '/logs/' + PKG_NAME + '.log'
-PID_FILE_PATH = BASE_DIR + '/pid'
+CONKY_PID_FILE_PATH = BASE_DIR + '/conky.pid'
 
 # Aborts the process in fatal error: message, errcode
 def abort (message, errcode):
@@ -180,8 +180,8 @@ def resolveArgs (prog):
 
 # Read the pid of the pid file
 def readPid ():
-  if os.path.exists(PID_FILE_PATH):
-    with open(PID_FILE_PATH) as pid_file:
+  if os.path.exists(CONKY_PID_FILE_PATH):
+    with open(CONKY_PID_FILE_PATH) as pid_file:
       return pid_file.read().strip()
   else:
     return None
@@ -217,7 +217,7 @@ def start (silent=False):
       abort('failed to spawn the conky process', 1)
 
     # Save the conky process id in the file system
-    with open(PID_FILE_PATH, 'w') as pid_file:
+    with open(CONKY_PID_FILE_PATH, 'w') as pid_file:
       pid_file.write(str(process.pid))
 
   if isUp():
@@ -244,7 +244,7 @@ def stop (silent=False):
     if process.returncode != 0:
       abort('failed to kill the conky process', 1)
 
-    os.remove(PID_FILE_PATH)
+    os.remove(CONKY_PID_FILE_PATH)
 
     if not silent: logger.info('Conky is now shut down')
   else:
