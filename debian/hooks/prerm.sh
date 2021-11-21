@@ -13,7 +13,7 @@ su $SUDO_USER -c "$PKG_NAME stop"
 
 echo -e "Executable has been stopped"
 
-echo -e "Stoping resolve service..."
+echo -e "Stopping resolve service..."
 
 systemctl stop $PKG_NAME.service
 systemctl disable $PKG_NAME.service
