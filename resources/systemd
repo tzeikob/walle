@@ -1,12 +1,12 @@
 [Unit]
-Description=#PKG_NAME resolve service
+Description=#PKG_NAME service
 After=multi-user.target
 
 [Service]
 Type=simple
 User=#USER
 Restart=always
-ExecStart=/usr/share/#PKG_NAME/bin/resolve.py
+ExecStart=/usr/share/#PKG_NAME/bin/service.py
 
 [Install]
 WantedBy=multi-user.target

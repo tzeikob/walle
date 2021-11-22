@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # A script to start the build process of the project
 
+set -e
+
 PKG_FILE=./package.yml
 
 # Aborts build process on fatal errors: <message> <errcode>

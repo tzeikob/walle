@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # A script to build the project as debian package
 
+set -e
+
 PKG_NAME="$1"
 PKG_VERSION="$2"
 PKG_DEPENDS="$3"
@@ -75,12 +77,15 @@ BIN_DIR=$INSTALLATION_DIR/bin
 mkdir -p $BIN_DIR
 
 cp $BASE_DIR/../src/bin.py $BIN_DIR/$PKG_NAME.py
-cp $BASE_DIR/../src/resolve.py $BIN_DIR/resolve.py
+cp $BASE_DIR/../src/service.py $BIN_DIR/service.py
 cp $BASE_DIR/../src/util.py $BIN_DIR/util.py
 
 echo -e "Binary files have been added"
 
-cp $BASE_DIR/../resources/systemd $INSTALLATION_DIR/$PKG_NAME.service
+SYSTEMD_DIR=$BUILD_DIR/etc/systemd/system
+mkdir -p $SYSTEMD_DIR
+
+cp $BASE_DIR/../resources/systemd $SYSTEMD_DIR/$PKG_NAME.service
 
 echo -e "Service file has been set in place"
 

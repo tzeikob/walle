@@ -5,6 +5,7 @@ set -e
 
 PKG_NAME="#PKG_NAME"
 INSTALLATION_DIR=/usr/share/$PKG_NAME
+SYSTEMD_DIR=/etc/systemd/system
 HOME_DIR=/home/$SUDO_USER
 CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
 AUTOSTART_DIR=$HOME_DIR/.config/autostart
@@ -12,15 +13,12 @@ AUTOSTART_DIR=$HOME_DIR/.config/autostart
 echo -e "Startig post installation script"
 
 # Set the current sudo user to files need user's name
-sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/bin/resolve.py
-sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/$PKG_NAME.service
+sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/bin/service.py
 sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/lua/main.lua
+sed -i "s/#USER/$SUDO_USER/g" $SYSTEMD_DIR/$PKG_NAME.service
 
 # Create the executable's symbolic link file
 ln -s $INSTALLATION_DIR/bin/$PKG_NAME.py /usr/bin/$PKG_NAME
-
-# Create resolve service symbolic link file
-ln -s $INSTALLATION_DIR/$PKG_NAME.service /etc/systemd/system/$PKG_NAME.service
 
 # Create config folders
 mkdir -p $CONFIG_DIR
@@ -68,19 +66,19 @@ luarocks install lua-cjson
 
 echo -e "Lua dependencies have been installed"
 
-echo -e "Starting resolve service..."
+echo -e "Starting service..."
 
 systemctl daemon-reload
 systemctl enable $PKG_NAME.service
 systemctl start $PKG_NAME.service
 
-echo -e "Resolve service has been started"
+echo -e "Service has been started"
 
-echo -e "Starting $PKG_NAME executable..."
+echo -e "Starting conky process..."
 
 su $SUDO_USER -c "$PKG_NAME start"
 
-echo -e "Executable has been started"
+echo -e "Conky has been started"
 
 echo -e "Exiting post installation script"
 

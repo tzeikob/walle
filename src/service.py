@@ -9,7 +9,7 @@ PKG_NAME = '#PKG_NAME'
 USER = '#USER'
 CONFIG_DIR = '/home/' + USER + '/.config/' + PKG_NAME
 DATA_FILE_PATH = CONFIG_DIR + '/.data'
-LOG_FILE_PATH = CONFIG_DIR + '/logs/resolve.log'
+LOG_FILE_PATH = CONFIG_DIR + '/logs/service.log'
 
 logger = Logger(LOG_FILE_PATH)
 
