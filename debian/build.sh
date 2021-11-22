@@ -61,10 +61,10 @@ mkdir -p $DEBIAN_DIR
 
 echo -e "Processing the debian meta files \U1F4AC"
 
-cp $BASE_DIR/control $DEBIAN_DIR/control
-cp $BASE_DIR/hooks/postinst.sh $DEBIAN_DIR/postinst
-cp $BASE_DIR/hooks/postrm.sh $DEBIAN_DIR/postrm
-cp $BASE_DIR/hooks/prerm.sh $DEBIAN_DIR/prerm
+cp $BASE_DIR/meta/control $DEBIAN_DIR/control
+cp $BASE_DIR/meta/hooks/postinst.sh $DEBIAN_DIR/postinst
+cp $BASE_DIR/meta/hooks/postrm.sh $DEBIAN_DIR/postrm
+cp $BASE_DIR/meta/hooks/prerm.sh $DEBIAN_DIR/prerm
 
 echo -e "Meta files have been created"
 
@@ -79,6 +79,9 @@ mkdir -p $BIN_DIR
 cp $BASE_DIR/../src/bin.py $BIN_DIR/$PKG_NAME.py
 cp $BASE_DIR/../src/service.py $BIN_DIR/service.py
 cp $BASE_DIR/../src/util.py $BIN_DIR/util.py
+
+# Copy the resolver core impl for debian
+cp $BASE_DIR/core/resolver.py $BIN_DIR/core.py
 
 echo -e "Binary files have been added"
 

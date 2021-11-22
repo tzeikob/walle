@@ -1,3 +1,5 @@
+# A python script exporting a forked logger
+
 import sys
 import logging
 

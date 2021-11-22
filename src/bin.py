@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# An opinionated tool to manage and configure conky for developers
+# A python script to orchestrate conky and service processes
 
 import sys
 import os
