@@ -17,6 +17,7 @@ BASE_DIR = os.path.expanduser("~") + '/.config/' + PKG_NAME
 CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
 CONKYRC_FILE_PATH = BASE_DIR + '/.conkyrc'
 LOG_FILE_PATH = BASE_DIR + '/logs/' + PKG_NAME + '.log'
+CONKY_LOG_FILE_PATH = BASE_DIR + '/logs/conky.log'
 CONKY_PID_FILE_PATH = BASE_DIR + '/conky.pid'
 
 # Aborts the process in fatal error: message, errcode
@@ -198,7 +199,7 @@ def start (silent=False):
     return
 
   # Launch the conky process
-  with open(LOG_FILE_PATH, 'a') as log_file:
+  with open(CONKY_LOG_FILE_PATH, 'a') as log_file:
     try:
       process = subprocess.Popen(
         ['conky', '-b', '-p', '1', '-c', CONKYRC_FILE_PATH],
@@ -231,7 +232,7 @@ def stop (silent=False):
     pid = readPid()
 
     # Kill conky process given the pid
-    with open(LOG_FILE_PATH, 'a') as log_file:
+    with open(CONKY_LOG_FILE_PATH, 'a') as log_file:
       try:
         process = subprocess.run(
           ['kill', str(pid)],
