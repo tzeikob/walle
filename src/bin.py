@@ -198,6 +198,19 @@ def start (silent=False):
     if not silent: logger.info('Conky is already up and running')
     return
 
+  with open(LOG_FILE_PATH, 'a') as log_file:
+    try:
+      service = subprocess.run(
+        ['sudo', 'systemctl', 'start', PKG_NAME + '.service'],
+        stdout=log_file,
+        stderr=log_file,
+        universal_newlines=True)
+    except:
+      abort('failed to start the service', 1)
+
+  if service.returncode != 0:
+    abort('failed to start the service', 1)
+
   # Launch the conky process
   with open(CONKY_LOG_FILE_PATH, 'a') as log_file:
     try:
@@ -248,6 +261,19 @@ def stop (silent=False):
     os.remove(CONKY_PID_FILE_PATH)
 
     if not silent: logger.info('Conky is now shut down')
+
+    with open(LOG_FILE_PATH, 'a') as log_file:
+      try:
+        service = subprocess.run(
+          ['sudo', 'systemctl', 'stop', PKG_NAME + '.service'],
+          stdout=log_file,
+          stderr=log_file,
+          universal_newlines=True)
+      except:
+        abort('failed to stop the service', 1)
+
+    if service.returncode != 0:
+      abort('failed to stop the service', 1)
   else:
     if not silent: logger.info('Conky is already shut down')
 

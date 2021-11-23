@@ -66,19 +66,23 @@ luarocks install lua-cjson
 
 echo -e "Lua dependencies have been installed"
 
-echo -e "Starting service..."
+echo -e "Setting up the $PKG_NAME service..."
 
 systemctl daemon-reload
 systemctl enable $PKG_NAME.service
-systemctl start $PKG_NAME.service
 
-echo -e "Service has been started"
+echo -e "Service has been enabled"
 
-echo -e "Starting conky process..."
+echo -e "Adding the sudoers rule file for service calls"
 
-su $SUDO_USER -c "$PKG_NAME start"
+# IMPORTANT: Before adding the sudoer rule don't forget
+# to set the user name and CHECK the syntax of the file
+sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/sudoers
+visudo -cf $INSTALLATION_DIR/sudoers
 
-echo -e "Conky has been started"
+mv $INSTALLATION_DIR/sudoers /etc/sudoers.d/$PKG_NAME
+
+echo -e "Sudoers rule file has been set in place"
 
 echo -e "Exiting post installation script"
 

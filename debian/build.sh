@@ -92,6 +92,10 @@ cp $BASE_DIR/../resources/systemd $SYSTEMD_DIR/$PKG_NAME.service
 
 echo -e "Service file has been set in place"
 
+cp $BASE_DIR/../resources/sudoers $INSTALLATION_DIR/sudoers
+
+echo -e "Sudoers file has been added"
+
 LUA_DIR=$INSTALLATION_DIR/lua
 mkdir -p $LUA_DIR
 
@@ -125,6 +129,7 @@ restore "PKG_MAINTAINER" "$PKG_MAINTAINER"
 restore "PKG_HOMEPAGE" "$PKG_HOMEPAGE"
 restore "PKG_DESCRIPTION" "$PKG_DESCRIPTION"
 restore "PKG_FILE_SIZE" "$PKG_FILE_SIZE"
+restore "ALIAS_NAME" "$(echo $PKG_NAME | tr [:lower:] [:upper:])"
 
 echo -e "Package global variables have been restored"
 

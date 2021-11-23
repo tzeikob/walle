@@ -7,20 +7,17 @@ PKG_NAME="#PKG_NAME"
 
 echo -e "Starting pre remove script"
 
-echo -e "Stopping conky process..."
+echo -e "Trying to stop processes..."
 
 su $SUDO_USER -c "$PKG_NAME stop"
 
-echo -e "Conky has been stopped"
+echo -e "Disabling the $PKG_NAME service..."
 
-echo -e "Stopping service..."
-
-systemctl stop $PKG_NAME.service
 systemctl disable $PKG_NAME.service
 systemctl daemon-reload
 systemctl reset-failed
 
-echo -e "Service has been stopped"
+echo -e "Service has been removed"
 
 echo -e "Exiting pre remove script"
 
