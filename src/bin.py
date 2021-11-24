@@ -5,17 +5,14 @@ import sys
 import os
 import subprocess
 import time
-import re
 import getpass
+import config
+import conky
 import args
-import ruamel.yaml
-from ruamel.yaml.scalarstring import SingleQuotedScalarString as scalar
-from util import Logger
+import util
 
 PKG_NAME = '#PKG_NAME'
-BASE_DIR = os.path.expanduser("~") + '/.config/' + PKG_NAME
-CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
-CONKYRC_FILE_PATH = BASE_DIR + '/.conkyrc'
+BASE_DIR = os.path.expanduser('~/.config/') + PKG_NAME
 LOG_FILE_PATH = BASE_DIR + '/logs/' + PKG_NAME + '.log'
 CONKY_LOG_FILE_PATH = BASE_DIR + '/logs/conky.log'
 CONKY_PID_FILE_PATH = BASE_DIR + '/conky.pid'
@@ -24,53 +21,6 @@ CONKY_PID_FILE_PATH = BASE_DIR + '/conky.pid'
 def abort (message, errcode):
   logger.error('Error: ' + message)
   sys.exit(errcode)
-
-# Reads and parses the config file to an object
-def readConfig ():
-  try:
-    with open(CONFIG_FILE_PATH) as config_file:
-      cfg = yaml.load(config_file)
-
-      # Recover string scalar values
-      cfg['version'] = scalar(cfg['version'])
-      cfg['head'] = scalar(cfg['head'])
-      cfg['system']['wallpapers']['path'] = scalar(cfg['system']['wallpapers']['path'])
-      cfg['theme']['font'] = scalar(cfg['theme']['font'])
-
-      return cfg
-  except EnvironmentError:
-    abort('failed to read the config file', 1)
-
-# Dumps the config object to a yaml file: config
-def writeConfig (config):
-  try:
-    with open(CONFIG_FILE_PATH, 'w') as config_file:
-      yaml.dump(config, config_file)
-  except EnvironmentError:
-    abort('failed to write to config file', 1)
-
-# Write the given settings to conkyrc file
-def writeConkyConfig (settings):
-  if not os.path.exists(CONKYRC_FILE_PATH):
-    abort('failed to write settings: missing conkyrc file', 1)
-
-  newContent = ''
-
-  with open(CONKYRC_FILE_PATH, 'r') as conkyrc_file:
-    for line in conkyrc_file:
-      for key in settings:
-        if re.match(r'^[ ]*{}[ ]*=[ ]*.+,[ ]*$'.format(key), line):
-          value = settings[key]
-
-          if type(value) is str:
-            value = "'" + value + "'"
-
-          line = '    ' + key + ' = ' + str(value) + ',\n'
-
-      newContent += line
-
-  with open(CONKYRC_FILE_PATH, 'w') as conkyrc_file:
-    conkyrc_file.write(newContent)
 
 # Read the pid of the pid file
 def readPid ():
@@ -181,46 +131,14 @@ def restart():
   else:
     start()
 
-# Dumps the theme part of the config as a preset file
-def savePreset (config, path):
-  try:
-    with open(path, 'w') as preset_file:
-      preset = {
-        'version': config['version'],
-        'theme': {
-          'mode': config['theme']['mode'],
-          'font': config['theme']['font']
-        }
-      }
-
-      yaml.dump(preset, preset_file)
-  except EnvironmentError:
-    abort('failed to save preset to file', 1)
-
-# Loads the preset file into the config
-def loadPreset (path, config):
-  try:
-    with open(path) as preset_file:
-      preset = yaml.load(preset_file)
-
-      config['theme']['mode'] = preset['theme']['mode']
-      config['theme']['font'] = scalar(preset['theme']['font'])
-
-      return config
-  except EnvironmentError:
-    abort('failed to read the preset file', 1)
-
 # Initialize logger
-logger = Logger(LOG_FILE_PATH)
-
-# Initialize yaml parser
-yaml = ruamel.yaml.YAML()
+logger = util.Logger(LOG_FILE_PATH)
 
 # Load the configuration file
-config = readConfig()
+settings = config.read()
 
-# Parse given arguments
-opts = args.parse(PKG_NAME, config['version'])
+# Parse given arguments into options
+opts = args.parse(PKG_NAME, settings['version'])
 
 # Disalow calling this script as root user or sudo
 if getpass.getuser() == 'root':
@@ -233,17 +151,16 @@ elif opts.command == 'stop':
 elif opts.command == 'restart':
   restart()
 elif opts.command == 'reset':
-  config['head'] = ''
-  config['system']['monitor'] = 0
-  config['system']['wallpapers']['path'] = ''
-  config['system']['wallpapers']['interval'] = 0
-  config['system']['debug'] = 'disabled'
-  config['theme']['mode'] = 'light'
-  config['theme']['font'] = ''
+  settings['head'] = ''
+  settings['system']['monitor'] = 0
+  settings['system']['wallpapers']['path'] = ''
+  settings['system']['wallpapers']['interval'] = 0
+  settings['system']['debug'] = 'disabled'
+  settings['theme']['mode'] = 'light'
+  settings['theme']['font'] = ''
 
-  writeConfig(config)
-
-  writeConkyConfig({
+  config.write(settings)
+  conky.config({
     'xinerama_head': 0,
     'default_color': 'white',
     'default_outline_color': 'white',
@@ -254,49 +171,60 @@ elif opts.command == 'reset':
     restart()
 elif opts.command == 'config':
   if opts.head != None:
-    config['head'] = opts.head.strip()
+    settings['head'] = opts.head.strip()
 
   if opts.mode != None:
-    config['theme']['mode'] = opts.mode.strip()
+    settings['theme']['mode'] = opts.mode.strip()
 
     color = 'white'
-    if config['theme']['mode'] == 'dark':
+    if settings['theme']['mode'] == 'dark':
       color = 'black'
 
-    writeConkyConfig({
+    conky.config({
       'default_color': color,
       'default_outline_color': color,
       'default_shade_color': color
       })
 
-
   if opts.font != None:
-    config['theme']['font'] = opts.font.strip()
+    settings['theme']['font'] = opts.font.strip()
 
   if opts.wallpapers != None:
-    config['system']['wallpapers']['path'] = opts.wallpapers
+    settings['system']['wallpapers']['path'] = opts.wallpapers
 
   if opts.interval != None:
-    config['system']['wallpapers']['interval'] = opts.interval
+    settings['system']['wallpapers']['interval'] = opts.interval
 
   if opts.monitor != None:
     monitor = opts.monitor
-    config['system']['monitor'] = monitor
-    writeConkyConfig({'xinerama_head': monitor})
+    settings['system']['monitor'] = monitor
+
+    conky.config({'xinerama_head': monitor})
 
   if opts.debug != None:
-    config['system']['debug'] = opts.debug.strip()
+    settings['system']['debug'] = opts.debug.strip()
 
-  writeConfig(config)
+  config.write(settings)
 
   if isUp():
     restart()
 elif opts.command == 'preset':
   if opts.save:
-    savePreset(config, opts.save)
+    config.save_preset(opts.save, settings)
   elif opts.load:
-    config = loadPreset(opts.load, config)
-    writeConfig(config)
+    settings = config.load_preset(opts.load, settings)
+
+    config.write(settings)
+
+    color = 'white'
+    if settings['theme']['mode'] == 'dark':
+      color = 'black'
+
+    conky.config({
+      'default_color': color,
+      'default_outline_color': color,
+      'default_shade_color': color
+      })
 
     if isUp():
       restart()

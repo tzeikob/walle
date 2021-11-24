@@ -1,4 +1,4 @@
-# A python script exporting a forked logger
+# A module exporting generic utilities
 
 import sys
 import logging

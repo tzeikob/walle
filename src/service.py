@@ -5,7 +5,7 @@ import json
 import time
 from datetime import datetime
 from util import Logger
-from core import Resolver
+from resolver import Resolver
 
 PKG_NAME = '#PKG_NAME'
 USER = '#USER'

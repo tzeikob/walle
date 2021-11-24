@@ -1,3 +1,5 @@
+# A module exporting the arguments parser
+
 import argparse
 import re
 
