@@ -7,7 +7,7 @@ import subprocess
 import time
 import re
 import getpass
-import argparse
+import args
 import ruamel.yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as scalar
 from util import Logger
@@ -24,35 +24,6 @@ CONKY_PID_FILE_PATH = BASE_DIR + '/conky.pid'
 def abort (message, errcode):
   logger.error('Error: ' + message)
   sys.exit(errcode)
-
-# Asserts if the given value is a zero positive integer: value
-def zeroPosInt (value):
-  try:
-    number = int(value)
-    if number < 0:
-      raise argparse.ArgumentTypeError("'%s' is not a zero positive int value" % value)
-
-    return number
-  except ValueError:
-    raise argparse.ArgumentTypeError("'%s' is not a zero positive int value" % value)
-
-# Asserts if the given value is a positive integer: value
-def posInt (value):
-  try:
-    number = int(value)
-    if number <= 0:
-      raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
-
-    return number
-  except ValueError:
-    raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
-
-# Asserts if the given value is a conky valid font style value: value
-def fontStyle (value):
-  if not re.match(r'^[a-zA-Z0-9]([a-zA-Z0-9_\- ])*(:bold)?(:italic)?(:size=[1-9][0-9]?[0-9]?)?$', value):
-    raise argparse.ArgumentTypeError("'%s' is not a valid conky font style value" % value)
-
-  return value
 
 # Reads and parses the config file to an object
 def readConfig ():
@@ -100,84 +71,6 @@ def writeConkyConfig (settings):
 
   with open(CONKYRC_FILE_PATH, 'w') as conkyrc_file:
     conkyrc_file.write(newContent)
-
-# Resolves the given arguments schema: prog
-def resolveArgs (prog):
-  parser = argparse.ArgumentParser(
-    prog=prog,
-    description='An opinionated tool to manage and configure conky for developers.',
-    epilog='Have a nice %(prog)s time!')
-
-  parser.add_argument(
-    '-v', '--version',
-    action='version',
-    version=config['version'],
-    help='show the version number and exit')
-
-  subparsers = parser.add_subparsers(metavar='command', dest='command')
-  subparsers.required = True
-
-  subparsers.add_parser('start', help='start %(prog)s spawning the conky process')
-  subparsers.add_parser('restart', help='restart %(prog)s respawning the conky process')
-  subparsers.add_parser('stop', help='stop %(prog)s killing the conky process')
-  subparsers.add_parser('reset', help='reset %(prog)s back to default settings')
-
-  configParser = subparsers.add_parser('config', help='configure %(prog)s and restart the conky process')
-
-  configParser.add_argument(
-    '--head',
-    metavar='text',
-    help="set the text which will appear as head line")
-
-  configParser.add_argument(
-    '-m', '--mode',
-    choices=['light', 'dark'],
-    metavar='mode',
-    help="set the theme color mode to 'light' or 'dark'")
-
-  configParser.add_argument(
-    '-f', '--font',
-    type=fontStyle,
-    metavar='font',
-    help='set the font style the text should appear with')
-
-  configParser.add_argument(
-    '-w', '--wallpapers',
-    metavar='path',
-    help='set the path to a folder containing wallpaper image files')
-
-  configParser.add_argument(
-    '-i', '--interval',
-    type=zeroPosInt,
-    metavar='secs',
-    help='set the interval in secs the wallpaper should randomly rotate by')
-
-  configParser.add_argument(
-    '--monitor',
-    type=zeroPosInt,
-    metavar='index',
-    help='set the monitor index the conky should render at')
-
-  configParser.add_argument(
-    '--debug',
-    choices=['enabled', 'disabled'],
-    metavar='mode',
-    help="set debug mode to 'enabled' or 'disabled'")
-
-  presetParser = subparsers.add_parser('preset', help='save or load %(prog)s preset files')
-  presetGroup = presetParser.add_mutually_exclusive_group()
-
-  presetGroup.add_argument(
-    '--save',
-    metavar='path',
-    help="set the file path the preset will be saved in")
-
-  presetGroup.add_argument(
-    '--load',
-    metavar='path',
-    help="set the file path the preset will be loaded from")
-
-  return parser.parse_args()
 
 # Read the pid of the pid file
 def readPid ():
@@ -326,20 +219,20 @@ yaml = ruamel.yaml.YAML()
 # Load the configuration file
 config = readConfig()
 
-# Resolve given arguments
-args = resolveArgs(PKG_NAME)
+# Parse given arguments
+opts = args.parse(PKG_NAME, config['version'])
 
 # Disalow calling this script as root user or sudo
 if getpass.getuser() == 'root':
   abort("don't run this script as root user", 1)
 
-if args.command == 'start':
+if opts.command == 'start':
   start()
-elif args.command == 'stop':
+elif opts.command == 'stop':
   stop()
-elif args.command == 'restart':
+elif opts.command == 'restart':
   restart()
-elif args.command == 'reset':
+elif opts.command == 'reset':
   config['head'] = ''
   config['system']['monitor'] = 0
   config['system']['wallpapers']['path'] = ''
@@ -359,12 +252,12 @@ elif args.command == 'reset':
 
   if isUp():
     restart()
-elif args.command == 'config':
-  if args.head != None:
-    config['head'] = args.head.strip()
+elif opts.command == 'config':
+  if opts.head != None:
+    config['head'] = opts.head.strip()
 
-  if args.mode != None:
-    config['theme']['mode'] = args.mode.strip()
+  if opts.mode != None:
+    config['theme']['mode'] = opts.mode.strip()
 
     color = 'white'
     if config['theme']['mode'] == 'dark':
@@ -377,32 +270,32 @@ elif args.command == 'config':
       })
 
 
-  if args.font != None:
-    config['theme']['font'] = args.font.strip()
+  if opts.font != None:
+    config['theme']['font'] = opts.font.strip()
 
-  if args.wallpapers != None:
-    config['system']['wallpapers']['path'] = args.wallpapers
+  if opts.wallpapers != None:
+    config['system']['wallpapers']['path'] = opts.wallpapers
 
-  if args.interval != None:
-    config['system']['wallpapers']['interval'] = args.interval
+  if opts.interval != None:
+    config['system']['wallpapers']['interval'] = opts.interval
 
-  if args.monitor != None:
-    monitor = args.monitor
+  if opts.monitor != None:
+    monitor = opts.monitor
     config['system']['monitor'] = monitor
     writeConkyConfig({'xinerama_head': monitor})
 
-  if args.debug != None:
-    config['system']['debug'] = args.debug.strip()
+  if opts.debug != None:
+    config['system']['debug'] = opts.debug.strip()
 
   writeConfig(config)
 
   if isUp():
     restart()
-elif args.command == 'preset':
-  if args.save:
-    savePreset(config, args.save)
-  elif args.load:
-    config = loadPreset(args.load, config)
+elif opts.command == 'preset':
+  if opts.save:
+    savePreset(config, opts.save)
+  elif opts.load:
+    config = loadPreset(opts.load, config)
     writeConfig(config)
 
     if isUp():

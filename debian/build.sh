@@ -79,6 +79,7 @@ mkdir -p $BIN_DIR
 cp $BASE_DIR/../src/bin.py $BIN_DIR/$PKG_NAME.py
 cp $BASE_DIR/../src/service.py $BIN_DIR/service.py
 cp $BASE_DIR/../src/util.py $BIN_DIR/util.py
+cp $BASE_DIR/../src/args.py $BIN_DIR/args.py
 
 # Copy the resolver core impl for debian
 cp $BASE_DIR/core/resolver.py $BIN_DIR/core.py
