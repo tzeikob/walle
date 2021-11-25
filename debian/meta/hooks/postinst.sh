@@ -5,7 +5,6 @@ set -e
 
 PKG_NAME="#PKG_NAME"
 INSTALLATION_DIR=/usr/share/$PKG_NAME
-SYSTEMD_DIR=/etc/systemd/system
 HOME_DIR=/home/$SUDO_USER
 CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
 AUTOSTART_DIR=$HOME_DIR/.config/autostart
@@ -13,16 +12,13 @@ AUTOSTART_DIR=$HOME_DIR/.config/autostart
 echo -e "Startig post installation script"
 
 # Set the current sudo user to files need user's name
-sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/bin/service.py
 sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/lua/main.lua
-sed -i "s/#USER/$SUDO_USER/g" $SYSTEMD_DIR/$PKG_NAME.service
 
 # Create the executable's symbolic link file
 ln -s $INSTALLATION_DIR/bin/$PKG_NAME.py /usr/bin/$PKG_NAME
 
-# Create config folders
+# Create config folder
 mkdir -p $CONFIG_DIR
-mkdir -p $CONFIG_DIR/logs
 
 # Copy config files to config folder
 cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml
@@ -65,24 +61,6 @@ luarocks install yaml
 luarocks install lua-cjson
 
 echo -e "Lua dependencies have been installed"
-
-echo -e "Setting up the $PKG_NAME service..."
-
-systemctl daemon-reload
-systemctl enable $PKG_NAME.service
-
-echo -e "Service has been enabled"
-
-echo -e "Adding the sudoers rule file for service calls"
-
-# IMPORTANT: Before adding the sudoer rule don't forget
-# to set the user name and CHECK the syntax of the file
-sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/sudoers
-visudo -cf $INSTALLATION_DIR/sudoers
-
-mv $INSTALLATION_DIR/sudoers /etc/sudoers.d/$PKG_NAME
-
-echo -e "Sudoers rule file has been set in place"
 
 echo -e "Exiting post installation script"
 

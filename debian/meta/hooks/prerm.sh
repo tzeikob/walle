@@ -11,13 +11,7 @@ echo -e "Trying to stop processes..."
 
 su $SUDO_USER -c "$PKG_NAME stop"
 
-echo -e "Disabling the $PKG_NAME service..."
-
-systemctl disable $PKG_NAME.service
-systemctl daemon-reload
-systemctl reset-failed
-
-echo -e "Service has been removed"
+echo -e "Processes have been stopped"
 
 echo -e "Exiting pre remove script"
 

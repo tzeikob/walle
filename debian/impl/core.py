@@ -1,4 +1,4 @@
-# A python script implementing a debian core resolver
+# A module exporting debian core resolving implementations
 
 from datetime import datetime
 

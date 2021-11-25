@@ -12,119 +12,126 @@ import args
 import logger
 import globals
 
-# Aborts the process in fatal error: message, errcode
+# Aborts the process in fatal error
 def abort (message, errcode):
   logger.error('Error: ' + message)
   sys.exit(errcode)
 
-# Read the pid of the pid file
-def readPid ():
-  if os.path.exists(globals.CONKY_PID_FILE_PATH):
-    with open(globals.CONKY_PID_FILE_PATH) as pid_file:
-      return pid_file.read().strip()
+# Writes the given data to the file with the given path
+def write (path, data):
+  with open(path, 'w') as output_file:
+    output_file.write(str(data))
+
+# Reads the contents of file with the given path
+def read (path):
+  if os.path.exists(path):
+    with open(path) as input_file:
+      return input_file.read().strip()
   else:
     return None
 
-# Returns if the conky process is up and running
-def isUp ():
-  pid = readPid()
+# Returns if the process with the given pid is up and running
+def isUp (pid):
   return os.path.exists('/proc/' + str(pid))
 
-# Spawns the conky process: silent
-def start (silent=False):
-  if isUp():
-    if not silent: logger.info('Conky is already up and running')
-    return
-
+# Spawns a new process given the command
+def spawn (command):
   with open(globals.LOG_FILE_PATH, 'a') as log_file:
     try:
-      service = subprocess.run(
-        ['sudo', 'systemctl', 'start', globals.PKG_NAME + '.service'],
-        stdout=log_file,
-        stderr=log_file,
-        universal_newlines=True)
-    except:
-      abort('failed to start the service', 1)
-
-  if service.returncode != 0:
-    abort('failed to start the service', 1)
-
-  # Launch the conky process
-  with open(globals.CONKY_LOG_FILE_PATH, 'a') as log_file:
-    try:
       process = subprocess.Popen(
-        ['conky', '-b', '-p', '1', '-c', globals.CONKYRC_FILE_PATH],
+        command.split(),
         stdout=log_file,
         stderr=log_file,
         universal_newlines=True)
-    except:
-      abort('failed to spawn the conky process', 1)
+    except Exception as error:
+      raise Exception('Failed to execute command: ' + str(error))
 
-    # Give time to conky to be spawn
-    time.sleep(2)
+  # Give time to the process to be spawn
+  time.sleep(2)
 
-    # Check if the process has failed to spawn
-    returncode = process.poll()
-    if returncode != None and returncode != 0:
-      abort('failed to spawn the conky process', 1)
+  # Check if the process has failed to be spawn
+  returncode = process.poll()
 
-    # Save the conky process id in the file system
-    with open(globals.CONKY_PID_FILE_PATH, 'w') as pid_file:
-      pid_file.write(str(process.pid))
+  if returncode != None and returncode != 0:
+    raise Exception('Failed to spawn the process: ' + str(command))
 
-  if isUp():
-    if not silent: logger.info('Conky is up and running')
-  else:
-    abort('failed to spawn the conky process', 1)
+  return process.pid
 
-# Stops the running conky process: silent
-def stop (silent=False):
-  if isUp():
-    pid = readPid()
-
-    # Kill conky process given the pid
-    with open(globals.CONKY_LOG_FILE_PATH, 'a') as log_file:
+# Kills the process identified by the given pid
+def kill (pid):
+  if isUp(pid):
+    with open(globals.LOG_FILE_PATH, 'a') as log_file:
       try:
         process = subprocess.run(
           ['kill', str(pid)],
           stdout=log_file,
           stderr=log_file,
           universal_newlines=True)
-      except:
-        abort('failed to kill the conky process', 1)
+      except Exception as error:
+        raise Exception('Failed to execute kill command: ' + str(error))
 
     if process.returncode != 0:
-      abort('failed to kill the conky process', 1)
+      raise Exception('Failed to kill the process: ' + str(pid))
 
-    os.remove(globals.CONKY_PID_FILE_PATH)
-
-    if not silent: logger.info('Conky is now shut down')
-
-    with open(globals.LOG_FILE_PATH, 'a') as log_file:
-      try:
-        service = subprocess.run(
-          ['sudo', 'systemctl', 'stop', globals.PKG_NAME + '.service'],
-          stdout=log_file,
-          stderr=log_file,
-          universal_newlines=True)
-      except:
-        abort('failed to stop the service', 1)
-
-    if service.returncode != 0:
-      abort('failed to stop the service', 1)
+    return True
   else:
-    if not silent: logger.info('Conky is already shut down')
+    return False
 
-# Restart the conky process
+# Starts resolver and conky processes
+def start ():
+  pid = read(globals.RESOLVER_PID_FILE_PATH)
+
+  if not isUp(pid):
+    try:
+      pid = spawn('/usr/share/' + globals.PKG_NAME + '/bin/resolver.py')
+      write(globals.RESOLVER_PID_FILE_PATH, pid)
+
+      logger.info('resolver is up')
+    except Exception as error:
+      abort('Failed to spawn resolver process: ' + str(error), 1)
+  
+  pid = read(globals.CONKY_PID_FILE_PATH)
+
+  if not isUp(pid):
+    try:
+      pid = spawn('conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH)
+      write(globals.CONKY_PID_FILE_PATH, pid)
+
+      logger.info('conky is up')
+    except Exception as error:
+      abort('Failed to spawn conky process: ' + str(error), 1)
+
+  logger.info(globals.PKG_NAME + ' is up and running')
+
+# Stops the resolver and conky processes
+def stop ():
+  pid = read(globals.RESOLVER_PID_FILE_PATH)
+
+  try:
+    if kill(pid):
+      os.remove(globals.RESOLVER_PID_FILE_PATH)
+
+    logger.info('resolver is down')
+  except Exception as error:
+    abort('Failed to stop resolver process: ' + str(error), 1)
+
+  pid = read(globals.CONKY_PID_FILE_PATH)
+
+  try:
+    if kill(pid):
+      os.remove(globals.CONKY_PID_FILE_PATH)
+
+    logger.info('conky is down')
+  except Exception as error:
+    abort('Failed to stop resolver process: ' + str(error), 1)
+  
+  logger.info(globals.PKG_NAME + ' is shut down')
+
+# Restart the resolver and conky processes
 def restart():
-  if isUp():
-    stop(True)
-    time.sleep(1)
-    start(True)
-
-    logger.info('Conky has been restarted')
-  else:
-    start()
+  stop()
+  time.sleep(1)
+  start()
 
 # Load the configuration file
 settings = config.read()
@@ -134,7 +141,7 @@ opts = args.parse(globals.PKG_NAME, settings['version'])
 
 # Disalow calling this script as root user or sudo
 if getpass.getuser() == 'root':
-  abort("don't run this script as root user", 1)
+  abort("Don't run this script as root user", 1)
 
 if opts.command == 'start':
   start()
@@ -159,8 +166,7 @@ elif opts.command == 'reset':
     'default_shade_color': 'white'
     })
 
-  if isUp():
-    restart()
+  restart()
 elif opts.command == 'config':
   if opts.head != None:
     settings['head'] = opts.head.strip()
@@ -188,6 +194,8 @@ elif opts.command == 'config':
     settings['system']['wallpapers']['interval'] = opts.interval
 
   if opts.monitor != None:
+    logger.info('monitor option is experimental')
+
     monitor = opts.monitor
     settings['system']['monitor'] = monitor
 
@@ -198,8 +206,7 @@ elif opts.command == 'config':
 
   config.write(settings)
 
-  if isUp():
-    restart()
+  restart()
 elif opts.command == 'preset':
   if opts.save:
     config.save_preset(opts.save, settings)
@@ -218,7 +225,6 @@ elif opts.command == 'preset':
       'default_shade_color': color
       })
 
-    if isUp():
-      restart()
+    restart()
 
 sys.exit(0)

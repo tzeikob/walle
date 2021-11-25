@@ -77,28 +77,17 @@ BIN_DIR=$INSTALLATION_DIR/bin
 mkdir -p $BIN_DIR
 
 cp $BASE_DIR/../src/bin.py $BIN_DIR/$PKG_NAME.py
-cp $BASE_DIR/../src/service.py $BIN_DIR/service.py
+cp $BASE_DIR/../src/resolver.py $BIN_DIR/resolver.py
 cp $BASE_DIR/../src/config.py $BIN_DIR/config.py
 cp $BASE_DIR/../src/conky.py $BIN_DIR/conky.py
 cp $BASE_DIR/../src/logger.py $BIN_DIR/logger.py
 cp $BASE_DIR/../src/args.py $BIN_DIR/args.py
 cp $BASE_DIR/../src/globals.py $BIN_DIR/globals.py
 
-# Copy the resolver core impl for debian
-cp $BASE_DIR/core/resolver.py $BIN_DIR/resolver.py
+# Copy the core impl to the binaries folder
+cp $BASE_DIR/impl/core.py $BIN_DIR/core.py
 
 echo -e "Binary files have been added"
-
-SYSTEMD_DIR=$BUILD_DIR/etc/systemd/system
-mkdir -p $SYSTEMD_DIR
-
-cp $BASE_DIR/../resources/systemd $SYSTEMD_DIR/$PKG_NAME.service
-
-echo -e "Service file has been set in place"
-
-cp $BASE_DIR/../resources/sudoers $INSTALLATION_DIR/sudoers
-
-echo -e "Sudoers file has been added"
 
 LUA_DIR=$INSTALLATION_DIR/lua
 mkdir -p $LUA_DIR
@@ -133,7 +122,6 @@ restore "PKG_MAINTAINER" "$PKG_MAINTAINER"
 restore "PKG_HOMEPAGE" "$PKG_HOMEPAGE"
 restore "PKG_DESCRIPTION" "$PKG_DESCRIPTION"
 restore "PKG_FILE_SIZE" "$PKG_FILE_SIZE"
-restore "ALIAS_NAME" "$(echo $PKG_NAME | tr [:lower:] [:upper:])"
 
 echo -e "Package global variables have been restored"
 

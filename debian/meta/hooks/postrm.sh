@@ -25,11 +25,6 @@ rm -f $AUTOSTART_DIR/$PKG_NAME.desktop
 
 echo -e "Autostart desktop file has been removed"
 
-# Remove sudoer rule file set for service calls
-rm -f /etc/sudoers.d/$PKG_NAME
-
-echo -e "Sudoers rule file has been removed"
-
 echo -e "Exiting post remove script"
 
 exit 0
