@@ -9,7 +9,7 @@ import getpass
 import config
 import conky
 import args
-import util
+import logger
 
 PKG_NAME = '#PKG_NAME'
 BASE_DIR = os.path.expanduser('~/.config/') + PKG_NAME
@@ -130,9 +130,6 @@ def restart():
     logger.info('Conky has been restarted')
   else:
     start()
-
-# Initialize logger
-logger = util.Logger(LOG_FILE_PATH)
 
 # Load the configuration file
 settings = config.read()

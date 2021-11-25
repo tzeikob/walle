@@ -80,7 +80,7 @@ cp $BASE_DIR/../src/bin.py $BIN_DIR/$PKG_NAME.py
 cp $BASE_DIR/../src/service.py $BIN_DIR/service.py
 cp $BASE_DIR/../src/config.py $BIN_DIR/config.py
 cp $BASE_DIR/../src/conky.py $BIN_DIR/conky.py
-cp $BASE_DIR/../src/util.py $BIN_DIR/util.py
+cp $BASE_DIR/../src/logger.py $BIN_DIR/logger.py
 cp $BASE_DIR/../src/args.py $BIN_DIR/args.py
 
 # Copy the resolver core impl for debian
