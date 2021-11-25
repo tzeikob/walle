@@ -3,10 +3,7 @@
 import os
 import sys
 import logging
-
-PKG_NAME = '#PKG_NAME'
-BASE_DIR = os.path.expanduser('~/.config/') + PKG_NAME
-LOG_FILE_PATH = BASE_DIR + 'all.log'
+import globals
 
 stdout = logging.getLogger('stdout')
 stdout.addHandler(logging.StreamHandler(sys.stdout))
@@ -17,7 +14,7 @@ stderr.addHandler(logging.StreamHandler(sys.stderr))
 stderr.setLevel(logging.ERROR)
 
 log_file = logging.getLogger('file')
-log_file.addHandler(logging.FileHandler(LOG_FILE_PATH))
+log_file.addHandler(logging.FileHandler(globals.LOG_FILE_PATH))
 log_file.setLevel(logging.INFO)
 
 def info (message):

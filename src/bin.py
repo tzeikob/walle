@@ -10,12 +10,7 @@ import config
 import conky
 import args
 import logger
-
-PKG_NAME = '#PKG_NAME'
-BASE_DIR = os.path.expanduser('~/.config/') + PKG_NAME
-LOG_FILE_PATH = BASE_DIR + '/logs/' + PKG_NAME + '.log'
-CONKY_LOG_FILE_PATH = BASE_DIR + '/logs/conky.log'
-CONKY_PID_FILE_PATH = BASE_DIR + '/conky.pid'
+import globals
 
 # Aborts the process in fatal error: message, errcode
 def abort (message, errcode):
@@ -24,8 +19,8 @@ def abort (message, errcode):
 
 # Read the pid of the pid file
 def readPid ():
-  if os.path.exists(CONKY_PID_FILE_PATH):
-    with open(CONKY_PID_FILE_PATH) as pid_file:
+  if os.path.exists(globals.CONKY_PID_FILE_PATH):
+    with open(globals.CONKY_PID_FILE_PATH) as pid_file:
       return pid_file.read().strip()
   else:
     return None
@@ -41,10 +36,10 @@ def start (silent=False):
     if not silent: logger.info('Conky is already up and running')
     return
 
-  with open(LOG_FILE_PATH, 'a') as log_file:
+  with open(globals.LOG_FILE_PATH, 'a') as log_file:
     try:
       service = subprocess.run(
-        ['sudo', 'systemctl', 'start', PKG_NAME + '.service'],
+        ['sudo', 'systemctl', 'start', globals.PKG_NAME + '.service'],
         stdout=log_file,
         stderr=log_file,
         universal_newlines=True)
@@ -55,10 +50,10 @@ def start (silent=False):
     abort('failed to start the service', 1)
 
   # Launch the conky process
-  with open(CONKY_LOG_FILE_PATH, 'a') as log_file:
+  with open(globals.CONKY_LOG_FILE_PATH, 'a') as log_file:
     try:
       process = subprocess.Popen(
-        ['conky', '-b', '-p', '1', '-c', CONKYRC_FILE_PATH],
+        ['conky', '-b', '-p', '1', '-c', globals.CONKYRC_FILE_PATH],
         stdout=log_file,
         stderr=log_file,
         universal_newlines=True)
@@ -74,7 +69,7 @@ def start (silent=False):
       abort('failed to spawn the conky process', 1)
 
     # Save the conky process id in the file system
-    with open(CONKY_PID_FILE_PATH, 'w') as pid_file:
+    with open(globals.CONKY_PID_FILE_PATH, 'w') as pid_file:
       pid_file.write(str(process.pid))
 
   if isUp():
@@ -88,7 +83,7 @@ def stop (silent=False):
     pid = readPid()
 
     # Kill conky process given the pid
-    with open(CONKY_LOG_FILE_PATH, 'a') as log_file:
+    with open(globals.CONKY_LOG_FILE_PATH, 'a') as log_file:
       try:
         process = subprocess.run(
           ['kill', str(pid)],
@@ -101,14 +96,14 @@ def stop (silent=False):
     if process.returncode != 0:
       abort('failed to kill the conky process', 1)
 
-    os.remove(CONKY_PID_FILE_PATH)
+    os.remove(globals.CONKY_PID_FILE_PATH)
 
     if not silent: logger.info('Conky is now shut down')
 
-    with open(LOG_FILE_PATH, 'a') as log_file:
+    with open(globals.LOG_FILE_PATH, 'a') as log_file:
       try:
         service = subprocess.run(
-          ['sudo', 'systemctl', 'stop', PKG_NAME + '.service'],
+          ['sudo', 'systemctl', 'stop', globals.PKG_NAME + '.service'],
           stdout=log_file,
           stderr=log_file,
           universal_newlines=True)
@@ -135,7 +130,7 @@ def restart():
 settings = config.read()
 
 # Parse given arguments into options
-opts = args.parse(PKG_NAME, settings['version'])
+opts = args.parse(globals.PKG_NAME, settings['version'])
 
 # Disalow calling this script as root user or sudo
 if getpass.getuser() == 'root':

@@ -82,6 +82,7 @@ cp $BASE_DIR/../src/config.py $BIN_DIR/config.py
 cp $BASE_DIR/../src/conky.py $BIN_DIR/conky.py
 cp $BASE_DIR/../src/logger.py $BIN_DIR/logger.py
 cp $BASE_DIR/../src/args.py $BIN_DIR/args.py
+cp $BASE_DIR/../src/globals.py $BIN_DIR/globals.py
 
 # Copy the resolver core impl for debian
 cp $BASE_DIR/core/resolver.py $BIN_DIR/resolver.py

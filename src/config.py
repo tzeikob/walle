@@ -3,21 +3,18 @@
 import os
 import ruamel.yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as scalar
-
-PKG_NAME = '#PKG_NAME'
-BASE_DIR = os.path.expanduser('~/.config/') + PKG_NAME
-CONFIG_FILE_PATH = BASE_DIR + '/config.yml'
+import globals
 
 # Initialize yaml parser
 yaml = ruamel.yaml.YAML()
 
 # Reads and parses the config file to an object
 def read ():
-  if not os.path.exists(CONFIG_FILE_PATH):
+  if not os.path.exists(globals.CONFIG_FILE_PATH):
     raise Exception('Failed to read config: missing config file')
 
   try:
-    with open(CONFIG_FILE_PATH) as config_file:
+    with open(globals.CONFIG_FILE_PATH) as config_file:
       settings = yaml.load(config_file)
 
       # Recover string scalar values
@@ -32,11 +29,11 @@ def read ():
 
 # Dumps the settings object to the config file
 def write (settings):
-  if not os.path.exists(CONFIG_FILE_PATH):
+  if not os.path.exists(globals.CONFIG_FILE_PATH):
     raise Exception('Failed to write config: missing config file')
 
   try:
-    with open(CONFIG_FILE_PATH, 'w') as config_file:
+    with open(globals.CONFIG_FILE_PATH, 'w') as config_file:
       yaml.dump(settings, config_file)
   except Exception as error:
     raise Exception('Failed to write config: ' + str(error))
