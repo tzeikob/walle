@@ -26,3 +26,16 @@ def config (settings):
 
   with open(globals.CONKYRC_FILE_PATH, 'w') as conkyrc_file:
     conkyrc_file.write(newContent)
+
+# Sets the monitor index the conky should render on
+def switch (index):
+  config({'xinerama_head': index})
+
+# Resets conky configuration to default settings
+def reset ():
+  config({
+    'xinerama_head': 0,
+    'default_color': 'white',
+    'default_outline_color': 'white',
+    'default_shade_color': 'white'
+    })

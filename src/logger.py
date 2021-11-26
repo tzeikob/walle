@@ -1,6 +1,5 @@
 # A module exporting the logger
 
-import os
 import sys
 import logging
 import globals

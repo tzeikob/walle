@@ -6,9 +6,9 @@ import getpass
 import config
 import conky
 import args
-import logger
 import system
 import globals
+import logger
 
 # Starts resolver and conky processes
 def start ():
@@ -75,11 +75,8 @@ if getpass.getuser() == 'root':
   logger.error("don't run this script as root user")
   system.exit(1)
 
-# Load the configuration file
-settings = config.read()
-
 # Parse given arguments into options
-opts = args.parse(globals.PKG_NAME, settings['version'])
+opts = args.parse(globals.PKG_NAME, globals.PKG_VERSION)
 
 if opts.command == 'start':
   start()
@@ -88,80 +85,23 @@ elif opts.command == 'stop':
 elif opts.command == 'restart':
   restart()
 elif opts.command == 'reset':
-  settings['head'] = ''
-  settings['system']['monitor'] = 0
-  settings['system']['wallpapers']['path'] = ''
-  settings['system']['wallpapers']['interval'] = 0
-  settings['system']['debug'] = 'disabled'
-  settings['theme']['mode'] = 'light'
-  settings['theme']['font'] = ''
-
-  config.write(settings)
-  conky.config({
-    'xinerama_head': 0,
-    'default_color': 'white',
-    'default_outline_color': 'white',
-    'default_shade_color': 'white'
-    })
+  config.reset()
+  conky.reset()
 
   restart()
 elif opts.command == 'config':
-  if opts.head != None:
-    settings['head'] = opts.head.strip()
-
-  if opts.mode != None:
-    settings['theme']['mode'] = opts.mode.strip()
-
-    color = 'white'
-    if settings['theme']['mode'] == 'dark':
-      color = 'black'
-
-    conky.config({
-      'default_color': color,
-      'default_outline_color': color,
-      'default_shade_color': color
-      })
-
-  if opts.font != None:
-    settings['theme']['font'] = opts.font.strip()
-
-  if opts.wallpapers != None:
-    settings['system']['wallpapers']['path'] = opts.wallpapers
-
-  if opts.interval != None:
-    settings['system']['wallpapers']['interval'] = opts.interval
+  config.update(opts)
 
   if opts.monitor != None:
-    logger.info('monitor option is experimental')
-
-    monitor = opts.monitor
-    settings['system']['monitor'] = monitor
-
-    conky.config({'xinerama_head': monitor})
-
-  if opts.debug != None:
-    settings['system']['debug'] = opts.debug.strip()
-
-  config.write(settings)
+    logger.info('monitor switching is an experimental option')
+    conky.switch(opts.monitor)
 
   restart()
 elif opts.command == 'preset':
   if opts.save:
-    config.save_preset(opts.save, settings)
+    config.export(opts.save)
   elif opts.load:
-    settings = config.load_preset(opts.load, settings)
-
-    config.write(settings)
-
-    color = 'white'
-    if settings['theme']['mode'] == 'dark':
-      color = 'black'
-
-    conky.config({
-      'default_color': color,
-      'default_outline_color': color,
-      'default_shade_color': color
-      })
+    config.load(opts.load)
 
     restart()
 

@@ -2,6 +2,7 @@
 
 import os
 
+PKG_VERSION = '#PKG_VERSION'
 PKG_NAME = '#PKG_NAME'
 BASE_DIR = os.path.expanduser('~/.config') + '/' + PKG_NAME
 

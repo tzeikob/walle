@@ -36,7 +36,7 @@ def font_style (value):
 def parse (name, version):
   parser = argparse.ArgumentParser(
     prog=name,
-    description='An opinionated tool to manage and configure conky for developers.',
+    description='An opinionated desktop widget for linux based developers.',
     epilog='Have a nice %(prog)s time!')
 
   parser.add_argument(
@@ -48,64 +48,64 @@ def parse (name, version):
   subparsers = parser.add_subparsers(metavar='command', dest='command')
   subparsers.required = True
 
-  subparsers.add_parser('start', help='start %(prog)s spawning the conky process')
-  subparsers.add_parser('restart', help='restart %(prog)s respawning the conky process')
-  subparsers.add_parser('stop', help='stop %(prog)s killing the conky process')
-  subparsers.add_parser('reset', help='reset %(prog)s back to default settings')
+  subparsers.add_parser('start', help='launch %(prog)s widget')
+  subparsers.add_parser('restart', help='restart %(prog)s widget')
+  subparsers.add_parser('stop', help='stop %(prog)s widget')
+  subparsers.add_parser('reset', help='reset %(prog)s back to its default settings')
 
-  configParser = subparsers.add_parser('config', help='configure %(prog)s and restart the conky process')
+  configParser = subparsers.add_parser('config', help='change configuration settings and restart')
 
   configParser.add_argument(
     '--head',
     metavar='text',
-    help="set the text which will appear as head line")
+    help="the text which will appear as head line")
 
   configParser.add_argument(
     '-m', '--mode',
     choices=['light', 'dark'],
     metavar='mode',
-    help="set the theme color mode to 'light' or 'dark'")
+    help="the theme color mode either 'light' or 'dark'")
 
   configParser.add_argument(
     '-f', '--font',
     type=font_style,
     metavar='font',
-    help='set the font style the text should appear with')
+    help='the font style the text should appear with')
 
   configParser.add_argument(
     '-w', '--wallpapers',
     metavar='path',
-    help='set the path to a folder containing wallpaper image files')
+    help='the path to a folder containing wallpaper image files')
 
   configParser.add_argument(
     '-i', '--interval',
     type=zero_pos_int,
     metavar='secs',
-    help='set the interval in secs the wallpaper should randomly rotate by')
+    help='the interval in secs the wallpaper should randomly rotate by')
 
   configParser.add_argument(
     '--monitor',
     type=zero_pos_int,
     metavar='index',
-    help='set the monitor index the conky should render at')
+    help='the monitor index the widget should render on (experimental)')
 
   configParser.add_argument(
     '--debug',
     choices=['enabled', 'disabled'],
     metavar='mode',
-    help="set debug mode to 'enabled' or 'disabled'")
+    help="the debug mode either 'enabled' or 'disabled'")
 
-  presetParser = subparsers.add_parser('preset', help='save or load %(prog)s preset files')
+  presetParser = subparsers.add_parser('preset', help='save and load %(prog)s preset files')
   presetGroup = presetParser.add_mutually_exclusive_group()
 
   presetGroup.add_argument(
     '--save',
     metavar='path',
-    help="set the file path the preset will be saved in")
+    help="the path the preset file will be saved to")
 
   presetGroup.add_argument(
     '--load',
     metavar='path',
-    help="set the file path the preset will be loaded from")
+    help="the path the preset file will be loaded from")
 
   return parser.parse_args()

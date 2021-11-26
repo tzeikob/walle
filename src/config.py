@@ -38,8 +38,47 @@ def write (settings):
   except Exception as error:
     raise Exception('Failed to write config: ' + str(error))
 
-# Dumps the theme part of the settings to a preset file with the given path
-def save_preset (path, settings):
+# Update the configuration settings given the cmd line arguments
+def update (opts):
+  settings = read()
+
+  if opts.head != None:
+    settings['head'] = opts.head.strip()
+
+  if opts.mode != None:
+    settings['theme']['mode'] = opts.mode.strip()
+
+  if opts.font != None:
+    settings['theme']['font'] = opts.font.strip()
+
+  if opts.wallpapers != None:
+    settings['system']['wallpapers']['path'] = opts.wallpapers
+
+  if opts.interval != None:
+    settings['system']['wallpapers']['interval'] = opts.interval
+
+  if opts.debug != None:
+    settings['system']['debug'] = opts.debug.strip()
+
+  write(settings)
+
+# Resets configuration to default settings
+def reset ():
+  settings = read()
+
+  settings['head'] = ''
+  settings['system']['wallpapers']['path'] = ''
+  settings['system']['wallpapers']['interval'] = 0
+  settings['system']['debug'] = 'disabled'
+  settings['theme']['mode'] = 'light'
+  settings['theme']['font'] = ''
+
+  write(settings)
+
+# Dumps the theme part of the settings to a preset file
+def export (path):
+  settings = read()
+
   try:
     with open(path, 'w') as preset_file:
       preset = {
@@ -54,10 +93,12 @@ def save_preset (path, settings):
   except Exception as error:
     raise Exception('Failed to save preset: ' + str(error))
 
-# Loads the preset file into the given setting object
-def load_preset (path, settings):
+# Loads the setting from the preset file to the configuration file
+def load (path):
   if not os.path.exists(path):
     raise Exception('Failed to load preset: file does not exist')
+
+  settings  = read()
 
   try:
     with open(path) as preset_file:
@@ -66,6 +107,6 @@ def load_preset (path, settings):
       settings['theme']['mode'] = preset['theme']['mode']
       settings['theme']['font'] = scalar(preset['theme']['font'])
 
-      return settings
+      write(settings)
   except Exception as error:
     raise Exception('Failed to load preset: ' + str(error))

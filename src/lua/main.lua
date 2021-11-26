@@ -273,6 +273,7 @@ end
 function conky_text ()
   local text = ""
 
+  text = text .. "${color " .. vars["mode"] .. "}\n"
   text = text .. ln (1.4, ie ("${head}"))
   text = text .. ln (1.0, ie ("USER ${user} HOST ${hostname}"))
   text = text .. ln (1.0, ie ("DISTRO ${rls_name} ${rls_codename}"))
