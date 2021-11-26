@@ -17,45 +17,39 @@ def isUp (pid):
 # Spawns a new process given the command
 def spawn (command):
   with open(globals.LOG_FILE_PATH, 'a') as log_file:
-    try:
-      process = subprocess.Popen(
-        command.split(),
-        stdout=log_file,
-        stderr=log_file,
-        universal_newlines=True)
-    except Exception as error:
-      raise Exception('Failed to execute command: ' + str(error))
+    process = subprocess.Popen(
+      command.split(),
+      stdout=log_file,
+      stderr=log_file,
+      universal_newlines=True)
 
   # Give time to the process to be spawn
   time.sleep(2)
 
   # Check if the process has failed to be spawn
-  returncode = process.poll()
+  code = process.poll()
 
-  if returncode != None and returncode != 0:
-    raise Exception('Failed to spawn the process: ' + str(command))
+  if code != None and code != 0:
+    raise Exception(f"[Errno] Failed to spawn process: '{str(command)}'")
 
   return process.pid
 
 # Kills the process identified by the given pid
 def kill (pid):
-  if isUp(pid):
-    with open(globals.LOG_FILE_PATH, 'a') as log_file:
-      try:
-        process = subprocess.run(
-          ['kill', str(pid)],
-          stdout=log_file,
-          stderr=log_file,
-          universal_newlines=True)
-      except Exception as error:
-        raise Exception('Failed to execute kill command: ' + str(error))
-
-    if process.returncode != 0:
-      raise Exception('Failed to kill the process: ' + str(pid))
-
-    return True
-  else:
+  if not isUp(pid):
     return False
+
+  with open(globals.LOG_FILE_PATH, 'a') as log_file:
+    process = subprocess.run(
+      ['kill', str(pid)],
+      stdout=log_file,
+      stderr=log_file,
+      universal_newlines=True)
+
+  if process.returncode != 0:
+    raise Exception(f"[Errno] Failed to kill process: '{str(pid)}'")
+
+  return True
 
 # Writes the given data to the file with the given path
 def write (path, data):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# A python script resolving system information and status
+# An executable script resolving system data and status
 
 import json
 import time

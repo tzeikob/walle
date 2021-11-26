@@ -7,23 +7,25 @@ import re
 def zero_pos_int (value):
   try:
     number = int(value)
-    if number < 0:
-      raise argparse.ArgumentTypeError("'%s' is not a zero positive int value" % value)
-
-    return number
   except ValueError:
-    raise argparse.ArgumentTypeError("'%s' is not a zero positive int value" % value)
+    raise argparse.ArgumentTypeError("'%s' is not an integer value" % value)
+  
+  if number < 0:
+    raise argparse.ArgumentTypeError("'%s' is not a zero positive integer value" % value)
+
+  return number
 
 # Asserts if the given value is a positive integer
 def pos_int (value):
   try:
     number = int(value)
-    if number <= 0:
-      raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
-
-    return number
   except ValueError:
-    raise argparse.ArgumentTypeError("'%s' is not a positive int value" % value)
+    raise argparse.ArgumentTypeError("'%s' is not an integer value" % value)
+
+  if number <= 0:
+    raise argparse.ArgumentTypeError("'%s' is not a positive integer value" % value)
+
+  return number
 
 # Asserts if the given value is a conky valid font style value
 def font_style (value):

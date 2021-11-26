@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# A python script to orchestrate conky and service processes
+# An executable script to orchestrate conky and resolver processes
 
 import time
 import getpass
@@ -10,99 +10,112 @@ import system
 import globals
 import logger
 
-# Starts resolver and conky processes
-def start ():
+# Starts the resolver process
+def start_resolver ():
   pid = system.read(globals.RESOLVER_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    try:
-      pid = system.spawn('/usr/share/' + globals.PKG_NAME + '/bin/resolver.py')
-      system.write(globals.RESOLVER_PID_FILE_PATH, pid)
+    pid = system.spawn('/usr/share/' + globals.PKG_NAME + '/bin/resolver.py')
+    system.write(globals.RESOLVER_PID_FILE_PATH, pid)
 
-      logger.info('resolver is up')
-    except Exception as error:
-      logger.error('Failed to spawn resolver process: ' + str(error))
-      system.exit(1)
+  logger.info('resolver process is up')
 
+# Stops the resolver process
+def stop_resolver ():
+  pid = system.read(globals.RESOLVER_PID_FILE_PATH)
+
+  if system.kill(pid):
+    system.remove(globals.RESOLVER_PID_FILE_PATH)
+
+  logger.info('resolver process is down')
+
+# Starts the conky process
+def start_conky ():
   pid = system.read(globals.CONKY_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    try:
-      pid = system.spawn('conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH)
-      system.write(globals.CONKY_PID_FILE_PATH, pid)
+    pid = system.spawn('conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH)
+    system.write(globals.CONKY_PID_FILE_PATH, pid)
 
-      logger.info('conky is up')
-    except Exception as error:
-      logger.error('Failed to spawn conky process: ' + str(error))
-      system.exit(1)
+  logger.info('conky process is up')
 
-  logger.info(globals.PKG_NAME + ' is up and running')
-
-# Stops the resolver and conky processes
-def stop ():
-  pid = system.read(globals.RESOLVER_PID_FILE_PATH)
-
-  try:
-    if system.kill(pid):
-      system.remove(globals.RESOLVER_PID_FILE_PATH)
-
-    logger.info('resolver is down')
-  except Exception as error:
-    logger.error('Failed to stop resolver process: ' + str(error))
-    system.exit(1)
-
+# Stops the conky process
+def stop_conky ():
   pid = system.read(globals.CONKY_PID_FILE_PATH)
 
-  try:
-    if system.kill(pid):
-      system.remove(globals.CONKY_PID_FILE_PATH)
+  if system.kill(pid):
+    system.remove(globals.CONKY_PID_FILE_PATH)
 
-    logger.info('conky is down')
-  except Exception as error:
-    logger.error('Failed to stop resolver process: ' + str(error))
-    system.exit(1)
-  
-  logger.info(globals.PKG_NAME + ' is shut down')
+  logger.info('conky process is down')
 
-# Restart the resolver and conky processes
+# Restarts the resolver and conky processes
 def restart():
-  stop()
+  stop_conky()
+  stop_resolver()
+
   time.sleep(1)
-  start()
+
+  start_resolver()
+  start_conky()
 
 # Disalow calling this script as root user or sudo
 if getpass.getuser() == 'root':
   logger.error("don't run this script as root user")
   system.exit(1)
 
-# Parse given arguments into options
-opts = args.parse(globals.PKG_NAME, globals.PKG_VERSION)
+try:
+  # Parse given cmd line arguments into options
+  opts = args.parse(globals.PKG_NAME, globals.PKG_VERSION)
 
-if opts.command == 'start':
-  start()
-elif opts.command == 'stop':
-  stop()
-elif opts.command == 'restart':
-  restart()
-elif opts.command == 'reset':
-  config.reset()
-  conky.reset()
+  if opts.command == 'start':
+    start_resolver()
+    start_conky()
 
-  restart()
-elif opts.command == 'config':
-  config.update(opts)
+    logger.info(globals.PKG_NAME + ' is up and running')
 
-  if opts.monitor != None:
-    logger.info('monitor switching is an experimental option')
-    conky.switch(opts.monitor)
+  if opts.command == 'stop':
+    stop_conky()
+    stop_resolver()
 
-  restart()
-elif opts.command == 'preset':
-  if opts.save:
+    logger.info(globals.PKG_NAME + ' is shutdown')
+
+  if opts.command == 'restart':
+    restart()
+
+    logger.info(globals.PKG_NAME + ' is up and running')
+
+  if opts.command == 'reset':
+    config.reset()
+    conky.reset()
+
+    restart()
+
+    logger.info(globals.PKG_NAME + ' is up and running')
+
+  if opts.command == 'config':
+    config.update(opts)
+
+    if opts.monitor != None:
+      logger.info('monitor switching is an experimental option')
+      conky.switch(opts.monitor)
+
+    restart()
+
+    logger.info(globals.PKG_NAME + ' is up and running')
+
+  if opts.command == 'preset' and opts.save != None:
     config.export(opts.save)
-  elif opts.load:
+
+    logger.info('preset has been saved to ' + opts.save)
+
+  if opts.command == 'preset' and opts.load != None:
     config.load(opts.load)
 
     restart()
 
-system.exit(0)
+    logger.info(globals.PKG_NAME + ' is up and running')
+
+  system.exit(0)
+except Exception as error:
+  logger.error(str(error))
+  system.exit(1)

@@ -11,32 +11,26 @@ yaml = ruamel.yaml.YAML()
 # Reads and parses the config file to an object
 def read ():
   if not os.path.exists(globals.CONFIG_FILE_PATH):
-    raise Exception('Failed to read config: missing config file')
+    raise Exception('[Errno] Config file not found')
 
-  try:
-    with open(globals.CONFIG_FILE_PATH) as config_file:
-      settings = yaml.load(config_file)
+  with open(globals.CONFIG_FILE_PATH) as config_file:
+    settings = yaml.load(config_file)
 
-      # Recover string scalar values
-      settings['version'] = scalar(settings['version'])
-      settings['head'] = scalar(settings['head'])
-      settings['system']['wallpapers']['path'] = scalar(settings['system']['wallpapers']['path'])
-      settings['theme']['font'] = scalar(settings['theme']['font'])
+  # Recover string scalar values
+  settings['version'] = scalar(settings['version'])
+  settings['head'] = scalar(settings['head'])
+  settings['system']['wallpapers']['path'] = scalar(settings['system']['wallpapers']['path'])
+  settings['theme']['font'] = scalar(settings['theme']['font'])
 
-      return settings
-  except Exception as error:
-    raise Exception('Failed to read config: ' + str(error))
+  return settings
 
 # Dumps the settings object to the config file
 def write (settings):
   if not os.path.exists(globals.CONFIG_FILE_PATH):
-    raise Exception('Failed to write config: missing config file')
+    raise Exception('[Errno] Config file not found')
 
-  try:
-    with open(globals.CONFIG_FILE_PATH, 'w') as config_file:
-      yaml.dump(settings, config_file)
-  except Exception as error:
-    raise Exception('Failed to write config: ' + str(error))
+  with open(globals.CONFIG_FILE_PATH, 'w') as config_file:
+    yaml.dump(settings, config_file)
 
 # Update the configuration settings given the cmd line arguments
 def update (opts):
@@ -79,34 +73,28 @@ def reset ():
 def export (path):
   settings = read()
 
-  try:
-    with open(path, 'w') as preset_file:
-      preset = {
-        'version': settings['version'],
-        'theme': {
-          'mode': settings['theme']['mode'],
-          'font': settings['theme']['font']
-        }
+  preset = {
+      'version': settings['version'],
+      'theme': {
+        'mode': settings['theme']['mode'],
+        'font': settings['theme']['font']
       }
+    }
 
-      yaml.dump(preset, preset_file)
-  except Exception as error:
-    raise Exception('Failed to save preset: ' + str(error))
+  with open(path, 'w') as preset_file:
+    yaml.dump(preset, preset_file)
 
 # Loads the setting from the preset file to the configuration file
 def load (path):
   if not os.path.exists(path):
-    raise Exception('Failed to load preset: file does not exist')
+    raise Exception(f"[Errno] File not found: '{path}'")
 
+  with open(path) as preset_file:
+    preset = yaml.load(preset_file)
+  
   settings  = read()
 
-  try:
-    with open(path) as preset_file:
-      preset = yaml.load(preset_file)
+  settings['theme']['mode'] = preset['theme']['mode']
+  settings['theme']['font'] = scalar(preset['theme']['font'])
 
-      settings['theme']['mode'] = preset['theme']['mode']
-      settings['theme']['font'] = scalar(preset['theme']['font'])
-
-      write(settings)
-  except Exception as error:
-    raise Exception('Failed to load preset: ' + str(error))
+  write(settings)
