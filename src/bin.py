@@ -2,12 +2,11 @@
 # An executable script to orchestrate conky and resolver processes
 
 import time
-import getpass
+import globals
+import system
+import args
 import config
 import conky
-import args
-import system
-import globals
 import logger
 
 # Starts the resolver process
@@ -58,32 +57,31 @@ def restart():
   start_resolver()
   start_conky()
 
-# Disalow calling this script as root user or sudo
-if getpass.getuser() == 'root':
-  logger.error("don't run this script as root user")
-  system.exit(1)
-
 try:
   # Parse given cmd line arguments into options
   opts = args.parse(globals.PKG_NAME, globals.PKG_VERSION)
 
+  # Start processes
   if opts.command == 'start':
     start_resolver()
     start_conky()
 
     logger.info(globals.PKG_NAME + ' is up and running')
 
+  # Stop processes
   if opts.command == 'stop':
     stop_conky()
     stop_resolver()
 
     logger.info(globals.PKG_NAME + ' is shutdown')
 
+  # Restart processes
   if opts.command == 'restart':
     restart()
 
     logger.info(globals.PKG_NAME + ' is up and running')
 
+  # Reset configuration
   if opts.command == 'reset':
     config.reset()
     conky.reset()
@@ -92,6 +90,7 @@ try:
 
     logger.info(globals.PKG_NAME + ' is up and running')
 
+  # Update configuration
   if opts.command == 'config':
     config.update(opts)
 
@@ -103,11 +102,13 @@ try:
 
     logger.info(globals.PKG_NAME + ' is up and running')
 
+  # Export configuration to preset
   if opts.command == 'preset' and opts.save != None:
     config.export(opts.save)
 
     logger.info('preset has been saved to ' + opts.save)
 
+  # Load preset to configuration
   if opts.command == 'preset' and opts.load != None:
     config.load(opts.load)
 

@@ -4,7 +4,13 @@ import sys
 import os
 import time
 import subprocess
+import getpass
 import globals
+
+# Abort if user in context is root or sudo used
+if getpass.getuser() == 'root':
+  print("[Errno] Don't run as root user")
+  exit(1)
 
 # Aborts the process in fatal error
 def exit (errcode):
