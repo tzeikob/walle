@@ -119,4 +119,5 @@ try:
   system.exit(0)
 except Exception as error:
   logger.error(str(error))
+  logger.trace(error)
   system.exit(1)

@@ -23,3 +23,6 @@ def info (message):
 def error (message):
   stderr.error(message)
   log_file.error(message)
+
+def trace (error):
+  log_file.exception(error)
