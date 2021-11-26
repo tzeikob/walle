@@ -1,129 +1,66 @@
 #!/usr/bin/env python3
 # A python script to orchestrate conky and service processes
 
-import sys
-import os
-import subprocess
 import time
 import getpass
 import config
 import conky
 import args
 import logger
+import system
 import globals
-
-# Aborts the process in fatal error
-def abort (message, errcode):
-  logger.error('Error: ' + message)
-  sys.exit(errcode)
-
-# Writes the given data to the file with the given path
-def write (path, data):
-  with open(path, 'w') as output_file:
-    output_file.write(str(data))
-
-# Reads the contents of file with the given path
-def read (path):
-  if os.path.exists(path):
-    with open(path) as input_file:
-      return input_file.read().strip()
-  else:
-    return None
-
-# Returns if the process with the given pid is up and running
-def isUp (pid):
-  return os.path.exists('/proc/' + str(pid))
-
-# Spawns a new process given the command
-def spawn (command):
-  with open(globals.LOG_FILE_PATH, 'a') as log_file:
-    try:
-      process = subprocess.Popen(
-        command.split(),
-        stdout=log_file,
-        stderr=log_file,
-        universal_newlines=True)
-    except Exception as error:
-      raise Exception('Failed to execute command: ' + str(error))
-
-  # Give time to the process to be spawn
-  time.sleep(2)
-
-  # Check if the process has failed to be spawn
-  returncode = process.poll()
-
-  if returncode != None and returncode != 0:
-    raise Exception('Failed to spawn the process: ' + str(command))
-
-  return process.pid
-
-# Kills the process identified by the given pid
-def kill (pid):
-  if isUp(pid):
-    with open(globals.LOG_FILE_PATH, 'a') as log_file:
-      try:
-        process = subprocess.run(
-          ['kill', str(pid)],
-          stdout=log_file,
-          stderr=log_file,
-          universal_newlines=True)
-      except Exception as error:
-        raise Exception('Failed to execute kill command: ' + str(error))
-
-    if process.returncode != 0:
-      raise Exception('Failed to kill the process: ' + str(pid))
-
-    return True
-  else:
-    return False
 
 # Starts resolver and conky processes
 def start ():
-  pid = read(globals.RESOLVER_PID_FILE_PATH)
+  pid = system.read(globals.RESOLVER_PID_FILE_PATH)
 
-  if not isUp(pid):
+  if not system.isUp(pid):
     try:
-      pid = spawn('/usr/share/' + globals.PKG_NAME + '/bin/resolver.py')
-      write(globals.RESOLVER_PID_FILE_PATH, pid)
+      pid = system.spawn('/usr/share/' + globals.PKG_NAME + '/bin/resolver.py')
+      system.write(globals.RESOLVER_PID_FILE_PATH, pid)
 
       logger.info('resolver is up')
     except Exception as error:
-      abort('Failed to spawn resolver process: ' + str(error), 1)
-  
-  pid = read(globals.CONKY_PID_FILE_PATH)
+      logger.error('Failed to spawn resolver process: ' + str(error))
+      system.exit(1)
 
-  if not isUp(pid):
+  pid = system.read(globals.CONKY_PID_FILE_PATH)
+
+  if not system.isUp(pid):
     try:
-      pid = spawn('conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH)
-      write(globals.CONKY_PID_FILE_PATH, pid)
+      pid = system.spawn('conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH)
+      system.write(globals.CONKY_PID_FILE_PATH, pid)
 
       logger.info('conky is up')
     except Exception as error:
-      abort('Failed to spawn conky process: ' + str(error), 1)
+      logger.error('Failed to spawn conky process: ' + str(error))
+      system.exit(1)
 
   logger.info(globals.PKG_NAME + ' is up and running')
 
 # Stops the resolver and conky processes
 def stop ():
-  pid = read(globals.RESOLVER_PID_FILE_PATH)
+  pid = system.read(globals.RESOLVER_PID_FILE_PATH)
 
   try:
-    if kill(pid):
-      os.remove(globals.RESOLVER_PID_FILE_PATH)
+    if system.kill(pid):
+      system.remove(globals.RESOLVER_PID_FILE_PATH)
 
     logger.info('resolver is down')
   except Exception as error:
-    abort('Failed to stop resolver process: ' + str(error), 1)
+    logger.error('Failed to stop resolver process: ' + str(error))
+    system.exit(1)
 
-  pid = read(globals.CONKY_PID_FILE_PATH)
+  pid = system.read(globals.CONKY_PID_FILE_PATH)
 
   try:
-    if kill(pid):
-      os.remove(globals.CONKY_PID_FILE_PATH)
+    if system.kill(pid):
+      system.remove(globals.CONKY_PID_FILE_PATH)
 
     logger.info('conky is down')
   except Exception as error:
-    abort('Failed to stop resolver process: ' + str(error), 1)
+    logger.error('Failed to stop resolver process: ' + str(error))
+    system.exit(1)
   
   logger.info(globals.PKG_NAME + ' is shut down')
 
@@ -133,15 +70,16 @@ def restart():
   time.sleep(1)
   start()
 
+# Disalow calling this script as root user or sudo
+if getpass.getuser() == 'root':
+  logger.error("don't run this script as root user")
+  system.exit(1)
+
 # Load the configuration file
 settings = config.read()
 
 # Parse given arguments into options
 opts = args.parse(globals.PKG_NAME, settings['version'])
-
-# Disalow calling this script as root user or sudo
-if getpass.getuser() == 'root':
-  abort("Don't run this script as root user", 1)
 
 if opts.command == 'start':
   start()
@@ -227,4 +165,4 @@ elif opts.command == 'preset':
 
     restart()
 
-sys.exit(0)
+system.exit(0)

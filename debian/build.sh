@@ -83,6 +83,7 @@ cp $BASE_DIR/../src/conky.py $BIN_DIR/conky.py
 cp $BASE_DIR/../src/logger.py $BIN_DIR/logger.py
 cp $BASE_DIR/../src/args.py $BIN_DIR/args.py
 cp $BASE_DIR/../src/globals.py $BIN_DIR/globals.py
+cp $BASE_DIR/../src/system.py $BIN_DIR/system.py
 
 # Copy the core impl to the binaries folder
 cp $BASE_DIR/impl/core.py $BIN_DIR/core.py
