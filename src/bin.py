@@ -15,7 +15,7 @@ def start_resolver ():
 
   if not system.isUp(pid):
     pid = system.spawn('/usr/share/' + globals.PKG_NAME + '/bin/resolver.py')
-    system.write(globals.RESOLVER_PID_FILE_PATH, pid)
+    system.write(pid, globals.RESOLVER_PID_FILE_PATH)
 
   logger.info('resolver process is up')
 
@@ -34,7 +34,7 @@ def start_conky ():
 
   if not system.isUp(pid):
     pid = system.spawn('conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH)
-    system.write(globals.CONKY_PID_FILE_PATH, pid)
+    system.write(pid, globals.CONKY_PID_FILE_PATH)
 
   logger.info('conky process is up')
 

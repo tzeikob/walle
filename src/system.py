@@ -10,7 +10,7 @@ import globals
 # Abort if user in context is root or sudo used
 if getpass.getuser() == 'root':
   print("[Errno 13] Don't run as root user")
-  exit(1)
+  sys.exit(1)
 
 # Aborts the process in fatal error
 def exit (errcode):
@@ -58,7 +58,7 @@ def kill (pid):
   return True
 
 # Writes the given data to the file with the given path
-def write (path, data):
+def write (data, path):
   with open(path, 'w') as output_file:
     output_file.write(str(data))
 
