@@ -11,7 +11,7 @@ yaml = ruamel.yaml.YAML()
 # Reads and parses the config file to an object
 def read ():
   if not os.path.exists(globals.CONFIG_FILE_PATH):
-    raise Exception('[Errno] Config file not found')
+    raise Exception('[Errno 2] Config file not found')
 
   with open(globals.CONFIG_FILE_PATH) as config_file:
     settings = yaml.load(config_file)
@@ -27,7 +27,7 @@ def read ():
 # Dumps the settings object to the config file
 def write (settings):
   if not os.path.exists(globals.CONFIG_FILE_PATH):
-    raise Exception('[Errno] Config file not found')
+    raise Exception('[Errno 2] Config file not found')
 
   with open(globals.CONFIG_FILE_PATH, 'w') as config_file:
     yaml.dump(settings, config_file)
@@ -87,7 +87,7 @@ def export (path):
 # Loads the setting from the preset file to the configuration file
 def load (path):
   if not os.path.exists(path):
-    raise Exception(f"[Errno] File not found: '{path}'")
+    raise Exception(f"[Errno 2] File not found: '{path}'")
 
   with open(path) as preset_file:
     preset = yaml.load(preset_file)

@@ -9,7 +9,7 @@ import globals
 
 # Abort if user in context is root or sudo used
 if getpass.getuser() == 'root':
-  print("[Errno] Don't run as root user")
+  print("[Errno 13] Don't run as root user")
   exit(1)
 
 # Aborts the process in fatal error
@@ -36,7 +36,7 @@ def spawn (command):
   code = process.poll()
 
   if code != None and code != 0:
-    raise Exception(f"[Errno] Failed to spawn process: '{str(command)}'")
+    raise Exception(f"[Errno 3] Failed to spawn process: '{str(command)}'")
 
   return process.pid
 
@@ -53,7 +53,7 @@ def kill (pid):
       universal_newlines=True)
 
   if process.returncode != 0:
-    raise Exception(f"[Errno] Failed to kill process: '{str(pid)}'")
+    raise Exception(f"[Errno 3] Failed to kill process: '{str(pid)}'")
 
   return True
 

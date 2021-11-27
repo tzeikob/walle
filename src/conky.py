@@ -7,7 +7,7 @@ import globals
 # Writes the given settings to the conkyrc file
 def config (settings):
   if not os.path.exists(globals.CONKYRC_FILE_PATH):
-    raise Exception('[Errno] Conkyrc file not found')
+    raise Exception('[Errno 2] Conkyrc file not found')
 
   newContent = ''
 
