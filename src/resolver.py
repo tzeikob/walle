@@ -11,7 +11,7 @@ from core import Resolver
 core = Resolver('core')
 data = {}
 
-logger.info('Service started at: ' + str(datetime.now()))
+logger.disk.info('Service started at: ' + str(datetime.now()))
 
 while True:
   try:
@@ -20,7 +20,7 @@ while True:
     data['name'] = core.name
     data['last'] = core.last
   except Exception as error:
-    logger.error('Error: ' + str(error))
+    logger.disk.trace(error)
 
   # Write down data into a json file
   with open(globals.DATA_FILE_PATH, 'w') as data_file:

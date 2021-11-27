@@ -17,7 +17,7 @@ def start_resolver ():
     pid = system.spawn('/usr/share/' + globals.PKG_NAME + '/bin/resolver.py')
     system.write(pid, globals.RESOLVER_PID_FILE_PATH)
 
-  logger.info('resolver process is up')
+  logger.disk.info(f"resolver process is up with pid '{pid}'")
 
 # Stops the resolver process
 def stop_resolver ():
@@ -26,7 +26,7 @@ def stop_resolver ():
   if system.kill(pid):
     system.remove(globals.RESOLVER_PID_FILE_PATH)
 
-  logger.info('resolver process is down')
+  logger.disk.info('resolver process is down')
 
 # Starts the conky process
 def start_conky ():
@@ -36,7 +36,7 @@ def start_conky ():
     pid = system.spawn('conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH)
     system.write(pid, globals.CONKY_PID_FILE_PATH)
 
-  logger.info('conky process is up')
+  logger.disk.info(f"conky process is up with pid '{pid}'")
 
 # Stops the conky process
 def stop_conky ():
@@ -45,7 +45,7 @@ def stop_conky ():
   if system.kill(pid):
     system.remove(globals.CONKY_PID_FILE_PATH)
 
-  logger.info('conky process is down')
+  logger.disk.info('conky process is down')
 
 # Restarts the resolver and conky processes
 def restart():
@@ -63,61 +63,69 @@ try:
 
   # Start processes
   if opts.command == 'start':
+    logger.disk.info('starting processes...')
+
     start_resolver()
     start_conky()
 
-    logger.info(globals.PKG_NAME + ' is up and running')
-
   # Stop processes
   if opts.command == 'stop':
+    logger.disk.info('stopping processes...')
+
     stop_conky()
     stop_resolver()
 
-    logger.info(globals.PKG_NAME + ' is shutdown')
-
   # Restart processes
   if opts.command == 'restart':
-    restart()
+    logger.disk.info('restarting processes...')
 
-    logger.info(globals.PKG_NAME + ' is up and running')
+    restart()
 
   # Reset configuration
   if opts.command == 'reset':
+    logger.disk.info('resetting configuration...')
+
     config.reset()
     conky.reset()
 
-    restart()
+    logger.disk.info('configuration has been set to default settings')
 
-    logger.info(globals.PKG_NAME + ' is up and running')
+    restart()
 
   # Update configuration
   if opts.command == 'config':
+    logger.disk.info('updating configuration settings...')
+
     config.update(opts)
 
     if opts.monitor != None:
-      logger.info('monitor switching is an experimental option')
       conky.switch(opts.monitor)
+      logger.stdout.info('Warning: monitor switch is an experimental operation')
+
+    logger.disk.info('configuration settings have been updated')
 
     restart()
-
-    logger.info(globals.PKG_NAME + ' is up and running')
 
   # Export configuration to preset
   if opts.command == 'preset' and opts.save != None:
+    logger.disk.info('exporting preset file...')
+
     config.export(opts.save)
 
-    logger.info('preset has been saved to ' + opts.save)
+    logger.disk.info(f"preset file has been saved to '{opts.save}'")
 
   # Load preset to configuration
   if opts.command == 'preset' and opts.load != None:
+    logger.disk.info('loading preset file...')
+
     config.load(opts.load)
+
+    logger.disk.info(f"preset has been loaded from '{opts.load}'")
 
     restart()
 
-    logger.info(globals.PKG_NAME + ' is up and running')
-
   system.exit(0)
 except Exception as error:
-  logger.error(str(error))
-  logger.trace(error)
+  logger.stderr.error(str(error))
+  logger.disk.trace(error)
   system.exit(1)

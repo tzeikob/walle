@@ -1,28 +1,24 @@
-# A module exporting the logger
+# A module exporting the logging routers
 
 import sys
 import logging
 import globals
 
-stdout = logging.getLogger('stdout')
-stdout.addHandler(logging.StreamHandler(sys.stdout))
-stdout.setLevel(logging.INFO)
+class Router:
+  def __init__(self, name, handler, level):
+    self.logger = logging.getLogger(name)
+    self.logger.addHandler(handler)
+    self.logger.setLevel(level)
 
-stderr = logging.getLogger('stderr')
-stderr.addHandler(logging.StreamHandler(sys.stderr))
-stderr.setLevel(logging.ERROR)
+  def info (self, message):
+    self.logger.info(f"{globals.PKG_NAME}: {message}")
+  
+  def error (self, message):
+    self.logger.error(f"{globals.PKG_NAME}: {message}")
+  
+  def trace (self, error):
+    self.logger.exception(error)
 
-log_file = logging.getLogger('file')
-log_file.addHandler(logging.FileHandler(globals.LOG_FILE_PATH))
-log_file.setLevel(logging.INFO)
-
-def info (message):
-  stdout.info(message)
-  log_file.info(message)
-
-def error (message):
-  stderr.error(message)
-  log_file.error(message)
-
-def trace (error):
-  log_file.exception(error)
+stdout = Router('stdout', logging.StreamHandler(sys.stdout), logging.INFO)
+stderr = Router('stderr', logging.StreamHandler(sys.stderr), logging.ERROR)
+disk = Router('disk', logging.FileHandler(globals.LOG_FILE_PATH), logging.INFO)
