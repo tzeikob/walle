@@ -57,6 +57,17 @@ def restart():
   start_resolver()
   start_conky()
 
+# Returns if should restart processes when any process is down
+def should_restart ():
+  resolver_pid = system.read(globals.RESOLVER_PID_FILE_PATH)
+  conky_pid = system.read(globals.CONKY_PID_FILE_PATH)
+
+  # Restart only if both up or one of them is down
+  if not system.isUp(resolver_pid) and not system.isUp(conky_pid):
+    return False
+
+  return True
+
 try:
   # Parse given cmd line arguments into options
   opts = args.parse(globals.PKG_NAME, globals.PKG_VERSION)
@@ -90,7 +101,8 @@ try:
 
     logger.disk.info('configuration has been set to default settings')
 
-    restart()
+    if should_restart():
+      restart()
 
   # Update configuration
   if opts.command == 'config':
@@ -104,7 +116,8 @@ try:
 
     logger.disk.info('configuration settings have been updated')
 
-    restart()
+    if should_restart():
+      restart()
 
   # Export configuration to preset
   if opts.command == 'preset' and opts.save != None:
@@ -122,7 +135,8 @@ try:
 
     logger.disk.info(f"preset has been loaded from '{opts.load}'")
 
-    restart()
+    if should_restart():
+      restart()
 
   system.exit(0)
 except Exception as error:
