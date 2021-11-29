@@ -11,7 +11,7 @@ echo -e "Trying to stop processes..."
 
 su $SUDO_USER -c "$PKG_NAME stop"
 
-echo -e "Processes have been stopped"
+echo -e "Processes are down"
 
 echo -e "Exiting pre remove script"
 
