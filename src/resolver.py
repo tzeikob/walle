@@ -12,8 +12,12 @@ data = {}
 
 while True:
   try:
+    logger.disk.info('gathering system data...')
+
     data['uptime'] = uptime.resolve()
     data['last'] = str(datetime.now())
+
+    logger.disk.info('system data have been resolved')
   except Exception as error:
     # Just report and skip to the next cycle
     logger.disk.trace(error)
