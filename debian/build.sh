@@ -85,10 +85,14 @@ cp $BASE_DIR/../src/args.py $BIN_DIR/args.py
 cp $BASE_DIR/../src/globals.py $BIN_DIR/globals.py
 cp $BASE_DIR/../src/system.py $BIN_DIR/system.py
 
-# Copy the core impl to the binaries folder
-cp $BASE_DIR/impl/core.py $BIN_DIR/core.py
-
 echo -e "Binary files have been added"
+
+LIB_DIR=$BIN_DIR/lib
+mkdir -p $LIB_DIR
+
+cp $BASE_DIR/../src/lib/*.py $LIB_DIR
+
+echo -e "Resolver modules have been added"
 
 LUA_DIR=$INSTALLATION_DIR/lua
 mkdir -p $LUA_DIR

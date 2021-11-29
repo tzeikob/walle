@@ -4,28 +4,27 @@
 import json
 import time
 from datetime import datetime
-import logger
 import globals
-from core import Resolver
+import logger
+from lib import uptime
 
-core = Resolver('core')
 data = {}
-
-logger.disk.info('Service started at: ' + str(datetime.now()))
 
 while True:
   try:
-    core.resolve()
-
-    data['name'] = core.name
-    data['last'] = core.last
+    data['uptime'] = uptime.resolve()
+    data['last'] = str(datetime.now())
   except Exception as error:
+    # Just report and skip to the next cycle
     logger.disk.trace(error)
 
-  # Write down data into a json file
+    time.sleep(globals.RESOLVER_INTERVAL)
+    continue
+
+  # Write down the collected data to the disk
   with open(globals.DATA_FILE_PATH, 'w') as data_file:
     data_file.write(json.dumps(data))
     data_file.close()
 
-  # Sleep for the next cycle
+  # Wait before start the next cycle
   time.sleep(globals.RESOLVER_INTERVAL)
