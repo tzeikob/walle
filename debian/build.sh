@@ -62,9 +62,7 @@ mkdir -p $DEBIAN_DIR
 echo -e "Processing the debian meta files \U1F4AC"
 
 cp $BASE_DIR/meta/control $DEBIAN_DIR/control
-cp $BASE_DIR/meta/hooks/postinst.sh $DEBIAN_DIR/postinst
-cp $BASE_DIR/meta/hooks/postrm.sh $DEBIAN_DIR/postrm
-cp $BASE_DIR/meta/hooks/prerm.sh $DEBIAN_DIR/prerm
+cp $BASE_DIR/meta/hooks/* $DEBIAN_DIR
 
 echo -e "Meta files have been created"
 
@@ -76,14 +74,8 @@ mkdir -p $INSTALLATION_DIR
 BIN_DIR=$INSTALLATION_DIR/bin
 mkdir -p $BIN_DIR
 
-cp $BASE_DIR/../src/bin.py $BIN_DIR/$PKG_NAME.py
-cp $BASE_DIR/../src/resolver.py $BIN_DIR/resolver.py
-cp $BASE_DIR/../src/config.py $BIN_DIR/config.py
-cp $BASE_DIR/../src/conky.py $BIN_DIR/conky.py
-cp $BASE_DIR/../src/logger.py $BIN_DIR/logger.py
-cp $BASE_DIR/../src/args.py $BIN_DIR/args.py
-cp $BASE_DIR/../src/globals.py $BIN_DIR/globals.py
-cp $BASE_DIR/../src/system.py $BIN_DIR/system.py
+cp $BASE_DIR/../src/*.py $BIN_DIR
+mv $BIN_DIR/bin.py $BIN_DIR/$PKG_NAME.py
 
 echo -e "Binary files have been added"
 
@@ -97,17 +89,14 @@ echo -e "Resolver modules have been added"
 LUA_DIR=$INSTALLATION_DIR/lua
 mkdir -p $LUA_DIR
 
-cp $BASE_DIR/../src/lua/main.lua $LUA_DIR/main.lua
-cp $BASE_DIR/../src/lua/util.lua $LUA_DIR/util.lua
-cp $BASE_DIR/../src/lua/core.lua $LUA_DIR/core.lua
+cp $BASE_DIR/../src/lua/*.lua $LUA_DIR
 cp $BASE_DIR/ui/gnome.lua $LUA_DIR/ui.lua
 
 echo -e "Lua script files have been added"
 
-cp $BASE_DIR/../resources/.conkyrc $INSTALLATION_DIR/.conkyrc
-cp $BASE_DIR/../resources/config.yml $INSTALLATION_DIR/config.yml
+cp -a $BASE_DIR/../resources/. $INSTALLATION_DIR
 
-echo -e "Config files have been set"
+echo -e "Config and resource files have been set"
 
 echo -e "Bundling process has been completed"
 
