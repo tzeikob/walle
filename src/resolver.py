@@ -7,6 +7,7 @@ from datetime import datetime
 import globals
 import logger
 from lib import uptime
+from lib import release
 
 # Executes the resolve API of the given callback
 def run (callback):
@@ -23,6 +24,10 @@ def run (callback):
 
 data = {}
 
+# Start resolving static data only once
+data['release'] = run(release)
+
+# Loop endlessly resolving non-static data
 while True:
   logger.disk.info('gathering system data...')
 
