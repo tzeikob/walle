@@ -31,7 +31,6 @@ data = {}
 data['release'] = run(release)
 data['login'] = run(login)
 data['hardware'] = run(hardware)
-data['loads'] = run(loads)
 
 # Loop endlessly resolving non-static data
 while True:
