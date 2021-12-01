@@ -9,6 +9,7 @@ import logger
 from lib import uptime
 from lib import release
 from lib import login
+from lib import hardware
 
 # Executes the resolve API of the given callback
 def run (callback):
@@ -28,6 +29,7 @@ data = {}
 # Start resolving static data only once
 data['release'] = run(release)
 data['login'] = run(login)
+data['hardware'] = run(hardware)
 
 # Loop endlessly resolving non-static data
 while True:
