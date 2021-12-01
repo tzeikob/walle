@@ -10,6 +10,7 @@ from lib import uptime
 from lib import release
 from lib import login
 from lib import hardware
+from lib import loads
 
 # Executes the resolve API of the given callback
 def run (callback):
@@ -30,12 +31,14 @@ data = {}
 data['release'] = run(release)
 data['login'] = run(login)
 data['hardware'] = run(hardware)
+data['loads'] = run(loads)
 
 # Loop endlessly resolving non-static data
 while True:
   logger.disk.info('gathering system data...')
 
   data['uptime'] = run(uptime)
+  data['loads'] = run(loads)
   data['last'] = str(datetime.now())
 
   logger.disk.info('system data have been resolved')
