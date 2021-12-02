@@ -26,7 +26,7 @@ def resolve ():
   if not gpu:
     raise Exception('unable to resolve gpu data')
 
-  gpu_util = gpu.load * 100
+  gpu_util = round(gpu.load * 100, 1)
   gpu_mem_used = math.floor(gpu.memoryUsed)
   gpu_mem_free = math.floor(gpu.memoryFree)
 
