@@ -1,9 +1,20 @@
 # A lib module resolving network data and status
 
+from datetime import datetime
 import subprocess
-import math
 import psutil
 import requests
+
+# Converts bytes to mbits
+def to_mbits (bytes):
+  return (bytes * 8) / (1024 * 1024)
+
+# Sent and recv bytes since the last resolve call
+last_sent = 0
+last_recv = 0
+
+# Last date time since the last resolve call
+last = datetime.now()
 
 # Returns network and connection data
 def resolve ():
@@ -40,8 +51,29 @@ def resolve ():
   # Read network sent and received bytes
   io = psutil.net_io_counters(pernic=True)[name]
 
-  sent = math.floor(io.bytes_sent / (1024 * 1024))
-  received = math.floor(io.bytes_recv / (1024 * 1024))
+  sent = io.bytes_sent
+  recv = io.bytes_recv
+
+  # Calculate the secs past since the last call
+  global last
+  past = (datetime.now() - last).total_seconds()
+
+  # Update last date time for the next call
+  last = datetime.now()
+
+  # Calculate current download and upload speeds
+  global last_sent, last_recv
+
+  if last_sent == 0 and last_recv == 0:
+    up_speed = 0
+    down_speed = 0
+  else:
+    up_speed = round(to_mbits(sent - last_sent) / past, 2)
+    down_speed = round(to_mbits(recv - last_recv) / past, 2)
+  
+  # Update the last sent and recv for the next call
+  last_sent = sent
+  last_recv = recv
 
   try:
     # Resolve the public address via the ident API
@@ -60,5 +92,7 @@ def resolve ():
     'lip': local_ip,
     'pip': public_ip,
     'sent': sent,
-    'recv': received
+    'recv': recv,
+    'upspeed': up_speed,
+    'downspeed': down_speed
   }
