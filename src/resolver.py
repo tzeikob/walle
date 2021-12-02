@@ -11,6 +11,7 @@ from lib import release
 from lib import login
 from lib import hardware
 from lib import loads
+from lib import thermals
 
 # Executes the resolve API of the given callback
 def run (callback):
@@ -34,13 +35,10 @@ data['hardware'] = run(hardware)
 
 # Loop endlessly resolving non-static data
 while True:
-  logger.disk.info('gathering system data...')
-
   data['uptime'] = run(uptime)
   data['loads'] = run(loads)
+  data['thermals'] = run(thermals)
   data['last'] = str(datetime.now())
-
-  logger.disk.info('system data have been resolved')
 
   # Write down the collected data to the disk
   with open(globals.DATA_FILE_PATH, 'w') as data_file:
