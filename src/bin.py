@@ -139,7 +139,7 @@ try:
       restart()
 
   system.exit(0)
-except Exception as error:
-  logger.stderr.error(str(error))
-  logger.disk.trace(error)
+except Exception as exc:
+  logger.stderr.error(exc)
+  logger.disk.trace(exc)
   system.exit(1)

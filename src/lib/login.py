@@ -1,17 +1,17 @@
-# # A lib module resolving the current login data
+# A lib module resolving the current login data
 
 import getpass
 import socket
+from convert import text
+
+data = {}
 
 # Returns the name of the logged in user and host name
 def resolve ():
   user = getpass.getuser()
-  user = user.lower() if user else None
-
   host = socket.gethostname()
-  host = host.lower() if host else None
 
-  return {
-    'user': user,
-    'host': host
-  }
+  data['user'] = text(user)
+  data['host'] = text(host)
+
+  return data

@@ -3,17 +3,20 @@
 import statistics
 import psutil
 import GPUtil
+from convert import decimal
+
+data = {}
 
 # Returns thermal data for the cpu and gpu
 def resolve ():
-  # Extract any thermal sensor data
+  # Read any thermal sensor
   thermals = psutil.sensors_temperatures()
 
-  # Read only thermals from cpu k10temp sensors
+  # Extract only thermals matching k10temp cpu sensors
   thermals = thermals['k10temp']
 
   if not thermals:
-    raise Exception('unable to resolve cpu thermals')
+    raise Exception('unable to resolve cpu thermals via psutil')
 
   temps = []
 
@@ -23,20 +26,18 @@ def resolve ():
       temps.append(thermal.current)
   
   if not len(temps) > 0:
-    raise Exception('unable to resolve cpu thermals')
+    raise Exception('unable to resolve cpu thermals via psutil')
 
   # Reduce temperatures down to the mean average
-  cpu_temp = round(statistics.mean(temps), 1)
+  temp = statistics.mean(temps)
 
-  # Measure thermals only for nvidia gpu
+  data['cpu'] = decimal(temp, 1)
+
+  # Read gpu thermals
   gpu = GPUtil.getGPUs()[0]
 
-  if not gpu:
-    raise Exception('unable to resolve gpu thermals')
+  temp = gpu.temperature
 
-  gpu_temp = round(gpu.temperature, 1)
+  data['gpu'] = decimal(temp, 1)
 
-  return {
-    'cpu': cpu_temp,
-    'gpu': gpu_temp
-  }
+  return data

@@ -21,9 +21,9 @@ def run (module):
   try:
     # Call the resolve method each module should has
     result = module.resolve()
-  except Exception as error:
+  except Exception as exc:
     # Just report and return none
-    logger.disk.trace(error)
+    logger.disk.trace(exc)
 
   return result
 

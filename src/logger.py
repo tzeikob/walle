@@ -17,6 +17,7 @@ class Router:
     self.logger.error(f'{globals.PKG_NAME}: {message}')
   
   def trace (self, error):
+    self.error(error)
     self.logger.exception(error)
 
 stdout = Router('stdout', logging.StreamHandler(sys.stdout), logging.INFO)

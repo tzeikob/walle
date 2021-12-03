@@ -2,72 +2,68 @@
 
 import psutil
 import GPUtil
-import units
+from convert import integer, decimal, MB
+
+data = {}
 
 # Returns loads for the cpu, memory, gpu and disk
 def resolve ():
-  # Measure cpu utilization
-  cpu_clock = round(psutil.cpu_freq().current)
-  cpu_util = round(psutil.cpu_percent(), 1)
+  # Read cpu utilization
+  utilization = psutil.cpu_percent()
+  clock = psutil.cpu_freq().current
 
-  # Measure memory utilization
+  data['cpu'] = {
+    'util': decimal(utilization, 1),
+    'clock': integer(clock)
+  }
+
+  # Read memory utilization
   mem = psutil.virtual_memory()
 
-  if not mem:
-    raise Exception('unable to resolve memory data')
+  utilization = mem.percent
+  used = mem.used
+  free = mem.available
 
-  mem_util = round(mem.percent, 1)
-  mem_used = round(units.MB(mem.used))
-  mem_free = round(units.MB(mem.available))
+  data['memory'] = {
+    'util': decimal(utilization, 1),
+    'used': integer(MB(used)),
+    'free': integer(MB(free))
+  }
 
   # Measure gpu utilization
   gpu = GPUtil.getGPUs()[0]
 
   if not gpu:
-    raise Exception('unable to resolve gpu data')
+    raise Exception('unable to resolve gpu data via gputil')
 
-  gpu_util = round(gpu.load * 100, 1)
-  gpu_mem_used = round(gpu.memoryUsed)
-  gpu_mem_free = round(gpu.memoryFree)
+  utilization = gpu.load * 100
+  used = gpu.memoryUsed
+  free = gpu.memoryFree
+
+  data['gpu'] = {
+    'util': decimal(utilization, 1),
+    'used': integer(used),
+    'free': integer(free)
+  }
 
   # Measure disk utilization
   disk = psutil.disk_usage('/')
 
-  if not disk:
-    raise Exception('unable to resolve disk data')
-
-  disk_util = round(disk.percent, 1)
-  disk_used = round(units.MB(disk.used))
-  disk_free = round(units.MB(disk.free))
+  utilization = disk.percent
+  used = disk.used
+  free = disk.free
 
   io = psutil.disk_io_counters()
 
-  if not io:
-    raise Exception('unable to resolve disk io data')
+  read = io.read_bytes
+  write = io.write_bytes
 
-  disk_read = round(units.MB(io.read_bytes))
-  disk_write = round(units.MB(io.write_bytes))
-
-  return {
-    'cpu': {
-      'clock': cpu_clock,
-      'util': cpu_util
-    },
-    'memory': {
-      'util': mem_util,
-      'used': mem_used,
-      'free': mem_free
-    },
-    'gpu': {
-      'util': gpu_util,
-      'mem_used': gpu_mem_used,
-      'mem_free': gpu_mem_free
-    },
-    'disk': {
-      'util': disk_util,
-      'used': disk_used,
-      'free': disk_free,
-      'read': disk_read,
-      'write': disk_write
-    }
+  data['disk'] = {
+    'util': decimal(utilization, 1),
+    'used': integer(MB(used)),
+    'free': integer(MB(free)),
+    'read': integer(MB(read)),
+    'write': integer(MB(write))
   }
+
+  return data

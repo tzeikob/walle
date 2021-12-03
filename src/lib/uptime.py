@@ -3,6 +3,9 @@
 import ctypes
 import struct
 import math
+from convert import integer
+
+data = {}
 
 # Load native c libraries
 libc = ctypes.CDLL('libc.so.6')
@@ -16,7 +19,7 @@ def resolve ():
     # Otherwise fallback to the proc file
     with open('/proc/uptime') as uptime_file:
       secs = float(uptime_file.readline().split()[0])
-  
+
   if not isinstance(secs, (int, float)):
     raise Exception(f'uptime resolved to a non numeric value: {secs}')
 
@@ -36,8 +39,8 @@ def resolve ():
   # Floor down to the remaining secs
   secs = math.floor (secs)
 
-  return {
-    'hour': hours,
-    'mins': mins,
-    'secs': secs
-  }
+  data['hours'] = integer(hours)
+  data['mins'] = integer(mins)
+  data['secs'] = integer(secs)
+
+  return data

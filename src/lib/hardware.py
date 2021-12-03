@@ -4,65 +4,67 @@ import subprocess
 import re
 import psutil
 import GPUtil
+from convert import text, integer, decimal
 
-# Returns metadata for the board, cpu and gpu
+data = {}
+
+# Returns meta data for the mobo, cpu and gpu
 def resolve ():
-  # Extract the name of the motherboard
+  # Read motherboard data via sys/devices
   with open('/sys/devices/virtual/dmi/id/board_name') as board_file:
-    board = board_file.readline()
+    name = board_file.readline()
 
-  board = board.lower().strip() if board else None
+  data['mobo'] = {
+    'name': text(name)
+  }
 
-  # Extract the cpu info with lscpu
+  # Read cpu data via lscpu and psutil
   lscpu = subprocess.run(
     ['lscpu'],
     stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
     universal_newlines=True)
 
-  if not lscpu.stdout:
-    raise Exception('unable to resolve cpu data')
+  if lscpu.stderr:
+    raise Exception(f'unable to read cpu data via lscpu: {lscpu.stderr}')
 
-  # Match the model name of the cpu
+  if not lscpu.stdout:
+    raise Exception('unable to read cpu data via lscpu')
+
+  # Extract various cpu attributes
+  name = arch = endian = clock = None
+
   for line in lscpu.stdout.split('\n'):
     if 'Model name' in line:
-      cpu_name = re.sub('.*Model name.*:', '', line, 1)
+      name = re.sub('.*Model name.*:', '', line, 1)
     elif 'Architecture' in line:
-      cpu_arch = re.sub('.*Architecture.*:', '', line, 1)
+      arch = re.sub('.*Architecture.*:', '', line, 1)
     elif 'Byte Order' in line:
-      cpu_endian = re.sub('.*Byte Order.*:', '', line, 1)
+      endian = re.sub('.*Byte Order.*:', '', line, 1)
     elif 'CPU max MHz' in line:
-      cpu_clock = re.sub('.*CPU max MHz.*:', '', line, 1)
+      clock = re.sub('.*CPU max MHz.*:', '', line, 1)
 
-  cpu_name = cpu_name.lower().strip() if cpu_name else None
-  cpu_arch = cpu_arch.lower().strip() if cpu_arch else None
-  cpu_endian = cpu_endian.lower().strip() if cpu_endian else None
-  cpu_clock = round(float(cpu_clock)) if cpu_clock else None
+  cores = psutil.cpu_count(logical=False)
+  threads = psutil.cpu_count(logical=True)
 
-  # Use psutil to get cpu cores and threads
-  cpu_cores = psutil.cpu_count(logical=False)
-  cpu_threads = psutil.cpu_count(logical=True)
+  data['cpu'] = {
+    'name': text(name),
+    'arch': text(arch),
+    'endian': text(endian),
+    'clock': decimal(clock, 0),
+    'cores': integer(cores),
+    'threads': integer(threads)
+  }
 
-  # Extract gpu meta data
+  # Read gpu data via gputils
   gpu = GPUtil.getGPUs()[0]
 
-  if not gpu:
-    raise Exception('unable to resolve gpu data')
+  name = gpu.name
+  memory = gpu.memoryTotal
 
-  gpu_name = gpu.name.lower().strip() if gpu.name else None
-  gpu_memory = round(gpu.memoryTotal) if gpu.memoryTotal else None
-
-  return {
-    'board': board,
-    'cpu': {
-      'name': cpu_name,
-      'arch': cpu_arch,
-      'endian': cpu_endian,
-      'cores': cpu_cores,
-      'threads': cpu_threads,
-      'clock': cpu_clock
-    },
-    'gpu': {
-      'name': gpu_name,
-      'memory': gpu_memory
-    }
+  data['gpu'] = {
+    'name': text(name),
+    'memory': integer(memory)
   }
+
+  return data

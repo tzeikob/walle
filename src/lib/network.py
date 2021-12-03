@@ -4,7 +4,9 @@ from datetime import datetime
 import subprocess
 import psutil
 import requests
-import units
+from convert import text, integer, decimal, MB, Mb
+
+data = {}
 
 # Sent and recv bytes since the last call
 last_sent = None
@@ -15,7 +17,7 @@ last = datetime.now()
 
 # Returns network and connection data
 def resolve ():
-  # Use ip route to resolve if connection is up
+  # Read network name and local ip via ip route
   route = subprocess.run(
     ['ip', 'route', 'get', '8.8.8.8'],
     stdout=subprocess.PIPE,
@@ -24,22 +26,26 @@ def resolve ():
 
   # Return with network marked as down if stderr exists
   if route.stderr:
-    return { 'up': False }
+    data['up'] = False
+
+    return data
 
   if not route.stdout:
-    raise Exception('unable to resolve network data')
+    raise Exception('unable to resolve network data via ip route')
+
+  # Mark network status as up
+  data['up'] = True
 
   # Extract network name and local ip address
   parts = route.stdout.split()
+  nic = parts[4]
+  ip = parts[6]
 
-  try:
-    name = parts[4].strip()
-    local_ip = parts[6].strip()
-  except Exception as error:
-    raise Exception(f'unable to resolve network data: {error}')
+  data['name'] = text(nic)
+  data['lip'] = text(ip)
 
   # Read network sent and received bytes
-  io = psutil.net_io_counters(pernic=True)[name]
+  io = psutil.net_io_counters(pernic=True)[nic]
 
   sent = io.bytes_sent
   recv = io.bytes_recv
@@ -59,38 +65,32 @@ def resolve ():
     up_speed = 0
     down_speed = 0
   else:
-    delta = units.Mb(sent - last_sent)
-    up_speed = round(delta / past_secs, 2)
+    delta = sent - last_sent
+    up_speed = delta / past_secs
 
-    delta = units.Mb(recv - last_recv)
-    down_speed = round(delta / past_secs, 2)
+    delta = recv - last_recv
+    down_speed = delta / past_secs
   
   # Save last sent and recv bytes for the next call
   last_sent = sent
   last_recv = recv
 
-  # Convert bytes to megabytes
-  sent = round(units.MB(sent))
-  recv = round(units.MB(recv))
+  data['sent'] = integer(MB(sent))
+  data['recv'] = integer(MB(recv))
+  data['upspeed'] = decimal(Mb(up_speed), 2)
+  data['downspeed'] = decimal(Mb(down_speed), 2)
 
   try:
     # Resolve the public address via the ident API
     response = requests.get('https://ident.me/', timeout=0.8)
 
     if response.status_code == 200:
-      public_ip = response.text.strip()
+      public_ip = response.text
     else:
       public_ip = None
   except Exception:
     public_ip = None
 
-  return {
-    'up': True,
-    'name': name,
-    'lip': local_ip,
-    'pip': public_ip,
-    'sent': sent,
-    'recv': recv,
-    'upspeed': up_speed,
-    'downspeed': down_speed
-  }
+  data['pip'] = text(public_ip)
+
+  return data
