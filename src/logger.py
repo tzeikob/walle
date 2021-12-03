@@ -11,10 +11,10 @@ class Router:
     self.logger.setLevel(level)
 
   def info (self, message):
-    self.logger.info(f"{globals.PKG_NAME}: {message}")
+    self.logger.info(f'{globals.PKG_NAME}: {message}')
   
   def error (self, message):
-    self.logger.error(f"{globals.PKG_NAME}: {message}")
+    self.logger.error(f'{globals.PKG_NAME}: {message}')
   
   def trace (self, error):
     self.logger.exception(error)

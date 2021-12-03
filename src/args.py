@@ -60,7 +60,7 @@ def parse (name, version):
   configParser.add_argument(
     '--head',
     metavar='text',
-    help="the text which will appear as head line")
+    help='the text which will appear as head line')
 
   configParser.add_argument(
     '-m', '--mode',
@@ -103,11 +103,11 @@ def parse (name, version):
   presetGroup.add_argument(
     '--save',
     metavar='path',
-    help="the path the preset file will be saved to")
+    help='the path the preset file will be saved to')
 
   presetGroup.add_argument(
     '--load',
     metavar='path',
-    help="the path the preset file will be loaded from")
+    help='the path the preset file will be loaded from')
 
   return parser.parse_args()

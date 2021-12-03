@@ -37,7 +37,7 @@ def resolve ():
   secs = math.floor (secs)
 
   return {
-    "hour": hours,
-    "mins": mins,
-    "secs": secs
+    'hour': hours,
+    'mins': mins,
+    'secs': secs
   }
