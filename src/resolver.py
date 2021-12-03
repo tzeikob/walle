@@ -15,12 +15,12 @@ from lib import thermals
 from lib import network
 
 # Executes the resolve API of the given callback
-def run (callback):
+def run (module):
   result = None
 
   try:
-    # Call the resolve method each cb should has
-    result = callback.resolve()
+    # Call the resolve method each module should has
+    result = module.resolve()
   except Exception as error:
     # Just report and return none
     logger.disk.trace(error)
