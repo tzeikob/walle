@@ -33,9 +33,6 @@ def resolve ():
   # Measure gpu utilization
   gpu = GPUtil.getGPUs()[0]
 
-  if not gpu:
-    raise Exception('unable to resolve gpu data via gputil')
-
   utilization = gpu.load * 100
   used = gpu.memoryUsed
   free = gpu.memoryFree
