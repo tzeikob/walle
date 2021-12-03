@@ -2,7 +2,6 @@
 
 import subprocess
 import re
-import math
 import psutil
 import GPUtil
 
@@ -42,7 +41,7 @@ def resolve ():
   cpu_name = cpu_name.lower().strip() if cpu_name else None
   cpu_arch = cpu_arch.lower().strip() if cpu_arch else None
   cpu_endian = cpu_endian.lower().strip() if cpu_endian else None
-  cpu_clock = math.floor(float(cpu_clock)) if cpu_clock else None
+  cpu_clock = round(float(cpu_clock)) if cpu_clock else None
 
   # Use psutil to get cpu cores and threads
   cpu_cores = psutil.cpu_count(logical=False)
@@ -55,7 +54,7 @@ def resolve ():
     raise Exception('unable to resolve gpu data')
 
   gpu_name = gpu.name.lower().strip() if gpu.name else None
-  gpu_memory = math.floor(gpu.memoryTotal) if gpu.memoryTotal else None
+  gpu_memory = round(gpu.memoryTotal) if gpu.memoryTotal else None
 
   return {
     'board': board,

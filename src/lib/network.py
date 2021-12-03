@@ -4,16 +4,13 @@ from datetime import datetime
 import subprocess
 import psutil
 import requests
+import units
 
-# Converts bytes to mbits
-def to_mbits (bytes):
-  return (bytes * 8) / (1024 * 1024)
+# Sent and recv bytes since the last call
+last_sent = None
+last_recv = None
 
-# Sent and recv bytes since the last resolve call
-last_sent = 0
-last_recv = 0
-
-# Last date time since the last resolve call
+# Last date time since the last call
 last = datetime.now()
 
 # Returns network and connection data
@@ -27,14 +24,7 @@ def resolve ():
 
   # Return with network marked as down if stderr exists
   if route.stderr:
-    return {
-      'up': False,
-      'name': None,
-      'lip': None,
-      'pip': None,
-      'sent': None,
-      'recv': None
-    }
+    return { 'up': False }
 
   if not route.stdout:
     raise Exception('unable to resolve network data')
@@ -56,24 +46,32 @@ def resolve ():
 
   # Calculate the secs past since the last call
   global last
-  past = (datetime.now() - last).total_seconds()
+  now = datetime.now()
+  past_secs = (now - last).total_seconds()
 
-  # Update last date time for the next call
-  last = datetime.now()
+  # Save last checkpoint for the next call
+  last = now
 
   # Calculate current download and upload speeds
   global last_sent, last_recv
 
-  if last_sent == 0 and last_recv == 0:
+  if not last_sent and not last_recv:
     up_speed = 0
     down_speed = 0
   else:
-    up_speed = round(to_mbits(sent - last_sent) / past, 2)
-    down_speed = round(to_mbits(recv - last_recv) / past, 2)
+    delta = units.Mb(sent - last_sent)
+    up_speed = round(delta / past_secs, 2)
+
+    delta = units.Mb(recv - last_recv)
+    down_speed = round(delta / past_secs, 2)
   
-  # Update the last sent and recv for the next call
+  # Save last sent and recv bytes for the next call
   last_sent = sent
   last_recv = recv
+
+  # Convert bytes to megabytes
+  sent = round(units.MB(sent))
+  recv = round(units.MB(recv))
 
   try:
     # Resolve the public address via the ident API

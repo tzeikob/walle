@@ -1,14 +1,14 @@
 # A lib module resolving system loads
 
-import math
 import psutil
 import GPUtil
+import units
 
 # Returns loads for the cpu, memory, gpu and disk
 def resolve ():
   # Measure cpu utilization
-  cpu_clock = math.floor(psutil.cpu_freq().current)
-  cpu_util = psutil.cpu_percent()
+  cpu_clock = round(psutil.cpu_freq().current)
+  cpu_util = round(psutil.cpu_percent(), 1)
 
   # Measure memory utilization
   mem = psutil.virtual_memory()
@@ -16,9 +16,9 @@ def resolve ():
   if not mem:
     raise Exception('unable to resolve memory data')
 
-  mem_util = mem.percent
-  mem_used = math.floor(mem.used / (1024 * 1024))
-  mem_free = math.floor(mem.available / (1024 * 1024))
+  mem_util = round(mem.percent, 1)
+  mem_used = round(units.MB(mem.used))
+  mem_free = round(units.MB(mem.available))
 
   # Measure gpu utilization
   gpu = GPUtil.getGPUs()[0]
@@ -27,8 +27,8 @@ def resolve ():
     raise Exception('unable to resolve gpu data')
 
   gpu_util = round(gpu.load * 100, 1)
-  gpu_mem_used = math.floor(gpu.memoryUsed)
-  gpu_mem_free = math.floor(gpu.memoryFree)
+  gpu_mem_used = round(gpu.memoryUsed)
+  gpu_mem_free = round(gpu.memoryFree)
 
   # Measure disk utilization
   disk = psutil.disk_usage('/')
@@ -36,17 +36,17 @@ def resolve ():
   if not disk:
     raise Exception('unable to resolve disk data')
 
-  disk_util = disk.percent
-  disk_used = math.floor(disk.used / (1024 * 1024))
-  disk_free = math.floor(disk.free / (1024 * 1024))
+  disk_util = round(disk.percent, 1)
+  disk_used = round(units.MB(disk.used))
+  disk_free = round(units.MB(disk.free))
 
   io = psutil.disk_io_counters()
 
   if not io:
     raise Exception('unable to resolve disk io data')
 
-  disk_read = math.floor(io.read_bytes / (1024 * 1024))
-  disk_write = math.floor(io.write_bytes / (1024 * 1024))
+  disk_read = round(units.MB(io.read_bytes))
+  disk_write = round(units.MB(io.write_bytes))
 
   return {
     'cpu': {
