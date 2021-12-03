@@ -8,15 +8,10 @@ import GPUtil
 # Returns metadata for the board, cpu and gpu
 def resolve ():
   # Extract the name of the motherboard
-  board = subprocess.run(
-    ['cat', '/sys/devices/virtual/dmi/id/board_name'],
-    stdout=subprocess.PIPE,
-    universal_newlines=True)
+  with open('/sys/devices/virtual/dmi/id/board_name') as board_file:
+    board = board_file.readline()
 
-  if not board.stdout:
-    raise Exception('unable to resolve motherboard data')
-
-  board = board.stdout.lower().strip() if board.stdout else None
+  board = board.lower().strip() if board else None
 
   # Extract the cpu info with lscpu
   lscpu = subprocess.run(
