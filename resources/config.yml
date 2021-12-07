@@ -1,10 +1,6 @@
 version: '#PKG_VERSION'
 head: ''
-system:
-  wallpapers:
-    path: ''
-    interval: 0
-  debug: disabled
 theme:
   mode: light
   font: ''
+debug: disabled

@@ -1,6 +1,5 @@
 -- A lua module for various util functions
 
-lfs = require "lfs"
 yaml = require "yaml"
 json = require "cjson"
 text = require "text"
@@ -12,24 +11,6 @@ function exec (command)
   file:close ()
 
   return text.trim (output)
-end
-
--- Returns the list of files filtered by the given patterns
-function list (path, ...)
-  -- Return if no such path exists
-  if not lfs.chdir(path) then
-    return {}
-  end
-
-  local paths = {}
-
-  for file in lfs.dir (path) do
-    if matches (file, ...) then
-      table.insert (paths, path .. "/" .. file)
-    end
-  end
-
-  return paths
 end
 
 -- Loads the given yaml file into a dictionary object
@@ -71,7 +52,6 @@ end
 
 return {
   exec = exec,
-  list = list,
   yaml = load_yaml,
   json = load_json,
   is_empty = is_empty,

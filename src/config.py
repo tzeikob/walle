@@ -19,7 +19,6 @@ def read ():
   # Recover string scalar values
   settings['version'] = scalar(settings['version'])
   settings['head'] = scalar(settings['head'])
-  settings['system']['wallpapers']['path'] = scalar(settings['system']['wallpapers']['path'])
   settings['theme']['font'] = scalar(settings['theme']['font'])
 
   return settings
@@ -45,14 +44,8 @@ def update (opts):
   if opts.font != None:
     settings['theme']['font'] = opts.font.strip()
 
-  if opts.wallpapers != None:
-    settings['system']['wallpapers']['path'] = opts.wallpapers
-
-  if opts.interval != None:
-    settings['system']['wallpapers']['interval'] = opts.interval
-
   if opts.debug != None:
-    settings['system']['debug'] = opts.debug.strip()
+    settings['debug'] = opts.debug.strip()
 
   write(settings)
 
@@ -61,11 +54,9 @@ def reset ():
   settings = read()
 
   settings['head'] = ''
-  settings['system']['wallpapers']['path'] = ''
-  settings['system']['wallpapers']['interval'] = 0
-  settings['system']['debug'] = 'disabled'
   settings['theme']['mode'] = 'light'
   settings['theme']['font'] = ''
+  settings['debug'] = 'disabled'
 
   write(settings)
 

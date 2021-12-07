@@ -4,8 +4,8 @@
 debug_mode = "disabled"
 
 -- Enables or disables the debug mode
-function set_debug_mode (enabled)
-  debug_mode = enabled
+function set_debug_mode (mode)
+  debug_mode = mode
 end
 
 -- Logs a message

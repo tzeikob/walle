@@ -12,18 +12,12 @@ util = require "util"
 logger = require "logger"
 text = require "text"
 convert = require "convert"
-desktop = require "desktop"
 
 -- Load configuration into a dict object
 config = util.yaml (CONFIG_DIR .. "/config.yml")
 
 -- Initialize logger
-logger.set_debug_mode (config["system"]["debug"])
-
--- Load any paths to wallpaper files
-path = config["system"]["wallpapers"]["path"]
-path = util.default_to(path, CONFIG_DIR .. "/wallpapers")
-wallpapers = util.list (path, "jpeg$", "jpg$", "png$")
+logger.set_debug_mode (config["debug"])
 
 -- Initialize global variables
 status = "init"
@@ -55,18 +49,6 @@ for _, part in ipairs (parts) do
     vars["font_size"] = tonumber (size)
   elseif part ~= "" then
     vars["font_name"] = part
-  end
-end
-
--- Changes to current wallpaper to a random wallpaper
-function change_wallpaper ()
-  local len = table.getn (wallpapers)
-
-  if len > 0 then
-    local index = math.random (1, len)
-    vars["wallpaper"] = wallpapers[index]
-
-    logger.debug ("Next wallpaper set to '" .. vars["wallpaper"] .. "'")
   end
 end
 
@@ -125,14 +107,6 @@ function conky_main ()
   loop = tonumber (conky_parse ("${updates}"))
 
   call (1, read_resolve_data)
-
-  local secs = tonumber (config["system"]["wallpapers"]['interval'])
-  if secs > 0 then
-    if call (secs, change_wallpaper) then
-      desktop.updateWallpaper (vars["wallpaper"])
-      desktop.updateLockScreen (vars["wallpaper"])
-    end
-  end
 
   -- Mark conky as running in subsequent cycles
   if status == "init" then
