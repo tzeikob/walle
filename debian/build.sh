@@ -90,7 +90,7 @@ LUA_DIR=$INSTALLATION_DIR/lua
 mkdir -p $LUA_DIR
 
 cp $BASE_DIR/../src/lua/*.lua $LUA_DIR
-cp $BASE_DIR/ui/gnome.lua $LUA_DIR/ui.lua
+cp $BASE_DIR/impl/desktop.lua $LUA_DIR/desktop.lua
 
 echo -e "Lua script files have been added"
 
