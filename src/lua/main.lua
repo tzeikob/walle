@@ -5,6 +5,9 @@ PKG_NAME = "#PKG_NAME"
 BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
 CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
 
+CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
+LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
+
 -- Add base directory to lua package path
 package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 
@@ -14,15 +17,18 @@ text = require "text"
 convert = require "convert"
 
 -- Load configuration into a dict object
-config = util.yaml (CONFIG_DIR .. "/config.yml")
+config = util.yaml (CONFIG_FILE_PATH)
 
 -- Initialize logger
 logger.set_debug_mode (config["debug"])
+logger.set_log_file(LOG_FILE_PATH)
 
 -- Initialize global variables
 status = "init"
 loop = 0
 vars = {}
+
+logger.debug ("initializing lua script...")
 
 -- Initialize theme settings
 vars["head"] = config["head"]
@@ -80,7 +86,7 @@ function read_resolve_data ()
 
   vars["uptime"] = hours .. ":" .. mins .. ":" .. secs
 
-  logger.debug ("system data loaded from resolver's data file")
+  logger.debug ("resolver data has been loaded")
 end
 
 -- Calls the given callback in the given loop cycle
@@ -102,6 +108,7 @@ end
 -- Main lua function called by conky
 function conky_main ()
   if conky_window == nil then
+    logger.debug ("aborting since no conky window is ready")
     return
   end
 
@@ -113,6 +120,10 @@ function conky_main ()
   -- Mark conky as running in subsequent cycles
   if status == "init" then
     status = "running"
+
+    logger.debug ("script has completed first cycle")
+  else
+    logger.debug ("script exiting another cycle")
   end
 end
 
