@@ -10,18 +10,18 @@ end
 
 -- Logs a message
 function info (message)
-  print (message)
+  print ("lua: " .. message)
 end
 
 -- Logs an error message
 function error (message)
-  print ("Error: " .. message)
+  print ("lua: err: " .. message)
 end
 
 -- Logs a message only if debug mode is enabled
 function debug (message)
   if debug_mode == "enabled" then
-    print (message)
+    print ("lua: " .. message)
   end
 end
 

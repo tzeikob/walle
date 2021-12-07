@@ -79,6 +79,8 @@ function read_resolve_data ()
   local secs = string.format ("%02d", data["uptime"]["secs"])
 
   vars["uptime"] = hours .. ":" .. mins .. ":" .. secs
+
+  logger.debug ("system data loaded from resolver's data file")
 end
 
 -- Calls the given callback in the given loop cycle
