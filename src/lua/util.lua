@@ -31,6 +31,11 @@ function load_json (path)
   return dict
 end
 
+-- Encodes the given dictionary into a string json
+function stringify (dict)
+  return json.encode(dict)
+end
+
 -- Check if the given value is nil or empty
 function is_empty (value)
   return value == nil or value == ""
@@ -52,8 +57,13 @@ end
 
 return {
   exec = exec,
-  yaml = load_yaml,
-  json = load_json,
+  yaml = {
+    load = load_yaml
+  },
+  json = {
+    load = load_json,
+    stringify = stringify
+  },
   is_empty = is_empty,
   is_not_empty = is_not_empty,
   default_to = default_to

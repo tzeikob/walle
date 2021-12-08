@@ -6,6 +6,7 @@ BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
 CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
 
 CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
+DATA_FILE_PATH = CONFIG_DIR .. "/.data"
 LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
 
 -- Add base directory to lua package path
@@ -13,124 +14,67 @@ package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 
 util = require "util"
 logger = require "logger"
-text = require "text"
-convert = require "convert"
+context = require "context"
 
--- Load configuration into a dict object
-config = util.yaml (CONFIG_FILE_PATH)
+-- Load configuration settings
+config = util.yaml.load (CONFIG_FILE_PATH)
 
 -- Initialize logger
 logger.set_debug_mode (config["debug"])
-logger.set_log_file(LOG_FILE_PATH)
+logger.set_log_file (LOG_FILE_PATH)
 
--- Initialize global variables
-status = "init"
-loop = 0
-vars = {}
+-- Checks if the given cycle matches the current context loop
+function matches_cycle (cycle)
+  local timer = (context.loop % cycle)
 
-logger.debug ("initializing lua script...")
-
--- Initialize theme settings
-vars["head"] = config["head"]
-
-vars["mode"] = "white"
-if config["theme"]["mode"] == "dark" then
-  vars["mode"] = "black"
-end
-
-vars["font_name"] = "DejaVu Sans Mono"
-vars["font_bold"] = false
-vars["font_italic"] = false
-vars["font_size"] = 12
-
-local font = config["theme"]["font"]
-local parts = text.split (font, ":")
-for _, part in ipairs (parts) do
-  if text.matches (part, "bold") then
-    vars["font_bold"] = true
-  elseif text.matches (part, "italic") then
-    vars["font_italic"] = true
-  elseif text.matches (part, "size=.+") then
-    local size = text.split (part, "=")[2]
-    vars["font_size"] = tonumber (size)
-  elseif part ~= "" then
-    vars["font_name"] = part
-  end
-end
-
-function read_resolve_data ()
-  data = util.json(CONFIG_DIR .. "/.data")
-
-  vars["user"] = data["login"]["user"]
-  vars["hostname"] = data["login"]["host"]
-  vars["rls_name"] = data["release"]["name"]
-  vars["rls_codename"] = data["release"]["codename"]
-  vars["cpu_load"] = data["loads"]["cpu"]["util"]
-  vars["mem_load"] = data["loads"]["memory"]["util"]
-  vars["disk_load"] = data["loads"]["disk"]["util"]
-  vars["cpu_temp"] = data["thermals"]["cpu"]
-  vars["gpu_util"] = data["loads"]["gpu"]["util"]
-  vars["gpu_mem"] = data["loads"]["gpu"]["used"]
-  vars["gpu_temp"] = data["thermals"]["gpu"]
-  vars["net_name"] = data["network"]["name"]
-  vars["lan_ip"] = data["network"]["lip"]
-  vars["public_ip"] = data["network"]["pip"]
-  vars["up_mbytes"] = data["network"]["sent"]
-  vars["down_mbytes"] = data["network"]["recv"]
-  vars["up_speed"] = data["network"]["upspeed"]
-  vars["down_speed"] = data["network"]["downspeed"]
-
-  local hours = string.format ("%02d", data["uptime"]["hours"])
-  local mins = string.format ("%02d", data["uptime"]["mins"])
-  local secs = string.format ("%02d", data["uptime"]["secs"])
-
-  vars["uptime"] = hours .. ":" .. mins .. ":" .. secs
-
-  logger.debug ("resolver data has been loaded")
-end
-
--- Calls the given callback in the given loop cycle
-function call (cycle, callback)
-  if cycle > 0 then
-    local timer = (loop % cycle)
-
-    -- Return if not in the given cycle or not at start up
-    if timer ~= 0 and status ~= "init" then
-      return true
-    end
+  -- Return true if in the given cycle or at start up
+  if timer == 0 or context.status == "init" then
+    return true
   end
 
-  callback ()
-
-  return true
+  return false
 end
 
 -- Main lua function called by conky
 function conky_main ()
+  logger.debug ("entering a conky cycle")
+
   if conky_window == nil then
     logger.debug ("aborting since no conky window is ready")
     return
   end
 
   -- Update the current conky loop index
-  loop = tonumber (conky_parse ("${updates}"))
+  context.loop = tonumber (conky_parse ("${updates}"))
 
-  call (1, read_resolve_data)
+  if matches_cycle (1) then
+    logger.debug ("reading dynamic data...")
 
-  -- Mark conky as running in subsequent cycles
-  if status == "init" then
-    status = "running"
+    -- Load dynamic data from the resolver data file
+    data = util.json.load (DATA_FILE_PATH)
+    context.dynamic.load (data)
 
-    logger.debug ("script has completed first cycle")
-  else
-    logger.debug ("script exiting another cycle")
+    logger.debug ("dynamic data has been loaded")
+    logger.debug ("context:\n" .. util.json.stringify (context.vars))
   end
+
+  -- Mark conky as running in the subsequent cycles
+  if context.status == "init" then
+    context.status = "running"
+
+    logger.debug ("changed from init to running state")
+  end
+
+  logger.debug ("exiting the conky cycle")
 end
 
--- Returns the given text after interpolating any given vars
+-- Returns the given text interpolating any given variables
 function ie (text)
+  -- Read the interpolation variables from the context
+  vars = context.vars
+
   local matches = string.gmatch (text, '${([a-zA-Z_]+)}')
-  
+
   for key in matches do
     if vars[key] ~= nil then
       text = string.gsub (text, '${' .. key .. '}', vars[key])
@@ -140,7 +84,7 @@ function ie (text)
   return text
 end
 
--- Converts the given text as a conkyrc text line
+-- Converts the given text to a conkyrc text line
 function ln (scale, text)
   local line = "${alignr}"
 
@@ -186,4 +130,9 @@ function conky_text ()
   return conky_parse (text)
 end
 
-read_resolve_data ()
+-- Load static configuration variables
+context.static.load (config)
+
+-- Load dynamic system data
+data = util.json.load (DATA_FILE_PATH)
+context.dynamic.load (data)
