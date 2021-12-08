@@ -33,7 +33,7 @@ end
 
 -- Encodes the given dictionary into a string json
 function stringify (dict)
-  return json.encode(dict)
+  return json.encode (dict)
 end
 
 -- Check if the given value is nil or empty
