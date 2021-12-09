@@ -62,7 +62,8 @@ return {
   },
   json = {
     load = load_json,
-    stringify = stringify
+    stringify = stringify,
+    null = json.null
   },
   is_empty = is_empty,
   is_not_empty = is_not_empty,

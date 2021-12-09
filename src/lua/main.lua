@@ -76,7 +76,7 @@ function ie (text)
   local matches = string.gmatch (text, '${([a-zA-Z_]+)}')
 
   for key in matches do
-    if vars[key] ~= nil then
+    if vars[key] ~= nil and vars[key] ~= util.json.null then
       text = string.gsub (text, '${' .. key .. '}', vars[key])
     end
   end
