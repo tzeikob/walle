@@ -68,24 +68,11 @@ function conky_main ()
   logger.debug ("exiting the conky cycle")
 end
 
--- Returns the given text interpolating any given variables
-function ie (text)
-  -- Read the interpolation variables from the context
-  vars = context.vars
-
-  local matches = string.gmatch (text, '${([a-zA-Z_]+)}')
-
-  for key in matches do
-    if vars[key] ~= nil and vars[key] ~= util.json.null then
-      text = string.gsub (text, '${' .. key .. '}', vars[key])
-    end
-  end
-
-  return text
-end
-
 -- Converts the given text to a conkyrc text line
-function ln (scale, text)
+function ln (text, scale)
+  -- Read the interpolation variables from the context
+  local vars = context.vars
+
   local line = "${alignr}"
 
   line = line .. "${font " .. vars["font_name"]
@@ -100,7 +87,7 @@ function ln (scale, text)
 
   local size = vars["font_size"]
 
-  if scale > 1 then
+  if scale and scale > 1 then
     size = size * scale
   end
 
@@ -109,23 +96,74 @@ function ln (scale, text)
   return line
 end
 
+-- Returs the value itself unless it is nullish or empty
+function opt (value, default)
+  if not util.given (value) then
+    return default or "n/a"
+  end
+
+  return value
+end
+
 -- Builds and returns the conky text
 function conky_text ()
+  -- Read the interpolation variables from the context
+  local vars = context.vars
+
   local text = ""
 
-  text = text .. "${color " .. vars["mode"] .. "}\n"
-  text = text .. ln (1.4, ie ("${head}"))
-  text = text .. ln (1.0, ie ("USER ${user} HOST ${hostname}"))
-  text = text .. ln (1.0, ie ("DISTRO ${rls_name} ${rls_codename}"))
-  text = text .. ln (1.0, ie ("CPU ${cpu_load}% MEM ${mem_load}% DISK ${disk_load}%"))
-  text = text .. ln (1.0, ie ("CPU ".. vars["cpu_temp"] .. "°C"))
-  text = text .. ln (1.0, ie ("GPU ${gpu_util}% MEM ${gpu_mem}MB TEMP ${gpu_temp}°C"))
-  text = text .. ln (1.0, ie ("NETWORK ${net_name}"))
-  text = text .. ln (1.0, ie ("LAN ${lan_ip}"))
-  text = text .. ln (1.0, ie ("NET ${public_ip}"))
-  text = text .. ln (1.0, ie ("SENT ${up_mbytes}MB RECEIVED ${down_mbytes}MB"))
-  text = text .. ln (1.0, ie ("UP ${up_speed}Mbps DOWN ${down_speed}Mbps"))
-  text = text .. ln (1.0, ie ("UPTIME T+${uptime}"))
+  local theme_color = vars["theme_color"]
+  text = text .. "${color " .. theme_color .. "}\n"
+
+  local head_line = vars["head_line"]
+  if util.given (head_line) then
+    text = text .. ln (head_line, 1.4)
+  end
+
+  local user = opt (vars["user"])
+  local host = opt (vars["host"])
+  text = text .. ln ("USR " .. user .. " HST " .. host)
+
+  local rls_name = opt (vars["rls_name"])
+  local rls_codename = opt (vars["rls_codename"])
+  text = text .. ln ("RLS " .. rls_name .. " " .. rls_codename)
+
+  local cpu_util = opt (vars["cpu_util"])
+  local cpu_clock = opt (vars["cpu_clock"])
+  local cpu_temp = opt (vars["cpu_temp"])
+  text = text .. ln ("CPU " .. cpu_util .. "% " .. cpu_clock .. "MHz " .. cpu_temp .. "°C")
+
+  local gpu_util = opt (vars["gpu_util"])
+  local gpu_used = opt (vars["gpu_used"])
+  local gpu_temp = opt (vars["gpu_temp"])
+  text = text .. ln ("GPU " .. gpu_util .. "% " .. gpu_used .. "MB " .. gpu_temp .. "°C")
+
+  local mem_util = opt (vars["mem_util"])
+  local mem_used = opt (vars["mem_used"])
+  local mem_free = opt (vars["mem_free"])
+  text = text .. ln ("MEM " .. mem_util .. "% " .. mem_used .. "MB " .. mem_free .. "MB")
+
+  local disk_util = opt (vars["disk_util"])
+  local disk_read = opt (vars["disk_read"])
+  local disk_write = opt (vars["disk_write"])
+  text = text .. ln ("HD " .. disk_util .. "% R " .. disk_read .. "MB W " .. disk_write .. "MB")
+
+  local net_name = opt (vars["net_name"])
+  local net_up_speed = opt (vars["net_up_speed"])
+  local net_down_speed = opt (vars["net_down_speed"])
+  text = text .. ln ("NET " .. net_name .. " UP " .. net_up_speed .. "Mbps DOWN " .. net_down_speed .. "Mbps")
+
+  local net_sent_bytes = opt (vars["net_sent_bytes"])
+  local net_recv_bytes = opt (vars["net_recv_bytes"])
+  text = text .. ln ("Tx " .. net_sent_bytes .. "MB Rx " .. net_recv_bytes .. "MB")
+
+  local lan_ip = opt (vars["lan_ip"], "x.x.x.x")
+  local public_ip = opt (vars["public_ip"], "x.x.x.x")
+  text = text .. ln ("LAN " .. lan_ip)
+  text = text .. ln ("NET " .. public_ip)
+
+  local uptime = opt (vars["uptime"])
+  text = text .. ln ("UPTIME T+" .. uptime)
 
   return conky_parse (text)
 end

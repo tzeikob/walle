@@ -55,6 +55,11 @@ function default_to (value, default)
   return value
 end
 
+-- Return if the given value is not nullish not empty
+function given (value)
+  return is_not_empty(value) and value ~= json.null
+end
+
 return {
   exec = exec,
   yaml = {
@@ -67,5 +72,6 @@ return {
   },
   is_empty = is_empty,
   is_not_empty = is_not_empty,
-  default_to = default_to
+  default_to = default_to,
+  given = given
 }

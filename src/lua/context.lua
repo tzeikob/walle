@@ -11,11 +11,11 @@ vars = {}
 
 -- Maps static configuration data into the vars
 function map_static (data)
-  vars["head"] = data["head"]
+  vars["head_line"] = data["head"]
 
-  vars["mode"] = "white"
+  vars["theme_color"] = "white"
   if data["theme"]["mode"] == "dark" then
-    vars["mode"] = "black"
+    vars["theme_color"] = "black"
   end
 
   vars["font_name"] = "DejaVu Sans Mono"
@@ -44,25 +44,44 @@ end
 
 -- Maps dynamic system data into the vars
 function map_dynamic (data)
+  -- Read logged in user name and host
   vars["user"] = data["login"]["user"]
-  vars["hostname"] = data["login"]["host"]
+  vars["host"] = data["login"]["host"]
+
+  -- Read the release name and codename
   vars["rls_name"] = data["release"]["name"]
   vars["rls_codename"] = data["release"]["codename"]
-  vars["cpu_load"] = data["loads"]["cpu"]["util"]
-  vars["mem_load"] = data["loads"]["memory"]["util"]
-  vars["disk_load"] = data["loads"]["disk"]["util"]
+
+  -- Read cpu load and thermals
+  vars["cpu_util"] = data["loads"]["cpu"]["util"]
+  vars["cpu_clock"] = data["loads"]["cpu"]["clock"]
   vars["cpu_temp"] = data["thermals"]["cpu"]
+
+  -- Read gpu load and thermals
   vars["gpu_util"] = data["loads"]["gpu"]["util"]
-  vars["gpu_mem"] = data["loads"]["gpu"]["used"]
+  vars["gpu_used"] = data["loads"]["gpu"]["used"]
   vars["gpu_temp"] = data["thermals"]["gpu"]
+
+  -- Read memory utilization and usage
+  vars["mem_util"] = data["loads"]["memory"]["util"]
+  vars["mem_used"] = data["loads"]["memory"]["used"]
+  vars["mem_free"] = data["loads"]["memory"]["free"]
+
+  -- Read disk load and io counters
+  vars["disk_util"] = data["loads"]["disk"]["util"]
+  vars["disk_read"] = data["loads"]["disk"]["read"]
+  vars["disk_write"] = data["loads"]["disk"]["write"]
+
+  -- Read network state and usage
   vars["net_name"] = data["network"]["name"]
+  vars["net_up_speed"] = data["network"]["upspeed"]
+  vars["net_down_speed"] = data["network"]["downspeed"]
+  vars["net_sent_bytes"] = data["network"]["sent"]
+  vars["net_recv_bytes"] = data["network"]["recv"]
   vars["lan_ip"] = data["network"]["lip"]
   vars["public_ip"] = data["network"]["pip"]
-  vars["up_mbytes"] = data["network"]["sent"]
-  vars["down_mbytes"] = data["network"]["recv"]
-  vars["up_speed"] = data["network"]["upspeed"]
-  vars["down_speed"] = data["network"]["downspeed"]
 
+  -- Read uptime in hours, mins and seconds
   local hours = string.format ("%02d", data["uptime"]["hours"])
   local mins = string.format ("%02d", data["uptime"]["mins"])
   local secs = string.format ("%02d", data["uptime"]["secs"])
