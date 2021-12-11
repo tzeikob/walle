@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # An executable script resolving system data and status
 
+import sys
+import getpass
+
+# Abort if user in context is root or sudo used
+if getpass.getuser() == 'root':
+  print("[Errno 13] Don't run as root user")
+  sys.exit(1)
+
 import json
 import time
 from datetime import datetime
