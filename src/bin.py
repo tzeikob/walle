@@ -7,7 +7,7 @@ import system
 import args
 import config
 import conky
-import logger
+from logger import Router
 
 # Starts the resolver process
 def start_resolver ():
@@ -69,7 +69,16 @@ def should_restart ():
   return True
 
 try:
-  # Parse given cmd line arguments into options
+  # Read the configuration settings
+  settings = config.read()
+
+  # Initialize logging router
+  logger = Router(globals.PKG_NAME, globals.LOG_FILE_PATH)
+
+  if settings['debug'] == 'enabled':
+    logger.set_level('DEBUG')
+
+  # Parse given command line arguments into options
   opts = args.parse(globals.PKG_NAME, globals.PKG_VERSION)
 
   # Start processes
@@ -110,6 +119,7 @@ try:
 
     config.update(opts)
 
+    # Update the conky config instantly
     if opts.monitor != None:
       conky.switch(opts.monitor)
       logger.stdout.info('Warning: monitor switch is an experimental operation')
