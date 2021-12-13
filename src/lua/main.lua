@@ -56,7 +56,7 @@ function conky_main ()
     logger.debug ("reading dynamic data...")
 
     -- Load dynamic data from the resolver data file
-    data = util.json.load (DATA_FILE_PATH)
+    local data = util.json.load (DATA_FILE_PATH)
     context.dynamic.load (data)
 
     logger.debug ("dynamic data has been loaded")
