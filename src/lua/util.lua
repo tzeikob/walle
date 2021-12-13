@@ -13,6 +13,15 @@ function exec (command)
   return text.trim (output)
 end
 
+-- Reads the given file
+function read (path)
+  local file = io.open (path, "r")
+  local data = file:read ("*a")
+  file:close ()
+
+  return data
+end
+
 -- Loads the given yaml file into a dictionary object
 function load_yaml (path)
   local file = io.open (path, "r")
@@ -62,6 +71,7 @@ end
 
 return {
   exec = exec,
+  read = read,
   yaml = {
     load = load_yaml
   },

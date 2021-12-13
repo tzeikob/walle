@@ -81,10 +81,33 @@ function map_dynamic (data)
   vars["lan_ip"] = data["network"]["lip"]
   vars["public_ip"] = data["network"]["pip"]
 
+  return vars
+end
+
+-- Maps dynamic timing data
+function map_timings (data)
+  -- Convert data to number
+  local secs = tonumber (split (data, " ")[1])
+
+  -- Calculate how many hours
+  local hours = math.floor (secs / 3600)
+  if hours > 0 then
+    secs = secs - (hours * 3600)
+  end
+
+  -- Calculate how many mins
+  local mins = math.floor (secs / 60)
+  if mins > 0 then
+    secs = secs - (mins * 60)
+  end
+
+  -- Floor down to the remaining secs
+  secs = math.floor (secs)
+
   -- Read uptime in hours, mins and seconds
-  local hours = string.format ("%02d", data["uptime"]["hours"])
-  local mins = string.format ("%02d", data["uptime"]["mins"])
-  local secs = string.format ("%02d", data["uptime"]["secs"])
+  local hours = string.format ("%02d", hours)
+  local mins = string.format ("%02d", mins)
+  local secs = string.format ("%02d", secs)
 
   vars["uptime"] = hours .. ":" .. mins .. ":" .. secs
 
@@ -100,5 +123,8 @@ return {
   },
   dynamic = {
     load = map_dynamic
+  },
+  timings = {
+    load = map_timings
   }
 }

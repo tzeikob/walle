@@ -17,7 +17,6 @@ import globals
 import config
 import system
 from logger import Router
-from lib import uptime
 from lib import release
 from lib import login
 from lib import hardware
@@ -74,7 +73,6 @@ logger.disk.debug(f'static data resolved at {str(datetime.now())}')
 while is_up:
   logger.disk.debug(f'resolving dynamic data at {str(datetime.now())}')
 
-  data['uptime'] = run(uptime)
   data['loads'] = run(loads)
   data['thermals'] = run(thermals)
   data['network'] = run(network)
