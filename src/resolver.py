@@ -98,7 +98,4 @@ while is_up:
   # Wait before start the next cycle
   time.sleep(globals.RESOLVER_INTERVAL)
 
-# Remove the data file before shutting down
-system.remove(globals.DATA_FILE_PATH)
-
 logger.disk.info('shutdown gracefully')
