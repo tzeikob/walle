@@ -9,11 +9,13 @@ if getpass.getuser() == 'root':
   print("[Errno 13] Don't run as root user")
   sys.exit(1)
 
+import signal
 import json
 import time
 from datetime import datetime
 import globals
 import config
+import system
 from logger import Router
 from lib import uptime
 from lib import release
@@ -23,14 +25,10 @@ from lib import loads
 from lib import thermals
 from lib import network
 
-# Read the configuration settings
-settings = config.read()
-
-# Initialize logging router
-logger = Router('resolver', globals.LOG_FILE_PATH)
-
-if settings['debug'] == 'enabled':
-  logger.set_level('DEBUG')
+# Marks process as not up and running on kill signals
+def mark_shutdown (*args):
+  global is_up
+  is_up = False
 
 # Executes the resolve API of the given callback
 def run (module):
@@ -45,6 +43,22 @@ def run (module):
 
   return result
 
+# Read the configuration settings
+settings = config.read()
+
+# Initialize logging router
+logger = Router('resolver', globals.LOG_FILE_PATH)
+
+if settings['debug'] == 'enabled':
+  logger.set_level('DEBUG')
+
+# Mark script as up and running
+is_up = True
+
+# Attach shutdown kill handlers
+signal.signal(signal.SIGINT, mark_shutdown)
+signal.signal(signal.SIGTERM, mark_shutdown)
+
 data = {}
 
 logger.disk.debug(f'resolving static data at {str(datetime.now())}')
@@ -57,7 +71,7 @@ data['hardware'] = run(hardware)
 logger.disk.debug(f'static data resolved at {str(datetime.now())}')
 
 # Loop endlessly resolving non-static data
-while True:
+while is_up:
   logger.disk.debug(f'resolving dynamic data at {str(datetime.now())}')
 
   data['uptime'] = run(uptime)
@@ -85,3 +99,8 @@ while True:
 
   # Wait before start the next cycle
   time.sleep(globals.RESOLVER_INTERVAL)
+
+# Remove the data file before shutting down
+system.remove(globals.DATA_FILE_PATH)
+
+logger.disk.info('shutdown gracefully')
