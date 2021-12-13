@@ -104,7 +104,6 @@ function map_timings (data)
   -- Floor down to the remaining secs
   secs = math.floor (secs)
 
-  -- Read uptime in hours, mins and seconds
   local hours = string.format ("%02d", hours)
   local mins = string.format ("%02d", mins)
   local secs = string.format ("%02d", secs)
