@@ -52,7 +52,7 @@ function conky_main ()
   local uptime = util.read (UPTIME_FILE_PATH)
   context.timings.load (uptime)
 
-  if matches_cycle (1) then
+  if matches_cycle (5) then
     logger.debug ("reading dynamic data...")
 
     -- Load dynamic data from the resolver data file

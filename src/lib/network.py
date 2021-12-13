@@ -82,7 +82,7 @@ def resolve ():
 
   try:
     # Resolve the public address via the ident API
-    response = requests.get('https://ident.me/', timeout=0.8)
+    response = requests.get('https://ident.me/', timeout=2)
 
     if response.status_code == 200:
       public_ip = response.text
