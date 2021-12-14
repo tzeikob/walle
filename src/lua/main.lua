@@ -16,6 +16,7 @@ package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 util = require "util"
 logger = require "logger"
 context = require "context"
+format = require "format"
 
 -- Checks if the given cycle matches the current context loop
 function matches_cycle (cycle)
@@ -111,20 +112,34 @@ function conky_text ()
   local text = ""
 
   local theme_color = vars["theme_color"]
+
   text = text .. "${color " .. theme_color .. "}\n"
 
   local head_line = vars["head_line"]
+
   if util.given (head_line) then
+    head_line = format.upper (head_line)
+
     text = text .. ln (head_line, 1.4)
   end
 
   local user = opt (vars["user"])
   local host = opt (vars["host"])
-  text = text .. ln ("USR " .. user .. " HST " .. host)
+
+  user = format.upper (user)
+  host = format.upper (host)
+
+  text = text .. ln ("USER " .. user .. " HOST " .. host)
 
   local rls_name = opt (vars["rls_name"])
   local rls_codename = opt (vars["rls_codename"])
-  text = text .. ln ("RLS " .. rls_name .. " " .. rls_codename)
+  local rls_version = opt (vars["rls_version"])
+
+  rls_name = format.upper (rls_name)
+  rls_codename = format.upper (rls_codename)
+  rls_version = format.upper (rls_version)
+
+  text = text .. ln ("SYS " .. rls_name .. " " .. rls_codename .. " v" .. rls_version)
 
   local cpu_util = opt (vars["cpu_util"])
   local cpu_clock = opt (vars["cpu_clock"])
@@ -149,6 +164,9 @@ function conky_text ()
   local net_name = opt (vars["net_name"])
   local net_up_speed = opt (vars["net_up_speed"])
   local net_down_speed = opt (vars["net_down_speed"])
+
+  net_name = format.upper (net_name)
+
   text = text .. ln ("NET " .. net_name .. " UP " .. net_up_speed .. "Mbps DOWN " .. net_down_speed .. "Mbps")
 
   local net_sent_bytes = opt (vars["net_sent_bytes"])

@@ -45,6 +45,15 @@ function cap (str)
   return str:gsub ("^%l", string.upper)
 end
 
+-- Converts the given string to upper case
+function upper (str)
+  if str == nil or str == "" then
+    return str
+  end
+
+  return str:upper ()
+end
+
 -- Trims any whitespace of the given string
 function trim (str)
   if str ~= nil then
@@ -58,5 +67,6 @@ return {
   split = split,
   matches = matches,
   cap = cap,
+  upper = upper,
   trim = trim
 }
