@@ -17,13 +17,6 @@ util = require "util"
 logger = require "logger"
 context = require "context"
 
--- Load configuration settings
-config = util.yaml.load (CONFIG_FILE_PATH)
-
--- Initialize logger
-logger.set_debug_mode (config["debug"])
-logger.set_log_file (LOG_FILE_PATH)
-
 -- Checks if the given cycle matches the current context loop
 function matches_cycle (cycle)
   local timer = (context.loop % cycle)
@@ -172,6 +165,13 @@ function conky_text ()
 
   return conky_parse (text)
 end
+
+-- Load configuration settings
+config = util.yaml.load (CONFIG_FILE_PATH)
+
+-- Initialize logger
+logger.set_debug_mode (config["debug"])
+logger.set_log_file (LOG_FILE_PATH)
 
 -- Load static configuration variables
 context.static.load (config)
