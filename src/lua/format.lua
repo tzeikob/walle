@@ -63,10 +63,28 @@ function trim (str)
   return str
 end
 
+-- Converts the number into a string with the given pattern
+function number (value, pattern)
+  if format then
+    value = string.format (pattern, value)
+  end
+
+  return value
+end
+
+-- Converts the integer into a string witht he given pattern
+function int (value, pattern)
+  value = math.floor (value + 0.5)
+
+  return number(value, pattern)
+end
+
 return {
   split = split,
   matches = matches,
   cap = cap,
   upper = upper,
-  trim = trim
+  trim = trim,
+  number = number,
+  int = int
 }
