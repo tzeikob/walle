@@ -2,7 +2,7 @@
 
 yaml = require "yaml"
 json = require "cjson"
-text = require "text"
+format = require "format"
 
 -- Executes a native system command given as string
 function exec (command)
@@ -10,7 +10,7 @@ function exec (command)
   local output = file:read ("*a")
   file:close ()
 
-  return text.trim (output)
+  return format.trim (output)
 end
 
 -- Reads the given file

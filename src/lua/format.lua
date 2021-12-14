@@ -42,7 +42,7 @@ function cap (str)
     return str
   end
 
-  return (str:gsub ("^%l", string.upper))
+  return str:gsub ("^%l", string.upper)
 end
 
 -- Trims any whitespace of the given string

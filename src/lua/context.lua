@@ -1,6 +1,6 @@
 -- A lua module to encapsulate the context lua script
 
-text = require "text"
+format = require "format"
 
 -- Initialize some state variables
 status = "init"
@@ -25,14 +25,14 @@ function map_static (data)
   
   local font = data["theme"]["font"]
 
-  local parts = text.split (font, ":")
+  local parts = format.split (font, ":")
   for _, part in ipairs (parts) do
-    if text.matches (part, "bold") then
+    if format.matches (part, "bold") then
       vars["font_bold"] = true
-    elseif text.matches (part, "italic") then
+    elseif format.matches (part, "italic") then
       vars["font_italic"] = true
-    elseif text.matches (part, "size=.+") then
-      local size = text.split (part, "=")[2]
+    elseif format.matches (part, "size=.+") then
+      local size = format.split (part, "=")[2]
       vars["font_size"] = tonumber (size)
     elseif part ~= "" then
       vars["font_name"] = part
@@ -87,7 +87,7 @@ end
 -- Maps dynamic timing data
 function map_timings (data)
   -- Convert data to number
-  local secs = tonumber (split (data, " ")[1])
+  local secs = tonumber (format.split (data, " ")[1])
 
   -- Calculate how many hours
   local hours = math.floor (secs / 3600)
