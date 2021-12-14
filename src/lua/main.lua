@@ -161,25 +161,47 @@ function conky_text ()
   local disk_write = opt (vars["disk_write"])
   text = text .. ln ("HD " .. disk_util .. "% R " .. disk_read .. "MB W " .. disk_write .. "MB")
 
-  local net_name = opt (vars["net_name"])
-  local net_up_speed = opt (vars["net_up_speed"])
-  local net_down_speed = opt (vars["net_down_speed"])
+  local net_up_speed = 0.0
+  local net_sent_bytes = 0
 
-  net_name = format.upper (net_name)
+  if vars["net_up"] then
+    net_up_speed = opt (vars["net_up_speed"], 0.0)
+    net_sent_bytes = opt (vars["net_sent_bytes"], 0)
+  end
 
-  text = text .. ln ("NET " .. net_name .. " UP " .. net_up_speed .. "Mbps DOWN " .. net_down_speed .. "Mbps")
+  text = text .. ln (" UP " .. net_up_speed .. "Mbps TRx " .. net_sent_bytes .. "MB")
 
-  local net_sent_bytes = opt (vars["net_sent_bytes"])
-  local net_recv_bytes = opt (vars["net_recv_bytes"])
-  text = text .. ln ("Tx " .. net_sent_bytes .. "MB Rx " .. net_recv_bytes .. "MB")
+  local net_down_speed = 0.0
+  local net_recv_bytes = 0
 
-  local lan_ip = opt (vars["lan_ip"], "x.x.x.x")
-  local public_ip = opt (vars["public_ip"], "x.x.x.x")
-  text = text .. ln ("LAN " .. lan_ip)
-  text = text .. ln ("NET " .. public_ip)
+  if vars["net_up"] then
+    net_down_speed = opt (vars["net_down_speed"], 0.0)
+    net_recv_bytes = opt (vars["net_recv_bytes"], 0)
+  end
+
+  text = text .. ln ("DOWN " .. net_down_speed .. "Mbps REx " .. net_recv_bytes .. "MB")
+
+  local net_name = "NA"
+  local lan_ip = "x.x.x.x"
+
+  if vars["net_up"] then
+    net_name = format.upper (opt (vars["net_name"]))
+    lan_ip = opt (vars["lan_ip"], "x.x.x.x")
+  end
+
+  text = text .. ln ("LAN " .. net_name .. " IP " .. lan_ip)
+
+  local public_ip = "x.x.x.x"
+
+  if vars["net_up"] then
+    public_ip = opt (vars["public_ip"], "x.x.x.x")
+  end
+
+  text = text .. ln ("PUB IP " .. public_ip)
 
   local uptime = opt (vars["uptime"])
-  text = text .. ln ("UPTIME T+" .. uptime)
+
+  text = text .. ln ("UP T+" .. uptime)
 
   return conky_parse (text)
 end

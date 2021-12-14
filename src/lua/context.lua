@@ -73,6 +73,7 @@ function map_dynamic (data)
   vars["disk_write"] = data["loads"]["disk"]["write"]
 
   -- Read network state and usage
+  vars["net_up"] = data["network"]["up"]
   vars["net_name"] = data["network"]["name"]
   vars["net_up_speed"] = data["network"]["upspeed"]
   vars["net_down_speed"] = data["network"]["downspeed"]
