@@ -51,6 +51,7 @@ function map_dynamic (data)
   -- Read the release name and codename
   vars["rls_name"] = data["release"]["name"]
   vars["rls_codename"] = data["release"]["codename"]
+  vars["rls_version"] = data["release"]["version"]
 
   -- Read cpu load and thermals
   vars["cpu_util"] = data["loads"]["cpu"]["util"]
