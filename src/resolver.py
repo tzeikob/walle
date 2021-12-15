@@ -15,7 +15,6 @@ import time
 from datetime import datetime
 import globals
 import config
-import system
 from logger import Router
 from lib import release
 from lib import login
