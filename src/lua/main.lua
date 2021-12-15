@@ -143,7 +143,7 @@ function conky_text ()
   rls_codename = format.upper (rls_codename)
   rls_version = format.upper (rls_version)
 
-  text = text .. ln ("SYS " .. rls_name .. " " .. rls_codename .. " v" .. rls_version)
+  text = text .. ln ("SYSTEM " .. rls_name .. " " .. rls_codename .. " v" .. rls_version) .. "\n"
 
   -- Build the cpu line text
   local cpu_util = opt (vars["cpu_util"], 0.0)
@@ -154,9 +154,9 @@ function conky_text ()
   cpu_clock = format.int (cpu_clock, "%04d")
   cpu_temp = format.int (cpu_temp, "%02d")
 
-  text = text .. ln ("CPU " .. cpu_util .. "% " .. cpu_clock .. "MHz " .. cpu_temp .. "°C")
+  text = text .. ln ("PROCESSOR " .. cpu_util .. "% " .. cpu_clock .. "MHz " .. cpu_temp .. "°C")
 
-  -- Build the gpu line text
+    -- Build the gpu line text
   local gpu_util = opt (vars["gpu_util"], 0.0)
   local gpu_used = opt (vars["gpu_used"], 0)
   local gpu_temp = opt (vars["gpu_temp"], 0.0)
@@ -165,7 +165,7 @@ function conky_text ()
   gpu_used = format.int (gpu_used, "%05d")
   gpu_temp = format.int (gpu_temp, "%02d")
 
-  text = text .. ln ("GPU " .. gpu_util .. "% " .. gpu_used .. "MB " .. gpu_temp .. "°C")
+  text = text .. ln ("GRAPHICS " .. gpu_util .. "% " .. gpu_used .. "MB " .. gpu_temp .. "°C")
 
   -- Build the memory line text
   local mem_util = opt (vars["mem_util"], 0.0)
@@ -176,7 +176,7 @@ function conky_text ()
   mem_used = format.int (mem_used, "%06d")
   mem_free = format.int (mem_free, "%06d")
 
-  text = text .. ln ("MEM " .. mem_util .. "% US " .. mem_used .. "MB FR " .. mem_free .. "MB")
+  text = text .. ln ("MEMORY " .. mem_util .. "% " .. mem_used .. "MB " .. "xxxxMHz")
 
   -- Build the disk line text
   local disk_util = opt (vars["disk_util"], 0.0)
@@ -187,7 +187,7 @@ function conky_text ()
   disk_read = format.int (disk_read, "%05d")
   disk_write = format.int (disk_write, "%05d")
 
-  text = text .. ln ("DISK " .. disk_util .. "% RD " .. disk_read .. "MB WR " .. disk_write .. "MB")
+  text = text .. ln ("DISK " .. disk_util .. "% Rx " .. disk_read .. "MB Wx " .. disk_write .. "MB") .. "\n"
 
   -- Build the upload network line text
   local net_up_speed = 0.0
@@ -201,7 +201,7 @@ function conky_text ()
   net_up_speed = format.number (net_up_speed, "%05.1f")
   net_sent_bytes = format.int (net_sent_bytes, "%05d")
 
-  text = text .. ln (" UP " .. net_up_speed .. "Mbps TRx " .. net_sent_bytes .. "MB")
+  text = text .. ln (" UPLOAD Tx " .. net_sent_bytes .. "MB " .. net_up_speed .. "Mbps")
 
   -- Build the download network line text
   local net_down_speed = 0.0
@@ -215,7 +215,7 @@ function conky_text ()
   net_down_speed = format.number (net_down_speed, "%05.1f")
   net_recv_bytes = format.int (net_recv_bytes, "%05d")
 
-  text = text .. ln ("DOWN " .. net_down_speed .. "Mbps REx " .. net_recv_bytes .. "MB")
+  text = text .. ln ("DOWNLOAD Rx " .. net_recv_bytes .. "MB " .. net_down_speed .. "Mbps")
 
   -- Build the local network line text
   local net_name = "NA"
@@ -226,21 +226,12 @@ function conky_text ()
     lan_ip = opt (vars["lan_ip"], "x.x.x.x")
   end
 
-  text = text .. ln ("LAN " .. net_name .. " IP " .. lan_ip)
-
-  -- Build the public network line text
-  local public_ip = "x.x.x.x"
-
-  if vars["net_up"] then
-    public_ip = opt (vars["public_ip"], "x.x.x.x")
-  end
-
-  text = text .. ln ("PUB IP " .. public_ip)
+  text = text .. ln ("NETWORK " .. net_name .. " IP " .. lan_ip) .. "\n"
 
   -- Build the uptime line text
   local uptime = opt (vars["uptime"])
 
-  text = text .. ln ("UP T+" .. uptime)
+  text = text .. ln ("UPTIME T+" .. uptime)
 
   return conky_parse (text)
 end
