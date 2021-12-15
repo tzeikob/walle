@@ -58,11 +58,13 @@ def stop_conky ():
 # Restarts the resolver and conky processes
 def restart():
   stop_conky()
+  time.sleep(1)
   stop_resolver()
 
   time.sleep(1)
 
   start_resolver()
+  time.sleep(1)
   start_conky()
 
 # Returns if should restart processes when any process is down
@@ -94,6 +96,7 @@ try:
     logger.disk.info('starting processes...')
 
     start_resolver()
+    time.sleep(1)
     start_conky()
 
   # Stop processes
@@ -101,6 +104,7 @@ try:
     logger.disk.info('stopping processes...')
 
     stop_conky()
+    time.sleep(1)
     stop_resolver()
 
   # Restart processes
