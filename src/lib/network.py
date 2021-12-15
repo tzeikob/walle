@@ -61,15 +61,15 @@ def resolve ():
   # Calculate current download and upload speeds
   global last_sent, last_recv
 
-  # Report zero up speed in case of invalid sent value
-  if last_sent >= sent or past_secs <= 0:
+  # Report zero up speed in case of invalid sent values
+  if last_sent == 0 or last_sent >= sent or past_secs <= 0:
     up_speed = 0
   else:
     delta = sent - last_sent
     up_speed = delta / past_secs
 
-  # Report zero down speed in case of invalid recv value
-  if last_recv >= recv or past_secs <= 0:
+  # Report zero down speed in case of invalid recv values
+  if last_recv == 0 or last_recv >= recv or past_secs <= 0:
     down_speed = 0
   else:
     delta = recv - last_recv
