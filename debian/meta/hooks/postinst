@@ -4,30 +4,25 @@
 set -e
 
 PKG_NAME="#PKG_NAME"
+INSTALLATION_DIR=/usr/share/$PKG_NAME
 HOME_DIR=/home/$SUDO_USER
 CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
 AUTOSTART_DIR=$HOME_DIR/.config/autostart
-TEMP_DIR=/tmp/$PKG_NAME
 
 echo -e "Startig post installation script"
+
+# Set the current sudo user to files need user's name
+sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/lua/main.lua
+
+# Create the executable's symbolic link file
+ln -s $INSTALLATION_DIR/bin/$PKG_NAME.py /usr/bin/$PKG_NAME
 
 # Create config folder
 mkdir -p $CONFIG_DIR
 
-# Move config files to the config folder
-mv $TEMP_DIR/config.yml $CONFIG_DIR/config.yml
-mv $TEMP_DIR/.conkyrc $CONFIG_DIR/.conkyrc
-
-# Move lua files
-LUA_FILE=$CONFIG_DIR/main.lua
-mv $TEMP_DIR/main.lua $LUA_FILE
-
-# Set the user name in the main lua file
-sed -i "s/#USER/$SUDO_USER/g" $LUA_FILE
-
-mv $TEMP_DIR/ui.lua $CONFIG_DIR/ui.lua
-mv $TEMP_DIR/util.lua $CONFIG_DIR/util.lua
-mv $TEMP_DIR/core.lua $CONFIG_DIR/core.lua
+# Copy config files to config folder
+cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml
+cp $INSTALLATION_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
@@ -55,21 +50,16 @@ echo -e "Autostart desktop file created at '$DESKTOP_FILE'"
 
 echo -e "Installing python third-party dependencies..."
 
-su $SUDO_USER -c "pip3 install ruamel.yaml --upgrade"
+su $SUDO_USER -c "pip3 install requests ruamel.yaml psutil gputil --upgrade"
 
 echo -e "Python dependencies have been installed"
 
 echo -e "Installing lua third-party dependencies..."
 
-luarocks install luafilesystem
 luarocks install yaml
 luarocks install lua-cjson
 
 echo -e "Lua dependencies have been installed"
-
-echo -e "Starting $PKG_NAME executable..."
-
-su $SUDO_USER -c "$PKG_NAME start"
 
 echo -e "Exiting post installation script"
 

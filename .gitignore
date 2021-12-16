@@ -13,3 +13,7 @@ build/
 dist/
 .dist/
 *.deb
+
+# Python cache file
+__pycache__/
+**/*.pyc

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # A script to build the project as debian package
 
+set -e
+
 PKG_NAME="$1"
 PKG_VERSION="$2"
 PKG_DEPENDS="$3"
@@ -12,6 +14,7 @@ PKG_DESCRIPTION="$7"
 # Resolve base and dist folder paths
 BASE_DIR=$(dirname "$0")
 DIST_DIR=$BASE_DIR/../dist/debian
+BUILD_DIR=$DIST_DIR/build
 
 # Aborts build process on fatal errors: <message> <errcode>
 abort () {
@@ -27,107 +30,93 @@ abort () {
   exit $errcode
 }
 
+# Escapes slashes in the given path: path
+esc () {
+  local path=$1
+
+  echo $path | sed 's/\//\\\//g'
+}
+
+# Restores any key with the given value in all build files: key, value
+restore () {
+  local key=$1
+  local value=$2
+
+  # Replace only keys prefixed with sharp # char
+  find $BUILD_DIR -type f -print0 | xargs -0 sed -i "s/#$key/$(esc "$value")/g"
+}
+
 # Disallow to run this script as root or with sudo
 if [[ "$UID" == "0" ]]; then
   abort "don't run this script as root user" 1
 fi
 
-# Source utility methods
-source $BASE_DIR/../src/util/core.sh
-source $BASE_DIR/../src/util/text.sh
-
 # Clean any build files
 rm -rf $DIST_DIR
 
 echo -e "Debian build process started for '$PKG_NAME v$PKG_VERSION'"
-echo -e "Creating debian files \U1F4AC"
 
-DEBIAN_DIR=$DIST_DIR/build/DEBIAN
+DEBIAN_DIR=$BUILD_DIR/DEBIAN
 mkdir -p $DEBIAN_DIR
 
-echo -e "Creating the debian control file \U1F4AC"
+echo -e "Processing the debian meta files \U1F4AC"
 
-CONTROL_FILE=$DEBIAN_DIR/control
-cp $BASE_DIR/control $CONTROL_FILE
+cp $BASE_DIR/meta/control $DEBIAN_DIR/control
+cp $BASE_DIR/meta/hooks/* $DEBIAN_DIR
 
-# Inject the package metadata into the control file
-sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $CONTROL_FILE
-sed -i "s/#PKG_VERSION/$(esc "$PKG_VERSION")/g" $CONTROL_FILE
-sed -i "s/#PKG_DEPENDS/$(esc "$PKG_DEPENDS")/g" $CONTROL_FILE
-sed -i "s/#PKG_ARCHITECTURE/$(esc "$PKG_ARCHITECTURE")/g" $CONTROL_FILE
-sed -i "s/#PKG_MAINTAINER/$(esc "$PKG_MAINTAINER")/g" $CONTROL_FILE
-sed -i "s/#PKG_HOMEPAGE/$(esc "$PKG_HOMEPAGE")/g" $CONTROL_FILE
-sed -i "s/#PKG_DESCRIPTION/$(esc "$PKG_DESCRIPTION")/g" $CONTROL_FILE
-
-echo -e "Control file has been created"
-
-echo -e "Copying apt pre/post installation scripts \U1F4AC"
-
-POSTINST_FILE=$DEBIAN_DIR/postinst
-cp $BASE_DIR/hooks/postinst.sh $POSTINST_FILE
-
-sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $POSTINST_FILE
-
-POSTRM_FILE=$DEBIAN_DIR/postrm
-cp $BASE_DIR/hooks/postrm.sh $POSTRM_FILE
-
-sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $POSTRM_FILE
-
-PRERM_FILE=$DEBIAN_DIR/prerm
-cp $BASE_DIR/hooks/prerm.sh $PRERM_FILE
-
-sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $PRERM_FILE
-
-echo -e "Installation scripts have been set in place"
-echo -e "Debian files have been created successfully"
+echo -e "Meta files have been created"
 
 echo -e "Bundling the package files \U1F4AC"
 
-BIN_DIR=$DIST_DIR/build/usr/bin
+INSTALLATION_DIR=$BUILD_DIR/usr/share/$PKG_NAME
+mkdir -p $INSTALLATION_DIR
+
+BIN_DIR=$INSTALLATION_DIR/bin
 mkdir -p $BIN_DIR
 
-BIN_FILE=$BIN_DIR/$PKG_NAME
-cp $BASE_DIR/../src/index.py $BIN_FILE
+cp $BASE_DIR/../src/*.py $BIN_DIR
+mv $BIN_DIR/bin.py $BIN_DIR/$PKG_NAME.py
 
-sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $BIN_FILE
+echo -e "Binary files have been added"
 
-echo -e "Executable file has been bundled"
+LIB_DIR=$BIN_DIR/lib
+mkdir -p $LIB_DIR
 
-TEMP_DIR=$DIST_DIR/build/tmp/$PKG_NAME
-mkdir -p $TEMP_DIR
+cp $BASE_DIR/../src/lib/*.py $LIB_DIR
 
-LUA_FILE=$TEMP_DIR/main.lua
-cp $BASE_DIR/../src/lua/main.lua $LUA_FILE
+echo -e "Resolver modules have been added"
 
-sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $LUA_FILE
+LUA_DIR=$INSTALLATION_DIR/lua
+mkdir -p $LUA_DIR
 
-cp $BASE_DIR/../src/lua/util.lua $TEMP_DIR/util.lua
-cp $BASE_DIR/../src/lua/core.lua $TEMP_DIR/core.lua
-cp $BASE_DIR/ui/gnome.lua $TEMP_DIR/ui.lua
+cp $BASE_DIR/../src/lua/*.lua $LUA_DIR
 
-echo -e "Lua files have been bundled"
+echo -e "Lua script files have been added"
 
-CONKYRC_FILE=$TEMP_DIR/.conkyrc
-cp $BASE_DIR/../src/.conkyrc $CONKYRC_FILE
+cp -a $BASE_DIR/../resources/. $INSTALLATION_DIR
 
-sed -i "s/#PKG_NAME/$(esc "$PKG_NAME")/g" $CONKYRC_FILE
+echo -e "Config and resource files have been set"
 
-echo -e "Conkyrc file has been bundle"
+echo -e "Bundling process has been completed"
 
-CONFIG_FILE=$TEMP_DIR/config.yml
-cp $BASE_DIR/../src/config.yml $CONFIG_FILE
-
-sed -i "s/#PKG_VERSION/$(esc "$PKG_VERSION")/g" $CONFIG_FILE
-
-echo -e "Config file has been bundled"
-echo -e "Package files have been bundled successfully"
-
-echo -e "Calculating the package files size \U1F4AC"
+echo -e "Calculating package file size \U1F4AC"
 
 PKG_FILE_SIZE=$(find $DIST_DIR/build/ -type f -exec du -ch {} + | grep total$ | awk '{print $1}')
-sed -i "s/#PKG_FILE_SIZE/$(esc "$PKG_FILE_SIZE")/g" $CONTROL_FILE
 
-echo -e "Total of $PKG_FILE_SIZE bytes in file size"
+echo -e "Package file size is $PKG_FILE_SIZE bytes"
+
+echo -e "Restoring package global variables \U1F4AC"
+
+restore "PKG_NAME" "$PKG_NAME"
+restore "PKG_VERSION" "$PKG_VERSION"
+restore "PKG_DEPENDS" "$PKG_DEPENDS"
+restore "PKG_ARCHITECTURE" "$PKG_ARCHITECTURE"
+restore "PKG_MAINTAINER" "$PKG_MAINTAINER"
+restore "PKG_HOMEPAGE" "$PKG_HOMEPAGE"
+restore "PKG_DESCRIPTION" "$PKG_DESCRIPTION"
+restore "PKG_FILE_SIZE" "$PKG_FILE_SIZE"
+
+echo -e "Package global variables have been restored"
 
 echo -e "Building the debian package file \U1F4AC"
 

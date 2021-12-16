@@ -7,9 +7,11 @@ PKG_NAME="#PKG_NAME"
 
 echo -e "Starting pre remove script"
 
-echo -e "Stoping $PKG_NAME executable..."
+echo -e "Trying to stop processes..."
 
 su $SUDO_USER -c "$PKG_NAME stop"
+
+echo -e "Processes are down"
 
 echo -e "Exiting pre remove script"
 
