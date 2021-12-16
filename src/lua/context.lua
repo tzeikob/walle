@@ -10,7 +10,7 @@ loop = 0
 vars = {}
 
 -- Maps static configuration data into the vars
-function map_static (data)
+function map_config (data)
   vars["head_line"] = data["head"]
 
   vars["theme_color"] = "white"
@@ -42,17 +42,30 @@ function map_static (data)
   return vars
 end
 
--- Maps dynamic system data into the vars
-function map_dynamic (data)
-  -- Read logged in user name and host
-  vars["user"] = data["login"]["user"]
-  vars["host"] = data["login"]["host"]
+-- Maps hardware data into the vars
+function map_hardware (data)
+  -- Read memory speed data
+  vars["mem_speed"] = data["memory"]["speed"]
 
+  return vars
+end
+
+-- Maps system static data into the vars
+function map_system (data)
   -- Read the release name and codename
   vars["rls_name"] = data["release"]["name"]
   vars["rls_codename"] = data["release"]["codename"]
   vars["rls_version"] = data["release"]["version"]
 
+  -- Read logged in user name and host
+  vars["user"] = data["login"]["user"]
+  vars["host"] = data["login"]["host"]
+
+  return vars
+end
+
+-- Maps monitoring data into the vars
+function map_monitor (data)
   -- Read cpu load and thermals
   vars["cpu_util"] = data["loads"]["cpu"]["util"]
   vars["cpu_clock"] = data["loads"]["cpu"]["clock"]
@@ -119,11 +132,17 @@ return {
   status = status,
   loop = loop,
   vars = vars,
-  static = {
-    load = map_static
+  config = {
+    load = map_config
   },
-  dynamic = {
-    load = map_dynamic
+  hardware = {
+    load = map_hardware
+  },
+  system = {
+    load = map_system
+  },
+  monitor = {
+    load = map_monitor
   },
   timings = {
     load = map_timings

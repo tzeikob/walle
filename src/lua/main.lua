@@ -4,9 +4,9 @@
 PKG_NAME = "#PKG_NAME"
 BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
 CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
+DATA_DIR = CONFIG_DIR .. "/.data"
 
 CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
-DATA_FILE_PATH = CONFIG_DIR .. "/.data"
 UPTIME_FILE_PATH = "/proc/uptime"
 LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
 
@@ -42,7 +42,7 @@ function conky_main ()
   -- Update the current conky loop index
   context.loop = tonumber (conky_parse ("${updates}"))
 
-  -- Load timing data
+  -- Load timings data
   local uptime = util.read (UPTIME_FILE_PATH)
   context.timings.load (uptime)
 
@@ -50,10 +50,10 @@ function conky_main ()
     logger.debug ("reading dynamic data...")
 
     -- Load dynamic data from the resolver data file
-    local data = util.json.load (DATA_FILE_PATH)
-    context.dynamic.load (data)
+    local monitor = util.json.load (DATA_DIR .. "/monitor")
+    context.monitor.load (monitor)
 
-    logger.debug ("dynamic data has been loaded")
+    logger.debug ("monitoring data has been loaded")
     logger.debug ("context:\n" .. util.json.stringify (context.vars))
   end
 
@@ -170,13 +170,13 @@ function conky_text ()
   -- Build the memory line text
   local mem_util = opt (vars["mem_util"], 0.0)
   local mem_used = opt (vars["mem_used"], 0)
-  local mem_free = opt (vars["mem_free"], 0)
+  local mem_speed = opt (vars["mem_speed"], 0)
 
   mem_util = format.int (mem_util, "%02d")
   mem_used = format.int (mem_used, "%06d")
-  mem_free = format.int (mem_free, "%06d")
+  mem_speed = format.int (mem_speed, "%04d")
 
-  text = text .. ln ("MEMORY " .. mem_util .. "% " .. mem_used .. "MB " .. "xxxxMHz")
+  text = text .. ln ("MEMORY " .. mem_util .. "% " .. mem_used .. "MB " .. mem_speed .. "MHz")
 
   -- Build the disk line text
   local disk_util = opt (vars["disk_util"], 0.0)
@@ -244,12 +244,20 @@ logger.set_debug_mode (config["debug"])
 logger.set_log_file (LOG_FILE_PATH)
 
 -- Load static configuration variables
-context.static.load (config)
+context.config.load (config)
 
--- Load dynamic system data
-data = util.json.load (DATA_FILE_PATH)
-context.dynamic.load (data)
+-- Load hardware data
+hardware = util.json.load (DATA_DIR .. "/hardware")
+context.hardware.load (hardware)
 
--- Load timing data
+-- Load system data
+system = util.json.load (DATA_DIR .. "/system")
+context.system.load (system)
+
+-- Load monitoring data
+monitor = util.json.load (DATA_DIR .. "/monitor")
+context.monitor.load (monitor)
+
+-- Load timings data
 uptime = util.read (UPTIME_FILE_PATH)
 context.timings.load (uptime)

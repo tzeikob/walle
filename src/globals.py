@@ -11,5 +11,5 @@ CONKYRC_FILE_PATH = BASE_DIR + '/.conkyrc'
 LOG_FILE_PATH = BASE_DIR + '/all.log'
 CONKY_PID_FILE_PATH = BASE_DIR + '/conky.pid'
 RESOLVER_PID_FILE_PATH = BASE_DIR + '/resolver.pid'
-DATA_FILE_PATH = BASE_DIR + '/.data'
+DATA_DIR_PATH = BASE_DIR + '/.data'
 RESOLVER_INTERVAL = 5

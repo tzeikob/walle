@@ -7,6 +7,7 @@ PKG_NAME="#PKG_NAME"
 INSTALLATION_DIR=/usr/share/$PKG_NAME
 HOME_DIR=/home/$SUDO_USER
 CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
+DATA_DIR=$CONFIG_DIR/.data
 AUTOSTART_DIR=$HOME_DIR/.config/autostart
 
 echo -e "Startig post installation script"
@@ -23,6 +24,16 @@ mkdir -p $CONFIG_DIR
 # Copy config files to config folder
 cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml
 cp $INSTALLATION_DIR/.conkyrc $CONFIG_DIR/.conkyrc
+
+echo -e "Resolving system hardware information..."
+
+mkdir -p $DATA_DIR
+
+# Use dmidecode to resolve memory clock speeds
+speed_line=$(sudo dmidecode -t memory | egrep -im 1 'Speed: [0-9]{4} MT/s')
+speed=$(echo $speed_line | sed  's/^.* \([0-9][0-9][0-9][0-9]\).*$/\1/g')
+
+echo "{\"memory\": {\"speed\": $speed}}" > $DATA_DIR/hardware
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR

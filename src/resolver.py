@@ -57,41 +57,52 @@ is_up = True
 signal.signal(signal.SIGINT, mark_shutdown)
 signal.signal(signal.SIGTERM, mark_shutdown)
 
-data = {}
+# Collect system data in one place
+data = {
+  'hardware': {},
+  'system': {},
+  'monitor': {}
+}
 
 logger.disk.debug(f'resolving static data at {str(datetime.now())}')
 
-# Start resolving static data only once
-data['release'] = run(release)
-data['login'] = run(login)
+# Read memory data already resolved at installation
+with open(globals.DATA_DIR_PATH + '/hardware') as hardware_file:
+  memory = json.load(hardware_file)['memory']
+
+# Resolve the rest of the hardware data and save them along with memory
 data['hardware'] = run(hardware)
+data['hardware']['memory'] = memory
 
-logger.disk.debug(f'static data resolved at {str(datetime.now())}')
+# Save again hardware data into the disk
+with open(globals.DATA_DIR_PATH + '/hardware', 'w') as hardware_file:
+  hardware_file.write(json.dumps(data['hardware']))
 
-# Loop endlessly resolving non-static data
+# Resolve static system's release and login data
+data['system']['release'] = run(release)
+data['system']['login'] = run(login)
+
+# Save system data into the disk
+with open(globals.DATA_DIR_PATH + '/system', 'w') as system_file:
+  system_file.write(json.dumps(data['system']))
+
+logger.disk.debug('static data resolved successfully')
+
+# Loop endlessly resolving monitoring data
 while is_up:
-  logger.disk.debug(f'resolving dynamic data at {str(datetime.now())}')
+  logger.disk.debug(f'resolving monitor data at {str(datetime.now())}')
 
-  data['loads'] = run(loads)
-  data['thermals'] = run(thermals)
-  data['network'] = run(network)
+  data['monitor']['loads'] = run(loads)
+  data['monitor']['thermals'] = run(thermals)
+  data['monitor']['network'] = run(network)
 
-  logger.disk.debug(f'dynamic data resolved at {str(datetime.now())}')
+  logger.disk.debug('monitor data resolved successfully')
 
-  # Mark the last time resolving has occurred
-  data['last'] = str(datetime.now())
+  # Write down the collected monitoring data to the disk
+  with open(globals.DATA_DIR_PATH + '/monitor', 'w') as data_file:
+    data_file.write(json.dumps(data['monitor']))
 
   logger.disk.debug(f'resolved data: \n{str(data)}')
-
-  logger.disk.debug('writing data to the disk...')
-
-  # Write down the collected data to the disk
-  with open(globals.DATA_FILE_PATH, 'w') as data_file:
-    data_file.write(json.dumps(data))
-    data_file.close()
-
-  logger.disk.debug(f"data has been written to '{globals.DATA_FILE_PATH}'")
-
   logger.disk.debug(f'turning into the next resolve cycle...')
 
   # Wait before start the next cycle
