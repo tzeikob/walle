@@ -12,6 +12,7 @@ if getpass.getuser() == 'root':
 import signal
 import json
 import time
+import threading
 import globals
 import config
 from logger import Router
@@ -87,34 +88,44 @@ logger.disk.debug(f'login data resolved:\n{login_data}')
 with open(globals.DATA_DIR_PATH + '/login', 'w') as login_file:
   login_file.write(json.dumps(login_data))
 
-# Loop endlessly resolving monitoring data
-while is_up:
-  monitor_data = {}
+# Resolves monitoring tasks endlessly until the resolver goes down
+def monitor ():
+  while is_up:
+    monitor_data = {}
 
-  logger.disk.debug(f'resolving loads data at {time.strftime(globals.TIME_FORMAT)}')
+    logger.disk.debug(f'resolving loads data at {time.strftime(globals.TIME_FORMAT)}')
 
-  monitor_data['loads'] = resolve(loads)
+    monitor_data['loads'] = resolve(loads)
 
-  logger.disk.debug(f"loads data resolved:\n{monitor_data['loads']}")
+    logger.disk.debug(f"loads data resolved:\n{monitor_data['loads']}")
 
-  logger.disk.debug(f'resolving thermals data at {time.strftime(globals.TIME_FORMAT)}')
+    logger.disk.debug(f'resolving thermals data at {time.strftime(globals.TIME_FORMAT)}')
 
-  monitor_data['thermals'] = resolve(thermals)
+    monitor_data['thermals'] = resolve(thermals)
 
-  logger.disk.debug(f"thermals data resolved:\n{monitor_data['thermals']}")
+    logger.disk.debug(f"thermals data resolved:\n{monitor_data['thermals']}")
 
-  logger.disk.debug(f'resolving network data at {time.strftime(globals.TIME_FORMAT)}')
+    logger.disk.debug(f'resolving network data at {time.strftime(globals.TIME_FORMAT)}')
 
-  monitor_data['network'] = resolve(network)
+    monitor_data['network'] = resolve(network)
 
-  logger.disk.debug(f"network data resolved:\n{monitor_data['network']}")
+    logger.disk.debug(f"network data resolved:\n{monitor_data['network']}")
 
-  with open(globals.DATA_DIR_PATH + '/monitor', 'w') as monitor_file:
-    monitor_file.write(json.dumps(monitor_data))
+    with open(globals.DATA_DIR_PATH + '/monitor', 'w') as monitor_file:
+      monitor_file.write(json.dumps(monitor_data))
 
-  logger.disk.debug(f'turning into the next resolve cycle...')
+    logger.disk.debug('turning into the next resolve cycle...')
 
-  # Wait before start the next cycle
-  time.sleep(globals.RESOLVER_INTERVAL)
+    # Wait before start the next cycle
+    time.sleep(4)
 
-logger.disk.info('shutdown gracefully')
+# Launching monitor tasks in a separate parallel thread
+monitor_thread = threading.Thread(target=monitor)
+
+monitor_thread.start()
+
+logger.disk.debug(f'monitor thread spawn successfully')
+
+monitor_thread.join()
+
+logger.disk.info('shutting down gracefully...')
