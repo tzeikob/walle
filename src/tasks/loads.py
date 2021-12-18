@@ -1,4 +1,4 @@
-# A lib module resolving system loads
+# A resolver module task resolving system loads
 
 import psutil
 import GPUtil

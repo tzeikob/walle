@@ -1,4 +1,4 @@
-# A lib module resolving network data and status
+# A resolver module task resolving network data and status
 
 from datetime import datetime
 import subprocess

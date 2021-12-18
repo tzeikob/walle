@@ -1,4 +1,4 @@
-# A lib module resolving os release metadata
+# A resolver module task resolving os release metadata
 
 import platform
 from convert import text

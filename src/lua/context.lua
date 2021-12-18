@@ -50,16 +50,21 @@ function map_hardware (data)
   return vars
 end
 
--- Maps system static data into the vars
-function map_system (data)
+-- Maps release data into the vars
+function map_release (data)
   -- Read the release name and codename
-  vars["rls_name"] = data["release"]["name"]
-  vars["rls_codename"] = data["release"]["codename"]
-  vars["rls_version"] = data["release"]["version"]
+  vars["rls_name"] = data["name"]
+  vars["rls_codename"] = data["codename"]
+  vars["rls_version"] = data["version"]
 
+  return vars
+end
+
+-- Maps login data into the vars
+function map_login (data)
   -- Read logged in user name and host
-  vars["user"] = data["login"]["user"]
-  vars["host"] = data["login"]["host"]
+  vars["user"] = data["user"]
+  vars["host"] = data["host"]
 
   return vars
 end
@@ -101,27 +106,14 @@ end
 
 -- Maps dynamic timing data
 function map_timings (data)
-  -- Convert data to number
-  local secs = tonumber (format.split (data, " ")[1])
+  -- Read uptime data
+  local hours = data["uptime"]["hours"]
+  local mins = data["uptime"]["mins"]
+  local secs = data["uptime"]["secs"]
 
-  -- Calculate how many hours
-  local hours = math.floor (secs / 3600)
-  if hours > 0 then
-    secs = secs - (hours * 3600)
-  end
-
-  -- Calculate how many mins
-  local mins = math.floor (secs / 60)
-  if mins > 0 then
-    secs = secs - (mins * 60)
-  end
-
-  -- Floor down to the remaining secs
-  secs = math.floor (secs)
-
-  local hours = string.format ("%02d", hours)
-  local mins = string.format ("%02d", mins)
-  local secs = string.format ("%02d", secs)
+  hours = string.format ("%02d", hours)
+  mins = string.format ("%02d", mins)
+  secs = string.format ("%02d", secs)
 
   vars["uptime"] = hours .. ":" .. mins .. ":" .. secs
 
@@ -138,8 +130,11 @@ return {
   hardware = {
     load = map_hardware
   },
-  system = {
-    load = map_system
+  release = {
+    load = map_release
+  },
+  login = {
+    load = map_login
   },
   monitor = {
     load = map_monitor

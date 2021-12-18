@@ -12,31 +12,32 @@ if getpass.getuser() == 'root':
 import signal
 import json
 import time
-from datetime import datetime
+import threading
 import globals
 import config
 from logger import Router
-from lib import release
-from lib import login
-from lib import hardware
-from lib import loads
-from lib import thermals
-from lib import network
+from tasks import release
+from tasks import login
+from tasks import hardware
+from tasks import loads
+from tasks import thermals
+from tasks import network
+from tasks import uptime
 
 # Marks process as not up and running on kill signals
 def mark_shutdown (*args):
   global is_up
   is_up = False
 
-# Executes the resolve API of the given callback
-def run (module):
+# Resolve the given module task with fallback protection
+def resolve (task):
   result = None
 
   try:
-    # Call the resolve method each module should has
-    result = module.resolve()
+    # Call the resolve method each task should has
+    result = task.resolve()
   except Exception as exc:
-    # Just report and return none
+    # Just report and fallback to return none
     logger.disk.trace(exc)
 
   return result
@@ -57,55 +58,100 @@ is_up = True
 signal.signal(signal.SIGINT, mark_shutdown)
 signal.signal(signal.SIGTERM, mark_shutdown)
 
-# Collect system data in one place
-data = {
-  'hardware': {},
-  'system': {},
-  'monitor': {}
-}
+logger.disk.debug(f"resolving hardware data at {time.strftime(globals.TIME_FORMAT)}")
 
-logger.disk.debug(f'resolving static data at {str(datetime.now())}')
+hardware_data = resolve(hardware)
 
 # Read memory data already resolved at installation
 with open(globals.DATA_DIR_PATH + '/hardware') as hardware_file:
-  memory = json.load(hardware_file)['memory']
+  hardware_data['memory'] = json.load(hardware_file)['memory']
 
-# Resolve the rest of the hardware data and save them along with memory
-data['hardware'] = run(hardware)
-data['hardware']['memory'] = memory
+logger.disk.debug(f'hardware data resolved:\n{hardware_data}')
 
-# Save again hardware data into the disk
 with open(globals.DATA_DIR_PATH + '/hardware', 'w') as hardware_file:
-  hardware_file.write(json.dumps(data['hardware']))
+  hardware_file.write(json.dumps(hardware_data))
 
-# Resolve static system's release and login data
-data['system']['release'] = run(release)
-data['system']['login'] = run(login)
+logger.disk.debug(f'resolving release data at {time.strftime(globals.TIME_FORMAT)}')
 
-# Save system data into the disk
-with open(globals.DATA_DIR_PATH + '/system', 'w') as system_file:
-  system_file.write(json.dumps(data['system']))
+release_data = resolve(release)
 
-logger.disk.debug('static data resolved successfully')
+logger.disk.debug(f'release data resolved:\n{release_data}')
 
-# Loop endlessly resolving monitoring data
-while is_up:
-  logger.disk.debug(f'resolving monitor data at {str(datetime.now())}')
+with open(globals.DATA_DIR_PATH + '/release', 'w') as release_file:
+  release_file.write(json.dumps(release_data))
 
-  data['monitor']['loads'] = run(loads)
-  data['monitor']['thermals'] = run(thermals)
-  data['monitor']['network'] = run(network)
+logger.disk.debug(f'resolving login data at {time.strftime(globals.TIME_FORMAT)}')
 
-  logger.disk.debug('monitor data resolved successfully')
+login_data = resolve(login)
 
-  # Write down the collected monitoring data to the disk
-  with open(globals.DATA_DIR_PATH + '/monitor', 'w') as data_file:
-    data_file.write(json.dumps(data['monitor']))
+logger.disk.debug(f'login data resolved:\n{login_data}')
 
-  logger.disk.debug(f'resolved data: \n{str(data)}')
-  logger.disk.debug(f'turning into the next resolve cycle...')
+with open(globals.DATA_DIR_PATH + '/login', 'w') as login_file:
+  login_file.write(json.dumps(login_data))
 
-  # Wait before start the next cycle
-  time.sleep(globals.RESOLVER_INTERVAL)
+# Resolves instant timing tasks endlessly until the resolver goes down
+def timings ():
+  while is_up:
+    timings_data = {}
 
-logger.disk.info('shutdown gracefully')
+    logger.disk.debug(f'resolving uptime data at {time.strftime(globals.TIME_FORMAT)}')
+
+    timings_data['uptime'] = resolve(uptime)
+
+    logger.disk.debug(f"uptime data resolved:\n{timings_data['uptime']}")
+
+    with open(globals.DATA_DIR_PATH + '/timings', 'w') as timings_file:
+      timings_file.write(json.dumps(timings_data))
+
+    logger.disk.debug('turning into the next timings resolve cycle...')
+
+    # Wait before start the next cycle
+    time.sleep(1)
+
+# Resolves monitoring tasks endlessly until the resolver goes down
+def monitor ():
+  while is_up:
+    monitor_data = {}
+
+    logger.disk.debug(f'resolving loads data at {time.strftime(globals.TIME_FORMAT)}')
+
+    monitor_data['loads'] = resolve(loads)
+
+    logger.disk.debug(f"loads data resolved:\n{monitor_data['loads']}")
+
+    logger.disk.debug(f'resolving thermals data at {time.strftime(globals.TIME_FORMAT)}')
+
+    monitor_data['thermals'] = resolve(thermals)
+
+    logger.disk.debug(f"thermals data resolved:\n{monitor_data['thermals']}")
+
+    logger.disk.debug(f'resolving network data at {time.strftime(globals.TIME_FORMAT)}')
+
+    monitor_data['network'] = resolve(network)
+
+    logger.disk.debug(f"network data resolved:\n{monitor_data['network']}")
+
+    with open(globals.DATA_DIR_PATH + '/monitor', 'w') as monitor_file:
+      monitor_file.write(json.dumps(monitor_data))
+
+    logger.disk.debug('turning into the next monitor resolve cycle...')
+
+    # Wait before start the next cycle
+    time.sleep(4)
+
+# Launching timings tasks in a separate parallel thread
+timings_thread = threading.Thread(target=timings)
+timings_thread.start()
+
+logger.disk.debug('timings thread spawn successfully')
+
+# Launching monitor tasks in a separate parallel thread
+monitor_thread = threading.Thread(target=monitor)
+monitor_thread.start()
+
+logger.disk.debug('monitor thread spawn successfully')
+
+timings_thread.join()
+monitor_thread.join()
+
+logger.disk.info('shutting down gracefully...')
