@@ -1,4 +1,4 @@
-# A lib module resolving system thermals
+# A resolver module task resolving system thermals
 
 import statistics
 import psutil

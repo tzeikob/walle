@@ -106,27 +106,14 @@ end
 
 -- Maps dynamic timing data
 function map_timings (data)
-  -- Convert data to number
-  local secs = tonumber (format.split (data, " ")[1])
+  -- Read uptime data
+  local hours = data["uptime"]["hours"]
+  local mins = data["uptime"]["mins"]
+  local secs = data["uptime"]["secs"]
 
-  -- Calculate how many hours
-  local hours = math.floor (secs / 3600)
-  if hours > 0 then
-    secs = secs - (hours * 3600)
-  end
-
-  -- Calculate how many mins
-  local mins = math.floor (secs / 60)
-  if mins > 0 then
-    secs = secs - (mins * 60)
-  end
-
-  -- Floor down to the remaining secs
-  secs = math.floor (secs)
-
-  local hours = string.format ("%02d", hours)
-  local mins = string.format ("%02d", mins)
-  local secs = string.format ("%02d", secs)
+  hours = string.format ("%02d", hours)
+  mins = string.format ("%02d", mins)
+  secs = string.format ("%02d", secs)
 
   vars["uptime"] = hours .. ":" .. mins .. ":" .. secs
 

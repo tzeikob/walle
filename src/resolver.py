@@ -22,6 +22,7 @@ from tasks import hardware
 from tasks import loads
 from tasks import thermals
 from tasks import network
+from tasks import uptime
 
 # Marks process as not up and running on kill signals
 def mark_shutdown (*args):
@@ -88,6 +89,25 @@ logger.disk.debug(f'login data resolved:\n{login_data}')
 with open(globals.DATA_DIR_PATH + '/login', 'w') as login_file:
   login_file.write(json.dumps(login_data))
 
+# Resolves instant timing tasks endlessly until the resolver goes down
+def timings ():
+  while is_up:
+    timings_data = {}
+
+    logger.disk.debug(f'resolving uptime data at {time.strftime(globals.TIME_FORMAT)}')
+
+    timings_data['uptime'] = resolve(uptime)
+
+    logger.disk.debug(f"uptime data resolved:\n{timings_data['uptime']}")
+
+    with open(globals.DATA_DIR_PATH + '/timings', 'w') as timings_file:
+      timings_file.write(json.dumps(timings_data))
+
+    logger.disk.debug('turning into the next timings resolve cycle...')
+
+    # Wait before start the next cycle
+    time.sleep(1)
+
 # Resolves monitoring tasks endlessly until the resolver goes down
 def monitor ():
   while is_up:
@@ -114,18 +134,24 @@ def monitor ():
     with open(globals.DATA_DIR_PATH + '/monitor', 'w') as monitor_file:
       monitor_file.write(json.dumps(monitor_data))
 
-    logger.disk.debug('turning into the next resolve cycle...')
+    logger.disk.debug('turning into the next monitor resolve cycle...')
 
     # Wait before start the next cycle
     time.sleep(4)
 
+# Launching timings tasks in a separate parallel thread
+timings_thread = threading.Thread(target=timings)
+timings_thread.start()
+
+logger.disk.debug('timings thread spawn successfully')
+
 # Launching monitor tasks in a separate parallel thread
 monitor_thread = threading.Thread(target=monitor)
-
 monitor_thread.start()
 
-logger.disk.debug(f'monitor thread spawn successfully')
+logger.disk.debug('monitor thread spawn successfully')
 
+timings_thread.join()
 monitor_thread.join()
 
 logger.disk.info('shutting down gracefully...')

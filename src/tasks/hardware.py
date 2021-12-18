@@ -1,4 +1,4 @@
-# A lib module resolving hardware meta data
+# A resolver module task resolving hardware meta data
 
 import subprocess
 import re

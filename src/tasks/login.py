@@ -1,4 +1,4 @@
-# A lib module resolving the current login data
+# A resolver module task resolving the current login data
 
 import getpass
 import socket

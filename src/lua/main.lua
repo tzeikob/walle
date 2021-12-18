@@ -7,7 +7,6 @@ CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
 DATA_DIR = CONFIG_DIR .. "/.data"
 
 CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
-UPTIME_FILE_PATH = "/proc/uptime"
 LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
 
 -- Add base directory to lua package path
@@ -43,8 +42,8 @@ function conky_main ()
   context.loop = tonumber (conky_parse ("${updates}"))
 
   -- Load timings data
-  local uptime = util.read (UPTIME_FILE_PATH)
-  context.timings.load (uptime)
+  local timings = util.json.load (DATA_DIR .. "/timings")
+  context.timings.load (timings)
 
   if matches_cycle (5) then
     logger.debug ("reading dynamic data...")
@@ -258,10 +257,10 @@ context.release.load (release)
 login = util.json.load (DATA_DIR .. "/login")
 context.login.load (login)
 
+-- Load timings data
+timings = util.json.load (DATA_DIR .. "/timings")
+context.timings.load (timings)
+
 -- Load monitoring data
 monitor = util.json.load (DATA_DIR .. "/monitor")
 context.monitor.load (monitor)
-
--- Load timings data
-uptime = util.read (UPTIME_FILE_PATH)
-context.timings.load (uptime)
