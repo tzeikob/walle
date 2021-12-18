@@ -12,7 +12,6 @@ if getpass.getuser() == 'root':
 import signal
 import json
 import time
-from datetime import datetime
 import globals
 import config
 from logger import Router
@@ -57,52 +56,62 @@ is_up = True
 signal.signal(signal.SIGINT, mark_shutdown)
 signal.signal(signal.SIGTERM, mark_shutdown)
 
-# Collect system data in one place
-data = {
-  'hardware': {},
-  'system': {},
-  'monitor': {}
-}
+logger.disk.debug(f"resolving hardware data at {time.strftime(globals.TIME_FORMAT)}")
 
-logger.disk.debug(f'resolving static data at {str(datetime.now())}')
+hardware_data = run(hardware)
 
 # Read memory data already resolved at installation
 with open(globals.DATA_DIR_PATH + '/hardware') as hardware_file:
-  memory = json.load(hardware_file)['memory']
+  hardware_data['memory'] = json.load(hardware_file)['memory']
 
-# Resolve the rest of the hardware data and save them along with memory
-data['hardware'] = run(hardware)
-data['hardware']['memory'] = memory
+logger.disk.debug(f'hardware data resolved:\n{hardware_data}')
 
-# Save again hardware data into the disk
 with open(globals.DATA_DIR_PATH + '/hardware', 'w') as hardware_file:
-  hardware_file.write(json.dumps(data['hardware']))
+  hardware_file.write(json.dumps(hardware_data))
 
-# Resolve static system's release and login data
-data['system']['release'] = run(release)
-data['system']['login'] = run(login)
+logger.disk.debug(f'resolving release data at {time.strftime(globals.TIME_FORMAT)}')
 
-# Save system data into the disk
-with open(globals.DATA_DIR_PATH + '/system', 'w') as system_file:
-  system_file.write(json.dumps(data['system']))
+release_data = run(release)
 
-logger.disk.debug('static data resolved successfully')
+logger.disk.debug(f'release data resolved:\n{release_data}')
+
+with open(globals.DATA_DIR_PATH + '/release', 'w') as release_file:
+  release_file.write(json.dumps(release_data))
+
+logger.disk.debug(f'resolving login data at {time.strftime(globals.TIME_FORMAT)}')
+
+login_data = run(login)
+
+logger.disk.debug(f'login data resolved:\n{login_data}')
+
+with open(globals.DATA_DIR_PATH + '/login', 'w') as login_file:
+  login_file.write(json.dumps(login_data))
 
 # Loop endlessly resolving monitoring data
 while is_up:
-  logger.disk.debug(f'resolving monitor data at {str(datetime.now())}')
+  monitor_data = {}
 
-  data['monitor']['loads'] = run(loads)
-  data['monitor']['thermals'] = run(thermals)
-  data['monitor']['network'] = run(network)
+  logger.disk.debug(f'resolving loads data at {time.strftime(globals.TIME_FORMAT)}')
 
-  logger.disk.debug('monitor data resolved successfully')
+  monitor_data['loads'] = run(loads)
 
-  # Write down the collected monitoring data to the disk
-  with open(globals.DATA_DIR_PATH + '/monitor', 'w') as data_file:
-    data_file.write(json.dumps(data['monitor']))
+  logger.disk.debug(f"loads data resolved:\n{monitor_data['loads']}")
 
-  logger.disk.debug(f'resolved data: \n{str(data)}')
+  logger.disk.debug(f'resolving thermals data at {time.strftime(globals.TIME_FORMAT)}')
+
+  monitor_data['thermals'] = run(thermals)
+
+  logger.disk.debug(f"thermals data resolved:\n{monitor_data['thermals']}")
+
+  logger.disk.debug(f'resolving network data at {time.strftime(globals.TIME_FORMAT)}')
+
+  monitor_data['network'] = run(network)
+
+  logger.disk.debug(f"network data resolved:\n{monitor_data['network']}")
+
+  with open(globals.DATA_DIR_PATH + '/monitor', 'w') as monitor_file:
+    monitor_file.write(json.dumps(monitor_data))
+
   logger.disk.debug(f'turning into the next resolve cycle...')
 
   # Wait before start the next cycle

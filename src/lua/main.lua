@@ -250,9 +250,13 @@ context.config.load (config)
 hardware = util.json.load (DATA_DIR .. "/hardware")
 context.hardware.load (hardware)
 
--- Load system data
-system = util.json.load (DATA_DIR .. "/system")
-context.system.load (system)
+-- Load release data
+release = util.json.load (DATA_DIR .. "/release")
+context.release.load (release)
+
+-- Load login data
+login = util.json.load (DATA_DIR .. "/login")
+context.login.load (login)
 
 -- Load monitoring data
 monitor = util.json.load (DATA_DIR .. "/monitor")

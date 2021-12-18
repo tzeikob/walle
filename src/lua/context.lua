@@ -50,16 +50,21 @@ function map_hardware (data)
   return vars
 end
 
--- Maps system static data into the vars
-function map_system (data)
+-- Maps release data into the vars
+function map_release (data)
   -- Read the release name and codename
-  vars["rls_name"] = data["release"]["name"]
-  vars["rls_codename"] = data["release"]["codename"]
-  vars["rls_version"] = data["release"]["version"]
+  vars["rls_name"] = data["name"]
+  vars["rls_codename"] = data["codename"]
+  vars["rls_version"] = data["version"]
 
+  return vars
+end
+
+-- Maps login data into the vars
+function map_login (data)
   -- Read logged in user name and host
-  vars["user"] = data["login"]["user"]
-  vars["host"] = data["login"]["host"]
+  vars["user"] = data["user"]
+  vars["host"] = data["host"]
 
   return vars
 end
@@ -138,8 +143,11 @@ return {
   hardware = {
     load = map_hardware
   },
-  system = {
-    load = map_system
+  release = {
+    load = map_release
+  },
+  login = {
+    load = map_login
   },
   monitor = {
     load = map_monitor

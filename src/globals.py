@@ -13,3 +13,4 @@ CONKY_PID_FILE_PATH = BASE_DIR + '/conky.pid'
 RESOLVER_PID_FILE_PATH = BASE_DIR + '/resolver.pid'
 DATA_DIR_PATH = BASE_DIR + '/.data'
 RESOLVER_INTERVAL = 5
+TIME_FORMAT='%Y-%m-%dT%H:%M:%S.%s'
