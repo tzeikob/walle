@@ -1,14 +1,7 @@
 #!/usr/bin/env python3
 # An executable script resolving system data and status
 
-import sys
-import getpass
-
-# Abort if user in context is root or sudo used
-if getpass.getuser() == 'root':
-  print("[Errno 13] Don't run as root user")
-  sys.exit(1)
-
+import argparse
 import signal
 import json
 import time
@@ -41,53 +34,6 @@ def resolve (task):
     logger.disk.trace(exc)
 
   return result
-
-# Read the configuration settings
-settings = config.read()
-
-# Initialize logging router
-logger = Router('resolver', globals.LOG_FILE_PATH)
-
-if settings['debug'] == 'enabled':
-  logger.set_level('DEBUG')
-
-# Mark script as up and running
-is_up = True
-
-# Attach shutdown kill handlers
-signal.signal(signal.SIGINT, mark_shutdown)
-signal.signal(signal.SIGTERM, mark_shutdown)
-
-logger.disk.debug(f"resolving hardware data at {time.strftime(globals.TIME_FORMAT)}")
-
-hardware_data = resolve(hardware)
-
-# Read memory data already resolved at installation
-with open(globals.DATA_DIR_PATH + '/hardware') as hardware_file:
-  hardware_data['memory'] = json.load(hardware_file)['memory']
-
-logger.disk.debug(f'hardware data resolved:\n{hardware_data}')
-
-with open(globals.DATA_DIR_PATH + '/hardware', 'w') as hardware_file:
-  hardware_file.write(json.dumps(hardware_data))
-
-logger.disk.debug(f'resolving release data at {time.strftime(globals.TIME_FORMAT)}')
-
-release_data = resolve(release)
-
-logger.disk.debug(f'release data resolved:\n{release_data}')
-
-with open(globals.DATA_DIR_PATH + '/release', 'w') as release_file:
-  release_file.write(json.dumps(release_data))
-
-logger.disk.debug(f'resolving login data at {time.strftime(globals.TIME_FORMAT)}')
-
-login_data = resolve(login)
-
-logger.disk.debug(f'login data resolved:\n{login_data}')
-
-with open(globals.DATA_DIR_PATH + '/login', 'w') as login_file:
-  login_file.write(json.dumps(login_data))
 
 # Resolves instant timing tasks endlessly until the resolver goes down
 def timings ():
@@ -139,19 +85,82 @@ def monitor ():
     # Wait before start the next cycle
     time.sleep(4)
 
-# Launching timings tasks in a separate parallel thread
-timings_thread = threading.Thread(target=timings)
-timings_thread.start()
+# Parse command line arguments schema
+parser = argparse.ArgumentParser(prog='resolver')
 
-logger.disk.debug('timings thread spawn successfully')
+parser.add_argument('--hardware', action='store_true')
+parser.add_argument('--release', action='store_true')
+parser.add_argument('--login', action='store_true')
+parser.add_argument('--timings', action='store_true')
+parser.add_argument('--monitor', action='store_true')
 
-# Launching monitor tasks in a separate parallel thread
-monitor_thread = threading.Thread(target=monitor)
-monitor_thread.start()
+opts = parser.parse_args()
 
-logger.disk.debug('monitor thread spawn successfully')
+# Read the configuration settings
+settings = config.read()
 
-timings_thread.join()
-monitor_thread.join()
+# Initialize logging router
+logger = Router('resolver', globals.LOG_FILE_PATH)
+
+if settings['debug'] == 'enabled':
+  logger.set_level('DEBUG')
+
+# Mark script as up and running
+is_up = True
+
+# Attach shutdown kill handlers
+signal.signal(signal.SIGINT, mark_shutdown)
+signal.signal(signal.SIGTERM, mark_shutdown)
+
+if opts.hardware:
+  logger.disk.debug(f"resolving hardware data at {time.strftime(globals.TIME_FORMAT)}")
+
+  hardware_data = resolve(hardware)
+
+  logger.disk.debug(f'hardware data resolved:\n{hardware_data}')
+
+  with open(globals.DATA_DIR_PATH + '/hardware', 'w') as hardware_file:
+    hardware_file.write(json.dumps(hardware_data))
+
+if opts.release:
+  logger.disk.debug(f'resolving release data at {time.strftime(globals.TIME_FORMAT)}')
+
+  release_data = resolve(release)
+
+  logger.disk.debug(f'release data resolved:\n{release_data}')
+
+  with open(globals.DATA_DIR_PATH + '/release', 'w') as release_file:
+    release_file.write(json.dumps(release_data))
+
+if opts.login:
+  logger.disk.debug(f'resolving login data at {time.strftime(globals.TIME_FORMAT)}')
+
+  login_data = resolve(login)
+
+  logger.disk.debug(f'login data resolved:\n{login_data}')
+
+  with open(globals.DATA_DIR_PATH + '/login', 'w') as login_file:
+    login_file.write(json.dumps(login_data))
+
+if opts.timings:
+  # Launching timings tasks in a separate parallel thread
+  timings_thread = threading.Thread(target=timings)
+  timings_thread.start()
+
+  logger.disk.debug('timings thread spawn successfully')
+
+if opts.monitor:
+  # Launching monitor tasks in a separate parallel thread
+  monitor_thread = threading.Thread(target=monitor)
+  monitor_thread.start()
+
+  logger.disk.debug('monitor thread spawn successfully')
+
+# Wait until any spawn threads have been terminated
+if opts.timings:
+  timings_thread.join()
+
+if opts.monitor:
+  monitor_thread.join()
 
 logger.disk.info('shutting down gracefully...')

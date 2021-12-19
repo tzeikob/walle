@@ -22,7 +22,7 @@ def start_resolver ():
   pid = system.read(globals.RESOLVER_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    pid = system.spawn('/usr/share/' + globals.PKG_NAME + '/bin/resolver.py')
+    pid = system.spawn(globals.RESOLVER_FILE_PATH + ' --release --login --timings --monitor')
     system.write(pid, globals.RESOLVER_PID_FILE_PATH)
 
   logger.disk.info(f"resolver process is up with pid '{pid}'")

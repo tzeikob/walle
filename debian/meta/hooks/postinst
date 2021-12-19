@@ -25,20 +25,17 @@ mkdir -p $CONFIG_DIR
 cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml
 cp $INSTALLATION_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
+echo -e "Config folder has been created"
+
 echo -e "Resolving system hardware information..."
 
 mkdir -p $DATA_DIR
+$INSTALLATION_DIR/bin/resolver.py --hardware
 
-# Use dmidecode to resolve memory clock speeds
-speed_line=$(sudo dmidecode -t memory | egrep -im 1 'Speed: [0-9]{4} MT/s')
-speed=$(echo $speed_line | sed  's/^.* \([0-9][0-9][0-9][0-9]\).*$/\1/g')
-
-echo "{\"memory\": {\"speed\": $speed}}" > $DATA_DIR/hardware
+echo -e "Hardware information has been resolved"
 
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
-
-echo -e "Config folder has been created"
 
 # Create the autostart gnome desktop file
 mkdir -p $AUTOSTART_DIR
