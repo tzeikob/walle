@@ -8,12 +8,12 @@ from convert import text, integer, decimal, MB, Mb
 
 data = {}
 
+# Last date time since the last call
+last = datetime.now()
+
 # Sent and recv bytes since the last call
 last_sent = 0
 last_recv = 0
-
-# Last date time since the last call
-last = datetime.now()
 
 # Returns network and connection data
 def resolve ():

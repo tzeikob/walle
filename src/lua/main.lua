@@ -45,7 +45,7 @@ function conky_main ()
   local timings = util.json.load (DATA_DIR .. "/timings")
   context.timings.load (timings)
 
-  if matches_cycle (5) then
+  if matches_cycle (1) then
     logger.debug ("reading dynamic data...")
 
     -- Load dynamic data from the resolver data file
@@ -179,14 +179,28 @@ function conky_text ()
 
   -- Build the disk line text
   local disk_util = opt (vars["disk_util"], 0.0)
+  local disk_used = opt (vars["disk_used"], 0)
+  local disk_free = opt (vars["disk_free"], 0)
+
   local disk_read = opt (vars["disk_read"], 0)
+  local disk_read_speed = opt (vars["disk_read_speed"], 0.0)
+
   local disk_write = opt (vars["disk_write"], 0)
+  local disk_write_speed = opt (vars["disk_write_speed"], 0.0)
 
   disk_util = format.int (disk_util, "%02d")
-  disk_read = format.int (disk_read, "%05d")
-  disk_write = format.int (disk_write, "%05d")
+  disk_used = format.int (disk_used, "%06d")
+  disk_free = format.int (disk_free, "%06d")
 
-  text = text .. ln ("DISK " .. disk_util .. "% Rx " .. disk_read .. "MB Wx " .. disk_write .. "MB") .. "\n"
+  disk_read = format.int (disk_read, "%05d")
+  disk_read_speed = format.int (disk_read_speed, "%06.1f")
+
+  disk_write = format.int (disk_write, "%05d")
+  disk_write_speed = format.int (disk_write_speed, "%06.1f")
+
+  text = text .. ln ("DISK " .. disk_util .. "% Ux " .. disk_used .. "MB Fx " .. disk_free .. "MB")
+  text = text .. ln ("READ " .. disk_read .. "MB " .. disk_read_speed .. "MB/s")
+  text = text .. ln ("WRITE " .. disk_write .. "MB " .. disk_write_speed .. "MB/s")
 
   -- Build the upload network line text
   local net_up_speed = 0.0
@@ -200,7 +214,7 @@ function conky_text ()
   net_up_speed = format.number (net_up_speed, "%05.1f")
   net_sent_bytes = format.int (net_sent_bytes, "%05d")
 
-  text = text .. ln (" UPLOAD Tx " .. net_sent_bytes .. "MB " .. net_up_speed .. "Mbps")
+  text = text .. ln (" UPLOAD " .. net_sent_bytes .. "MB " .. net_up_speed .. "Mbps")
 
   -- Build the download network line text
   local net_down_speed = 0.0
@@ -214,7 +228,7 @@ function conky_text ()
   net_down_speed = format.number (net_down_speed, "%05.1f")
   net_recv_bytes = format.int (net_recv_bytes, "%05d")
 
-  text = text .. ln ("DOWNLOAD Rx " .. net_recv_bytes .. "MB " .. net_down_speed .. "Mbps")
+  text = text .. ln ("DOWNLOAD " .. net_recv_bytes .. "MB " .. net_down_speed .. "Mbps")
 
   -- Build the local network line text
   local net_name = "NA"

@@ -88,8 +88,12 @@ function map_monitor (data)
 
   -- Read disk load and io counters
   vars["disk_util"] = data["loads"]["disk"]["util"]
-  vars["disk_read"] = data["loads"]["disk"]["read"]
-  vars["disk_write"] = data["loads"]["disk"]["write"]
+  vars["disk_used"] = data["loads"]["disk"]["used"]
+  vars["disk_free"] = data["loads"]["disk"]["free"]
+  vars["disk_read"] = data["loads"]["disk"]["read"]["bytes"]
+  vars["disk_read_speed"] = data["loads"]["disk"]["read"]["speed"]
+  vars["disk_write"] = data["loads"]["disk"]["write"]["bytes"]
+  vars["disk_write_speed"] = data["loads"]["disk"]["write"]["speed"]
 
   -- Read network state and usage
   vars["net_up"] = data["network"]["up"]

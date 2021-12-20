@@ -83,7 +83,7 @@ def monitor ():
     logger.disk.debug('turning into the next monitor resolve cycle...')
 
     # Wait before start the next cycle
-    time.sleep(4)
+    time.sleep(1)
 
 # Parse command line arguments schema
 parser = argparse.ArgumentParser(prog='resolver')
