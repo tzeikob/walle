@@ -1,5 +1,6 @@
 -- A lua module to encapsulate the context lua script
 
+util = require "util"
 format = require "format"
 
 -- Initialize some state variables
@@ -90,8 +91,18 @@ function map_monitor (data)
   vars["disk_util"] = data["loads"]["disk"]["util"]
   vars["disk_used"] = data["loads"]["disk"]["used"]
   vars["disk_free"] = data["loads"]["disk"]["free"]
+  vars["disk_type"] = data["loads"]["disk"]["type"]
+
+  if util.given (data["loads"]["disk"]["home"]) then
+    vars["disk_home_util"] = data["loads"]["disk"]["home"]["util"]
+    vars["disk_home_used"] = data["loads"]["disk"]["home"]["used"]
+    vars["disk_home_free"] = data["loads"]["disk"]["home"]["free"]
+    vars["disk_home_type"] = data["loads"]["disk"]["home"]["type"]
+  end
+
   vars["disk_read"] = data["loads"]["disk"]["read"]["bytes"]
   vars["disk_read_speed"] = data["loads"]["disk"]["read"]["speed"]
+
   vars["disk_write"] = data["loads"]["disk"]["write"]["bytes"]
   vars["disk_write_speed"] = data["loads"]["disk"]["write"]["speed"]
 

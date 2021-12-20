@@ -181,6 +181,28 @@ function conky_text ()
   local disk_util = opt (vars["disk_util"], 0.0)
   local disk_used = opt (vars["disk_used"], 0)
   local disk_free = opt (vars["disk_free"], 0)
+  local disk_type = opt (vars["disk_type"])
+
+  disk_util = format.int (disk_util, "%02d")
+  disk_used = format.int (disk_used, "%06d")
+  disk_free = format.int (disk_free, "%06d")
+  disk_type = format.upper (disk_type)
+
+  text = text .. ln ("DISK ROOT " .. disk_type .. " " .. disk_util .. "% Ux " .. disk_used .. "MB Fx " .. disk_free .. "MB")
+
+  if util.given(vars["disk_home_util"]) then
+    local disk_home_util = opt (vars["disk_home_util"], 0.0)
+    local disk_home_used = opt (vars["disk_home_used"], 0)
+    local disk_home_free = opt (vars["disk_home_free"], 0)
+    local disk_home_type = opt (vars["disk_home_type"])
+  
+    disk_home_util = format.int (disk_home_util, "%02d")
+    disk_home_used = format.int (disk_home_used, "%06d")
+    disk_home_free = format.int (disk_home_free, "%06d")
+    disk_home_type = format.upper (disk_home_type)
+
+    text = text .. ln ("DISK HOME " .. disk_home_type .. " " .. disk_home_util .. "% Ux " .. disk_home_used .. "MB Fx " .. disk_home_free .. "MB")
+  end
 
   local disk_read = opt (vars["disk_read"], 0)
   local disk_read_speed = opt (vars["disk_read_speed"], 0.0)
@@ -188,17 +210,12 @@ function conky_text ()
   local disk_write = opt (vars["disk_write"], 0)
   local disk_write_speed = opt (vars["disk_write_speed"], 0.0)
 
-  disk_util = format.int (disk_util, "%02d")
-  disk_used = format.int (disk_used, "%06d")
-  disk_free = format.int (disk_free, "%06d")
-
   disk_read = format.int (disk_read, "%05d")
   disk_read_speed = format.int (disk_read_speed, "%06.1f")
 
   disk_write = format.int (disk_write, "%05d")
   disk_write_speed = format.int (disk_write_speed, "%06.1f")
 
-  text = text .. ln ("DISK " .. disk_util .. "% Ux " .. disk_used .. "MB Fx " .. disk_free .. "MB")
   text = text .. ln ("READ " .. disk_read .. "MB " .. disk_read_speed .. "MB/s")
   text = text .. ln ("WRITE " .. disk_write .. "MB " .. disk_write_speed .. "MB/s")
 

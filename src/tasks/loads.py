@@ -51,12 +51,47 @@ def resolve ():
     'free': integer(free)
   }
 
-  # Measure disk utilization
-  disk = psutil.disk_usage('/')
+  # Read disk data for both root and home paths
+  partitions = psutil.disk_partitions()
 
-  utilization = disk.percent
-  used = disk.used
-  free = disk.free
+  data['disk'] = {}
+
+  root = home = None
+
+  # Match only root and home paths
+  for p in partitions:
+    if p.mountpoint == '/':
+      root = p
+    elif p.mountpoint == '/home':
+      home = p
+
+  if root:
+    fstype = root.fstype
+    disk = psutil.disk_usage('/')
+    util = disk.percent
+    used = disk.used
+    free = disk.free
+
+    data['disk'] = {
+      'type': fstype,
+      'util': decimal(util, 1),
+      'used': integer(MB(used)),
+      'free': integer(MB(free))
+    }
+  
+  if home:
+    fstype = home.fstype
+    disk = psutil.disk_usage('/home')
+    util = disk.percent
+    used = disk.used
+    free = disk.free
+
+    data['disk']['home'] = {
+      'type': fstype,
+      'util': decimal(util, 1),
+      'used': integer(MB(used)),
+      'free': integer(MB(free))
+    }
 
   # Calculate the secs past since the last call
   global last
@@ -93,18 +128,14 @@ def resolve ():
   last_hd_read = hd_read
   last_hd_write = hd_write
 
-  data['disk'] = {
-    'util': decimal(utilization, 1),
-    'used': integer(MB(used)),
-    'free': integer(MB(free)),
-    'read': {
-      'bytes': integer(MB(hd_read)),
-      'speed': decimal(MB(hd_read_speed), 1)
-    },
-    'write': {
-      'bytes': integer(MB(hd_write)),
-      'speed': decimal(MB(hd_write_speed), 1)
-    }
+  data['disk']['read'] = {
+    'bytes': integer(MB(hd_read)),
+    'speed': decimal(MB(hd_read_speed), 1)
+  }
+
+  data['disk']['write'] = {
+    'bytes': integer(MB(hd_write)),
+    'speed': decimal(MB(hd_write_speed), 1)
   }
 
   return data
