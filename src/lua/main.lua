@@ -220,30 +220,30 @@ function conky_text ()
   text = text .. ln ("WRITE " .. disk_write .. "MB " .. disk_write_speed .. "MB/s")
 
   -- Build the upload network line text
-  local net_up_speed = 0.0
   local net_sent_bytes = 0
+  local net_up_speed = 0.0
 
   if vars["net_up"] then
-    net_up_speed = opt (vars["net_up_speed"], 0.0)
     net_sent_bytes = opt (vars["net_sent_bytes"], 0)
+    net_up_speed = opt (vars["net_up_speed"], 0.0)
   end
 
-  net_up_speed = format.number (net_up_speed, "%05.1f")
   net_sent_bytes = format.int (net_sent_bytes, "%05d")
+  net_up_speed = format.number (net_up_speed, "%05.1f")
 
   text = text .. ln (" UPLOAD " .. net_sent_bytes .. "MB " .. net_up_speed .. "Mbps")
 
   -- Build the download network line text
-  local net_down_speed = 0.0
   local net_recv_bytes = 0
+  local net_down_speed = 0.0
 
   if vars["net_up"] then
-    net_down_speed = opt (vars["net_down_speed"], 0.0)
     net_recv_bytes = opt (vars["net_recv_bytes"], 0)
+    net_down_speed = opt (vars["net_down_speed"], 0.0)
   end
 
-  net_down_speed = format.number (net_down_speed, "%05.1f")
   net_recv_bytes = format.int (net_recv_bytes, "%05d")
+  net_down_speed = format.number (net_down_speed, "%05.1f")
 
   text = text .. ln ("DOWNLOAD " .. net_recv_bytes .. "MB " .. net_down_speed .. "Mbps")
 
