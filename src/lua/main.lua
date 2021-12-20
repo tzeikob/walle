@@ -211,10 +211,10 @@ function conky_text ()
   local disk_write_speed = opt (vars["disk_write_speed"], 0.0)
 
   disk_read = format.int (disk_read, "%05d")
-  disk_read_speed = format.int (disk_read_speed, "%06.1f")
+  disk_read_speed = format.number (disk_read_speed, "%06.1f")
 
   disk_write = format.int (disk_write, "%05d")
-  disk_write_speed = format.int (disk_write_speed, "%06.1f")
+  disk_write_speed = format.number (disk_write_speed, "%06.1f")
 
   text = text .. ln ("READ " .. disk_read .. "MB " .. disk_read_speed .. "MB/s")
   text = text .. ln ("WRITE " .. disk_write .. "MB " .. disk_write_speed .. "MB/s")
