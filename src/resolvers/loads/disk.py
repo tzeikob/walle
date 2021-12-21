@@ -67,7 +67,7 @@ def resolve ():
   for partition in partitions:
     mountpoint = partition.mountpoint
 
-    if mountpoint == '/' or mountpoint != '/home':
+    if mountpoint == '/' or mountpoint == '/home':
       fstype = partition.fstype
       disk = psutil.disk_usage(mountpoint)
       util = disk.percent
