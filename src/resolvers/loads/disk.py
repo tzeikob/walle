@@ -67,20 +67,18 @@ def resolve ():
   for partition in partitions:
     mountpoint = partition.mountpoint
 
-    if mountpoint != '/' and mountpoint != '/home':
-      continue
+    if mountpoint == '/' or mountpoint != '/home':
+      fstype = partition.fstype
+      disk = psutil.disk_usage(mountpoint)
+      util = disk.percent
+      used = disk.used
+      free = disk.free
 
-    fstype = partition.fstype
-    disk = psutil.disk_usage(mountpoint)
-    util = disk.percent
-    used = disk.used
-    free = disk.free
-
-    data[mountpoint] = {
-      'type': fstype,
-      'util': decimal(util, 1),
-      'used': integer(MB(used)),
-      'free': integer(MB(free))
-    }
+      data[mountpoint] = {
+        'type': fstype,
+        'util': decimal(util, 1),
+        'used': integer(MB(used)),
+        'free': integer(MB(free))
+      }
 
   return data
