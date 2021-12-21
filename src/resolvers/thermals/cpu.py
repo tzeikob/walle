@@ -1,15 +1,12 @@
-# A resolver module task resolving system thermals
+# A monitoring resolver to resolve cpu thermals
 
 import statistics
 import psutil
-import GPUtil
 from convert import decimal
 
-data = {}
-
-# Returns thermal data for the cpu and gpu
+# Returns a data object populated with cpu thermal data
 def resolve ():
-  # Read any thermal sensor
+  # Use psutil to read any thermal sensor
   thermals = psutil.sensors_temperatures()
 
   # Extract only thermals matching k10temp cpu sensors
@@ -24,20 +21,15 @@ def resolve ():
   for thermal in thermals:
     if thermal.label == 'Tdie':
       temps.append(thermal.current)
-  
+
   if not len(temps) > 0:
     raise Exception('unable to resolve cpu thermals via psutil')
 
   # Reduce temperatures down to the mean average
-  temp = statistics.mean(temps)
+  mean = statistics.mean(temps)
 
-  data['cpu'] = decimal(temp, 1)
-
-  # Read gpu thermals
-  gpu = GPUtil.getGPUs()[0]
-
-  temp = gpu.temperature
-
-  data['gpu'] = decimal(temp, 1)
+  data = {
+    'mean': decimal(mean, 1)
+  }
 
   return data

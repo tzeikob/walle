@@ -1,17 +1,15 @@
-# A resolver module task resolving the current uptime
+# A timings resolver to resolve the uptime information
 
 import ctypes
 import struct
 import math
 from convert import integer
 
-data = {}
-
 # Load native c libraries
 libc = ctypes.CDLL('libc.so.6')
 buf = ctypes.create_string_buffer(4096)
 
-# Returns the current uptime in hours, mins and secs
+# Returns a data object populated with uptime data
 def resolve ():
   if libc.sysinfo(buf) == 0:
     secs = struct.unpack_from('@l', buf.raw)[0]
@@ -39,8 +37,10 @@ def resolve ():
   # Floor down to the remaining secs
   secs = math.floor (secs)
 
-  data['hours'] = integer(hours)
-  data['mins'] = integer(mins)
-  data['secs'] = integer(secs)
+  data = {
+    'hours': integer(hours),
+    'mins': integer(mins),
+    'secs': integer(secs)
+  }
 
   return data

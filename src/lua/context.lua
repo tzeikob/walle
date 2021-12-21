@@ -75,12 +75,12 @@ function map_monitor (data)
   -- Read cpu load and thermals
   vars["cpu_util"] = data["loads"]["cpu"]["util"]
   vars["cpu_clock"] = data["loads"]["cpu"]["clock"]
-  vars["cpu_temp"] = data["thermals"]["cpu"]
+  vars["cpu_temp"] = data["thermals"]["cpu"]["mean"]
 
   -- Read gpu load and thermals
   vars["gpu_util"] = data["loads"]["gpu"]["util"]
   vars["gpu_used"] = data["loads"]["gpu"]["used"]
-  vars["gpu_temp"] = data["thermals"]["gpu"]
+  vars["gpu_temp"] = data["thermals"]["gpu"]["chip"]
 
   -- Read memory utilization and usage
   vars["mem_util"] = data["loads"]["memory"]["util"]
@@ -88,16 +88,18 @@ function map_monitor (data)
   vars["mem_free"] = data["loads"]["memory"]["free"]
 
   -- Read disk load and io counters
-  vars["disk_util"] = data["loads"]["disk"]["util"]
-  vars["disk_used"] = data["loads"]["disk"]["used"]
-  vars["disk_free"] = data["loads"]["disk"]["free"]
-  vars["disk_type"] = data["loads"]["disk"]["type"]
+  if util.given (data["loads"]["disk"]["/"]) then
+    vars["disk_root_util"] = data["loads"]["disk"]["/"]["util"]
+    vars["disk_root_used"] = data["loads"]["disk"]["/"]["used"]
+    vars["disk_root_free"] = data["loads"]["disk"]["/"]["free"]
+    vars["disk_root_type"] = data["loads"]["disk"]["/"]["type"]
+  end
 
-  if util.given (data["loads"]["disk"]["home"]) then
-    vars["disk_home_util"] = data["loads"]["disk"]["home"]["util"]
-    vars["disk_home_used"] = data["loads"]["disk"]["home"]["used"]
-    vars["disk_home_free"] = data["loads"]["disk"]["home"]["free"]
-    vars["disk_home_type"] = data["loads"]["disk"]["home"]["type"]
+  if util.given (data["loads"]["disk"]["/home"]) then
+    vars["disk_home_util"] = data["loads"]["disk"]["/home"]["util"]
+    vars["disk_home_used"] = data["loads"]["disk"]["/home"]["used"]
+    vars["disk_home_free"] = data["loads"]["disk"]["/home"]["free"]
+    vars["disk_home_type"] = data["loads"]["disk"]["/home"]["type"]
   end
 
   vars["disk_read"] = data["loads"]["disk"]["read"]["bytes"]
@@ -107,14 +109,14 @@ function map_monitor (data)
   vars["disk_write_speed"] = data["loads"]["disk"]["write"]["speed"]
 
   -- Read network state and usage
-  vars["net_up"] = data["network"]["up"]
-  vars["net_name"] = data["network"]["name"]
-  vars["net_up_speed"] = data["network"]["upspeed"]
-  vars["net_down_speed"] = data["network"]["downspeed"]
-  vars["net_sent_bytes"] = data["network"]["sent"]
-  vars["net_recv_bytes"] = data["network"]["recv"]
-  vars["lan_ip"] = data["network"]["lip"]
-  vars["public_ip"] = data["network"]["pip"]
+  vars["net_up"] = data["network"]["lan"]["up"]
+  vars["net_name"] = data["network"]["lan"]["name"]
+  vars["net_up_speed"] = data["network"]["lan"]["upspeed"]
+  vars["net_down_speed"] = data["network"]["lan"]["downspeed"]
+  vars["net_sent_bytes"] = data["network"]["lan"]["sent"]
+  vars["net_recv_bytes"] = data["network"]["lan"]["recv"]
+  vars["lan_ip"] = data["network"]["lan"]["ip"]
+  vars["public_ip"] = data["network"]["public"]["ip"]
 
   return vars
 end
