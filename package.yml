@@ -14,7 +14,6 @@ dependencies:
     - 'iproute2'
     - 'lsb-release'
     - 'dmidecode'
-    - 'petname'
 builds:
   debian:
     arch: 'all'
