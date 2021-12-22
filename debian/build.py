@@ -126,7 +126,7 @@ print(f"Package file size is {pkg['size']} bytes")
 # Build the deb file
 subprocess.run(['dpkg-deb', '--build', '--root-owner-group', BUILD_DIR, DEB_FILE])
 
-print(f"Package file saved in '{DEB_FILE}'")
+print(f"Package file saved to '{DEB_FILE}'")
 print('Build process has completed successfully')
 
 sys.exit(0)
