@@ -1,7 +1,7 @@
 # A monitoring resolver to resolve gpu thermals
 
 import GPUtil
-from convert import decimal
+from util.convert import decimal
 
 # Returns a data object populated with gpu thermal data
 def resolve ():

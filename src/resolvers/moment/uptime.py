@@ -3,7 +3,7 @@
 import ctypes
 import struct
 import math
-from convert import integer
+from util.convert import integer
 
 # Load native c libraries
 libc = ctypes.CDLL('libc.so.6')

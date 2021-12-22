@@ -4,7 +4,6 @@ import sys
 import os
 import time
 import subprocess
-import globals
 
 # Aborts the process in fatal error
 def exit (errcode):
@@ -15,8 +14,8 @@ def isUp (pid):
   return os.path.exists('/proc/' + str(pid))
 
 # Spawns a new process given the command
-def spawn (command):
-  with open(globals.LOG_FILE_PATH, 'a') as log_file:
+def spawn (command, log_file_path):
+  with open(log_file_path, 'a') as log_file:
     process = subprocess.Popen(
       command.split(),
       stdout=log_file,
@@ -35,11 +34,11 @@ def spawn (command):
   return process.pid
 
 # Kills the process identified by the given pid
-def kill (pid):
+def kill (pid, log_file_path):
   if not isUp(pid):
     return False
 
-  with open(globals.LOG_FILE_PATH, 'a') as log_file:
+  with open(log_file_path, 'a') as log_file:
     process = subprocess.run(
       ['kill', str(pid)],
       stdout=log_file,

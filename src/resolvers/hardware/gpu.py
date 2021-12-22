@@ -1,7 +1,7 @@
 # A hardware resolver to resolve gpu information
 
 import GPUtil
-from convert import text, integer
+from util.convert import text, integer
 
 # Returns a data object populated with gpu attributes
 def resolve ():

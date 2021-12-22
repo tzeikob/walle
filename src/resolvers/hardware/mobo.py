@@ -1,6 +1,6 @@
 # A hardware resolver to resolve motherboard information
 
-from convert import text
+from util.convert import text
 
 # Returns a data object populated with motherboard attributes
 def resolve ():

@@ -6,15 +6,15 @@ import signal
 import json
 import time
 import threading
-import globals
-import config
+from common import globals
+from common import config
+from util.logger import Router
 from resolvers import hardware
 from resolvers import system
 from resolvers import loads
 from resolvers import thermals
 from resolvers import network
 from resolvers import moment
-from logger import Router
 
 # Marks process as not up and running on kill signals
 def mark_shutdown (*args):

@@ -3,7 +3,7 @@
 import subprocess
 import re
 import psutil
-from convert import text, integer, decimal
+from util.convert import text, integer, decimal
 
 # Returns a data object populated with cpu attributes
 def resolve ():

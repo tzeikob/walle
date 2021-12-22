@@ -1,7 +1,7 @@
 # A system resolver to resolve distro release information
 
 import platform
-from convert import text
+from util.convert import text
 
 # Returns a data object populated with distro attributes
 def resolve ():

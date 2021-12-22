@@ -1,7 +1,7 @@
 # A monitoring resolver to resolve memory loads
 
 import psutil
-from convert import integer, decimal, MB
+from util.convert import integer, decimal, MB
 
 # Returns a data object populated with memory load attributes
 def resolve ():

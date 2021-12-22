@@ -3,7 +3,7 @@
 import os
 import ruamel.yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as scalar
-import globals
+from common import globals
 
 # Initialize yaml parser
 yaml = ruamel.yaml.YAML()

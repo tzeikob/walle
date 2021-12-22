@@ -2,7 +2,7 @@
 
 import subprocess
 import re
-from convert import decimal
+from util.convert import decimal
 
 # Returns a data object populated with memory attributes
 def resolve ():

@@ -1,7 +1,7 @@
 # A monitoring resolver to resolve gpu loads
 
 import GPUtil
-from convert import integer, decimal
+from util.convert import integer, decimal
 
 # Returns a data object populated with gpu load attributes
 def resolve ():

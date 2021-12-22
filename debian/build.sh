@@ -79,6 +79,20 @@ mv $BIN_DIR/bin.py $BIN_DIR/$PKG_NAME.py
 
 echo -e "Binary files have been added"
 
+COMMON_DIR=$BIN_DIR/common
+mkdir -p $COMMON_DIR
+
+cp -R $BASE_DIR/../src/common/* $COMMON_DIR
+
+echo -e "Common modules have been added"
+
+UTIL_DIR=$BIN_DIR/util
+mkdir -p $UTIL_DIR
+
+cp -R $BASE_DIR/../src/util/* $UTIL_DIR
+
+echo -e "Utility modules have been added"
+
 RESOLVERS_DIR=$BIN_DIR/resolvers
 mkdir -p $RESOLVERS_DIR
 

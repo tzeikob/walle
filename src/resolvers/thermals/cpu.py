@@ -2,7 +2,7 @@
 
 import statistics
 import psutil
-from convert import decimal
+from util.convert import decimal
 
 # Returns a data object populated with cpu thermal data
 def resolve ():

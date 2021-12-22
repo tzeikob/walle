@@ -2,7 +2,7 @@
 
 import os
 import re
-import globals
+from common import globals
 
 # Writes the given settings to the conkyrc file
 def config (settings):

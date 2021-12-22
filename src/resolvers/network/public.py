@@ -1,7 +1,7 @@
 # A monitoring resolver to resolve public network information
 
 import requests
-from convert import text
+from util.convert import text
 
 # Returns a data object populated with public network data
 def resolve ():

@@ -10,19 +10,21 @@ if getpass.getuser() == 'root':
   sys.exit(1)
 
 import time
-import globals
-import system
-import args
-import config
-import conky
-from logger import Router
+from common import globals
+from common import args
+from common import config
+from common import conky
+from util import system
+from util.logger import Router
 
 # Starts the resolver process
 def start_resolver ():
   pid = system.read(globals.RESOLVER_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    pid = system.spawn(globals.RESOLVER_FILE_PATH + ' --release --login --timings --monitor')
+    pid = system.spawn(
+      globals.RESOLVER_FILE_PATH + ' --release --login --timings --monitor',
+      globals.LOG_FILE_PATH)
     system.write(pid, globals.RESOLVER_PID_FILE_PATH)
 
   logger.disk.info(f"resolver process is up with pid '{pid}'")
@@ -31,7 +33,7 @@ def start_resolver ():
 def stop_resolver ():
   pid = system.read(globals.RESOLVER_PID_FILE_PATH)
 
-  if system.kill(pid):
+  if system.kill(pid, globals.LOG_FILE_PATH):
     system.remove(globals.RESOLVER_PID_FILE_PATH)
 
   logger.disk.info('resolver process is down')
@@ -41,7 +43,9 @@ def start_conky ():
   pid = system.read(globals.CONKY_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    pid = system.spawn('conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH)
+    pid = system.spawn(
+      'conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH,
+      globals.LOG_FILE_PATH)
     system.write(pid, globals.CONKY_PID_FILE_PATH)
 
   logger.disk.info(f"conky process is up with pid '{pid}'")
@@ -50,7 +54,7 @@ def start_conky ():
 def stop_conky ():
   pid = system.read(globals.CONKY_PID_FILE_PATH)
 
-  if system.kill(pid):
+  if system.kill(pid, globals.LOG_FILE_PATH):
     system.remove(globals.CONKY_PID_FILE_PATH)
 
   logger.disk.info('conky process is down')

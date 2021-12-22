@@ -1,7 +1,7 @@
 # A monitoring resolver to resolve cpu loads
 
 import psutil
-from convert import integer, decimal
+from util.convert import integer, decimal
 
 # Returns a data object populated with cpu load attributes
 def resolve ():

@@ -2,7 +2,7 @@
 
 import getpass
 import socket
-from convert import text
+from util.convert import text
 
 # Returns a data object populated with user login and host attributes
 def resolve ():
