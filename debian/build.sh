@@ -79,12 +79,12 @@ mv $BIN_DIR/bin.py $BIN_DIR/$PKG_NAME.py
 
 echo -e "Binary files have been added"
 
-TASKS_DIR=$BIN_DIR/tasks
-mkdir -p $TASKS_DIR
+RESOLVERS_DIR=$BIN_DIR/resolvers
+mkdir -p $RESOLVERS_DIR
 
-cp $BASE_DIR/../src/tasks/*.py $TASKS_DIR
+cp -R $BASE_DIR/../src/resolvers/* $RESOLVERS_DIR
 
-echo -e "Resolver module tasks have been added"
+echo -e "Resolver modules have been added"
 
 LUA_DIR=$INSTALLATION_DIR/lua
 mkdir -p $LUA_DIR

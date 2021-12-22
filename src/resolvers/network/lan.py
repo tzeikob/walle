@@ -1,12 +1,9 @@
-# A resolver module task resolving network data and status
+# A monitoring resolver to resolve lan network information
 
 from datetime import datetime
 import subprocess
 import psutil
-import requests
 from convert import text, integer, decimal, MB, Mb
-
-data = {}
 
 # Last date time since the last call
 last = datetime.now()
@@ -15,7 +12,7 @@ last = datetime.now()
 last_sent = 0
 last_recv = 0
 
-# Returns network and connection data
+# Returns a data object populated with lan network data
 def resolve ():
   # Read network name and local ip via ip route
   route = subprocess.run(
@@ -26,33 +23,29 @@ def resolve ():
 
   # Return with network marked as down if stderr exists
   if route.stderr:
-    data['up'] = False
-
-    return data
+    return { 'up': False }
 
   if not route.stdout:
     raise Exception('unable to resolve network data via ip route')
 
   # Mark network status as up
-  data['up'] = True
+  up = True
 
   # Extract network name and local ip address
   parts = route.stdout.split()
-  nic = parts[4]
+  name = parts[4]
   ip = parts[6]
 
-  data['name'] = text(nic)
-  data['lip'] = text(ip)
-
   # Read network sent and received bytes
-  io = psutil.net_io_counters(pernic=True)[nic]
+  io = psutil.net_io_counters(pernic=True)[name]
 
   sent = io.bytes_sent
   recv = io.bytes_recv
 
   # Calculate the secs past since the last call
-  global last
   now = datetime.now()
+
+  global last
   past_secs = (now - last).total_seconds()
 
   # Save last checkpoint for the next call
@@ -79,22 +72,14 @@ def resolve ():
   last_sent = sent
   last_recv = recv
 
-  data['sent'] = integer(MB(sent))
-  data['recv'] = integer(MB(recv))
-  data['upspeed'] = decimal(Mb(up_speed), 2)
-  data['downspeed'] = decimal(Mb(down_speed), 2)
-
-  try:
-    # Resolve the public address via the ident API
-    response = requests.get('https://ident.me/', timeout=2)
-
-    if response.status_code == 200:
-      public_ip = response.text
-    else:
-      public_ip = None
-  except Exception:
-    public_ip = None
-
-  data['pip'] = text(public_ip)
+  data = {
+    'up': up,
+    'name': text(name),
+    'ip': text(ip),
+    'sent': integer(MB(sent)),
+    'recv': integer(MB(recv)),
+    'upspeed': decimal(Mb(up_speed), 2),
+    'downspeed': decimal(Mb(down_speed), 2)
+  }
 
   return data

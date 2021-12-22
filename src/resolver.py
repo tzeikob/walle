@@ -8,14 +8,13 @@ import time
 import threading
 import globals
 import config
+from resolvers import hardware
+from resolvers import system
+from resolvers import loads
+from resolvers import thermals
+from resolvers import network
+from resolvers import moment
 from logger import Router
-from tasks import release
-from tasks import login
-from tasks import hardware
-from tasks import loads
-from tasks import thermals
-from tasks import network
-from tasks import uptime
 
 # Marks process as not up and running on kill signals
 def mark_shutdown (*args):
@@ -42,7 +41,7 @@ def timings ():
 
     logger.disk.debug(f'resolving uptime data at {time.strftime(globals.TIME_FORMAT)}')
 
-    timings_data['uptime'] = resolve(uptime)
+    timings_data['uptime'] = resolve(moment.uptime)
 
     logger.disk.debug(f"uptime data resolved:\n{timings_data['uptime']}")
 
@@ -61,19 +60,30 @@ def monitor ():
 
     logger.disk.debug(f'resolving loads data at {time.strftime(globals.TIME_FORMAT)}')
 
-    monitor_data['loads'] = resolve(loads)
+    monitor_data['loads'] = {
+      'cpu': resolve(loads.cpu),
+      'memory': resolve(loads.memory),
+      'gpu': resolve(loads.gpu),
+      'disk': resolve(loads.disk)
+    }
 
     logger.disk.debug(f"loads data resolved:\n{monitor_data['loads']}")
 
     logger.disk.debug(f'resolving thermals data at {time.strftime(globals.TIME_FORMAT)}')
 
-    monitor_data['thermals'] = resolve(thermals)
+    monitor_data['thermals'] = {
+      'cpu': resolve(thermals.cpu),
+      'gpu': resolve(thermals.gpu)
+    }
 
     logger.disk.debug(f"thermals data resolved:\n{monitor_data['thermals']}")
 
     logger.disk.debug(f'resolving network data at {time.strftime(globals.TIME_FORMAT)}')
 
-    monitor_data['network'] = resolve(network)
+    monitor_data['network'] = {
+      'lan': resolve(network.lan),
+      'public': resolve(network.public)
+    }
 
     logger.disk.debug(f"network data resolved:\n{monitor_data['network']}")
 
@@ -115,7 +125,12 @@ signal.signal(signal.SIGTERM, mark_shutdown)
 if opts.hardware:
   logger.disk.debug(f"resolving hardware data at {time.strftime(globals.TIME_FORMAT)}")
 
-  hardware_data = resolve(hardware)
+  hardware_data = {
+    'mobo': resolve(hardware.mobo),
+    'cpu': resolve(hardware.cpu),
+    'memory': resolve(hardware.memory),
+    'gpu': resolve(hardware.gpu)
+  }
 
   logger.disk.debug(f'hardware data resolved:\n{hardware_data}')
 
@@ -125,7 +140,7 @@ if opts.hardware:
 if opts.release:
   logger.disk.debug(f'resolving release data at {time.strftime(globals.TIME_FORMAT)}')
 
-  release_data = resolve(release)
+  release_data = resolve(system.release)
 
   logger.disk.debug(f'release data resolved:\n{release_data}')
 
@@ -135,7 +150,7 @@ if opts.release:
 if opts.login:
   logger.disk.debug(f'resolving login data at {time.strftime(globals.TIME_FORMAT)}')
 
-  login_data = resolve(login)
+  login_data = resolve(system.login)
 
   logger.disk.debug(f'login data resolved:\n{login_data}')
 

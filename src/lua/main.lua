@@ -178,17 +178,17 @@ function conky_text ()
   text = text .. ln ("MEMORY " .. mem_util .. "% " .. mem_used .. "MB " .. mem_speed .. "MHz")
 
   -- Build the disk line text
-  local disk_util = opt (vars["disk_util"], 0.0)
-  local disk_used = opt (vars["disk_used"], 0)
-  local disk_free = opt (vars["disk_free"], 0)
-  local disk_type = opt (vars["disk_type"])
+  local disk_root_util = opt (vars["disk_root_util"], 0.0)
+  local disk_root_used = opt (vars["disk_root_used"], 0)
+  local disk_root_free = opt (vars["disk_root_free"], 0)
+  local disk_root_type = opt (vars["disk_root_type"])
 
-  disk_util = format.int (disk_util, "%02d")
-  disk_used = format.int (disk_used, "%06d")
-  disk_free = format.int (disk_free, "%06d")
-  disk_type = format.upper (disk_type)
+  disk_root_util = format.int (disk_root_util, "%02d")
+  disk_root_used = format.int (disk_root_used, "%06d")
+  disk_root_free = format.int (disk_root_free, "%06d")
+  disk_root_type = format.upper (disk_root_type)
 
-  text = text .. ln ("DISK ROOT " .. disk_type .. " " .. disk_util .. "% Ux " .. disk_used .. "MB Fx " .. disk_free .. "MB")
+  text = text .. ln ("DISK ROOT " .. disk_root_type .. " " .. disk_root_util .. "% Ux " .. disk_root_used .. "MB Fx " .. disk_root_free .. "MB")
 
   if util.given(vars["disk_home_util"]) then
     local disk_home_util = opt (vars["disk_home_util"], 0.0)
