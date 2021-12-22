@@ -3,8 +3,18 @@ version: '0.1.0'
 author: 'Jake Ob <iakopap@gmail.com>'
 homepage: 'https://github.com/tzeikob/walle'
 description: 'An opinionated tool to manage and configure conky for developers'
-
+dependencies:
+  system:
+    - 'python3'
+    - 'python3-pip'
+    - 'luarocks'
+    - 'conky'
+    - 'conky-all'
+    - 'curl'
+    - 'iproute2'
+    - 'lsb-release'
+    - 'dmidecode'
+    - 'petname'
 builds:
   debian:
     arch: 'all'
-    depends: 'python3, python3-pip, luarocks, conky, conky-all, curl, iproute2, lsb-release, dmidecode, petname'
