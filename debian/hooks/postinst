@@ -64,8 +64,7 @@ echo -e "Python dependencies have been installed"
 
 echo -e "Installing lua third-party dependencies..."
 
-luarocks install yaml
-luarocks install lua-cjson
+#PKG_LUA_DEPS
 
 echo -e "Lua dependencies have been installed"
 

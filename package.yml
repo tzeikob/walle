@@ -19,6 +19,9 @@ dependencies:
     - 'requests'
     - 'psutil'
     - 'gputil'
+  lua:
+    - 'yaml'
+    - 'lua-cjson'
 builds:
   debian:
     arch: 'all'

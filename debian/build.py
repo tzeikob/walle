@@ -122,6 +122,11 @@ for path, dirs, files in os.walk(BUILD_DIR):
       deps = ' '.join([str(x) for x in pkg['dependencies']['python']])
       contents = contents.replace('#PKG_PYTHON_DEPS', deps)
 
+      deps = ''
+      for dep_name in pkg['dependencies']['lua']:
+        deps = deps + 'luarocks install ' + dep_name + '\n'
+      contents = contents.replace('#PKG_LUA_DEPS', deps)
+
     # Overwrite file contents
     with open(file_path, 'wt') as f:
       f.write(contents)
