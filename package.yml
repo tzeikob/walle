@@ -14,6 +14,11 @@ dependencies:
     - 'iproute2'
     - 'lsb-release'
     - 'dmidecode'
+  python:
+    - 'ruamel.yaml'
+    - 'requests'
+    - 'psutil'
+    - 'gputil'
 builds:
   debian:
     arch: 'all'

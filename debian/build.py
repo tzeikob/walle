@@ -117,6 +117,11 @@ for path, dirs, files in os.walk(BUILD_DIR):
       depends = ', '.join([str(x) for x in pkg['dependencies']['system']])
       contents = contents.replace("#PKG_DEPENDS", depends)
 
+    # Inject package python and lua dependencies in post installation hook
+    if file_path.endswith('postinst'):
+      deps = ' '.join([str(x) for x in pkg['dependencies']['python']])
+      contents = contents.replace('#PKG_PYTHON_DEPS', deps)
+
     # Overwrite file contents
     with open(file_path, 'wt') as f:
       f.write(contents)
