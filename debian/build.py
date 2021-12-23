@@ -114,17 +114,21 @@ for path, dirs, files in os.walk(BUILD_DIR):
       contents = contents.replace("#PKG_DESCRIPTION", pkg['description'])
       contents = contents.replace("#PKG_FILE_SIZE", str(pkg['size']))
 
-      depends = ', '.join([str(x) for x in pkg['dependencies']['system']])
-      contents = contents.replace("#PKG_DEPENDS", depends)
+      deps = pkg['dependencies']['system']
+      deps = ', '.join([x for x in deps])
 
-    # Inject package python and lua dependencies in post installation hook
+      contents = contents.replace("#PKG_DEPENDS", deps)
+
+    # Inject python and lua dependencies in post installation hook
     if file_path.endswith('postinst'):
-      deps = ' '.join([str(x) for x in pkg['dependencies']['python']])
+      deps = pkg['dependencies']['python']
+      deps = ' '.join([x for x in deps])
+
       contents = contents.replace('#PKG_PYTHON_DEPS', deps)
 
-      deps = ''
-      for dep_name in pkg['dependencies']['lua']:
-        deps = deps + 'luarocks install ' + dep_name + '\n'
+      deps = pkg['dependencies']['lua']
+      deps = '\n'.join(['luarocks install ' + x for x in deps])
+
       contents = contents.replace('#PKG_LUA_DEPS', deps)
 
     # Overwrite file contents
