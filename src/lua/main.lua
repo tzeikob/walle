@@ -29,14 +29,10 @@ function matches_cycle (cycle)
   return false
 end
 
--- Main lua function called by conky
-function conky_main ()
-  logger.debug ("entering a conky cycle")
-
-  if conky_window == nil then
-    logger.debug ("aborting since no conky window is ready")
-    return
-  end
+-- Resolves monitoring system data
+function conky_resolve ()
+  logger.debug ("entering the pre conky resolve phase")
+  logger.debug ("reading monitoring data...")
 
   -- Update the current conky loop index
   context.loop = tonumber (conky_parse ("${updates}"))
@@ -46,15 +42,13 @@ function conky_main ()
   context.timings.load (timings)
 
   if matches_cycle (1) then
-    logger.debug ("reading dynamic data...")
-
-    -- Load dynamic data from the resolver data file
+    -- Load dynamic data from the monitor data file
     local monitor = util.json.load (DATA_DIR .. "/monitor")
     context.monitor.load (monitor)
-
-    logger.debug ("monitoring data has been loaded")
-    logger.debug ("context:\n" .. util.json.stringify (context.vars))
   end
+
+  logger.debug ("monitoring data has been loaded to context vars")
+  logger.debug ("context:\n" .. util.json.stringify (context.vars))
 
   -- Mark conky as running in the subsequent cycles
   if context.status == "init" then
@@ -63,7 +57,19 @@ function conky_main ()
     logger.debug ("changed from init to running state")
   end
 
-  logger.debug ("exiting the conky cycle")
+  logger.debug ("exiting the pre conky resolve phase")
+end
+
+-- Main conky function
+function conky_main ()
+  logger.debug ("entering the post conky main phase")
+
+  if conky_window == nil then
+    logger.debug ("aborting since no conky window is ready")
+    return
+  end
+
+  logger.debug ("exiting the post conky main phase")
 end
 
 -- Converts the given text to a conkyrc text line
