@@ -47,7 +47,7 @@ function conky_resolve ()
     context.monitor.load (monitor)
   end
 
-  logger.debug ("monitoring data has been loaded to context vars")
+  logger.debug ("monitoring data has been loaded to context")
   logger.debug ("context:\n" .. util.json.stringify (context.vars))
 
   -- Mark conky as running in the subsequent cycles
@@ -60,16 +60,32 @@ function conky_resolve ()
   logger.debug ("exiting the pre conky resolve phase")
 end
 
--- Main conky function
-function conky_main ()
-  logger.debug ("entering the post conky main phase")
+-- Draws the ui in conky's viewport
+function conky_draw ()
+  logger.debug ("entering the post conky draw phase")
 
   if conky_window == nil then
     logger.debug ("aborting since no conky window is ready")
     return
   end
 
-  logger.debug ("exiting the post conky main phase")
+  -- Create the cairo render viewport
+  local surface = cairo_xlib_surface_create (conky_window.display,
+    conky_window.drawable,
+    conky_window.visual,
+    conky_window.width,
+    conky_window.height)
+
+  local viewport = cairo_create (surface)
+
+  -- TODO: start drawing the ui
+
+  -- Destroy and clean cairo render viewport
+  cairo_destroy (viewport)
+  cairo_surface_destroy (surface)
+  viewport = nil
+
+  logger.debug ("exiting the post conky draw phase")
 end
 
 -- Converts the given text to a conkyrc text line

@@ -38,7 +38,7 @@ conky.config = {
     use_xft = true,
     lua_load = '/usr/share/#PKG_NAME/lua/main.lua',
     lua_draw_hook_pre = 'resolve',
-    lua_draw_hook_post = 'main'
+    lua_draw_hook_post = 'draw'
 }
 
 conky.text = [[${lua text}]]
