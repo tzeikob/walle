@@ -100,15 +100,6 @@ function ln (text, scale)
   return line
 end
 
--- Returs the value itself unless it is nullish or empty
-function opt (value, default)
-  if not util.given (value) then
-    return default or "n/a"
-  end
-
-  return value
-end
-
 -- Builds and returns the conky text
 function conky_text ()
   -- Read the interpolation variables from the context
@@ -131,8 +122,8 @@ function conky_text ()
   end
 
   -- Build the user and host line text
-  local user = opt (vars["user"])
-  local host = opt (vars["host"])
+  local user = util.opt (vars["user"])
+  local host = util.opt (vars["host"])
 
   user = format.upper (user)
   host = format.upper (host)
@@ -140,9 +131,9 @@ function conky_text ()
   text = text .. ln ("USER " .. user .. " HOST " .. host)
 
   -- Build the release line text
-  local rls_name = opt (vars["rls_name"])
-  local rls_codename = opt (vars["rls_codename"])
-  local rls_version = opt (vars["rls_version"])
+  local rls_name = util.opt (vars["rls_name"])
+  local rls_codename = util.opt (vars["rls_codename"])
+  local rls_version = util.opt (vars["rls_version"])
 
   rls_name = format.upper (rls_name)
   rls_codename = format.upper (rls_codename)
@@ -151,9 +142,9 @@ function conky_text ()
   text = text .. ln ("SYSTEM " .. rls_name .. " " .. rls_codename .. " v" .. rls_version) .. "\n"
 
   -- Build the cpu line text
-  local cpu_util = opt (vars["cpu_util"], 0.0)
-  local cpu_clock = opt (vars["cpu_clock"], 0)
-  local cpu_temp = opt (vars["cpu_temp"], 0.0)
+  local cpu_util = util.opt (vars["cpu_util"], 0.0)
+  local cpu_clock = util.opt (vars["cpu_clock"], 0)
+  local cpu_temp = util.opt (vars["cpu_temp"], 0.0)
 
   cpu_util = format.int (cpu_util, "%02d")
   cpu_clock = format.int (cpu_clock, "%04d")
@@ -162,9 +153,9 @@ function conky_text ()
   text = text .. ln ("PROCESSOR " .. cpu_util .. "% " .. cpu_clock .. "MHz " .. cpu_temp .. "°C")
 
     -- Build the gpu line text
-  local gpu_util = opt (vars["gpu_util"], 0.0)
-  local gpu_used = opt (vars["gpu_used"], 0)
-  local gpu_temp = opt (vars["gpu_temp"], 0.0)
+  local gpu_util = util.opt (vars["gpu_util"], 0.0)
+  local gpu_used = util.opt (vars["gpu_used"], 0)
+  local gpu_temp = util.opt (vars["gpu_temp"], 0.0)
 
   gpu_util = format.int (gpu_util, "%02d")
   gpu_used = format.int (gpu_used, "%05d")
@@ -173,9 +164,9 @@ function conky_text ()
   text = text .. ln ("GRAPHICS " .. gpu_util .. "% " .. gpu_used .. "MB " .. gpu_temp .. "°C")
 
   -- Build the memory line text
-  local mem_util = opt (vars["mem_util"], 0.0)
-  local mem_used = opt (vars["mem_used"], 0)
-  local mem_speed = opt (vars["mem_speed"], 0)
+  local mem_util = util.opt (vars["mem_util"], 0.0)
+  local mem_used = util.opt (vars["mem_used"], 0)
+  local mem_speed = util.opt (vars["mem_speed"], 0)
 
   mem_util = format.int (mem_util, "%02d")
   mem_used = format.int (mem_used, "%06d")
@@ -184,10 +175,10 @@ function conky_text ()
   text = text .. ln ("MEMORY " .. mem_util .. "% " .. mem_used .. "MB " .. mem_speed .. "MHz")
 
   -- Build the disk line text
-  local disk_root_util = opt (vars["disk_root_util"], 0.0)
-  local disk_root_used = opt (vars["disk_root_used"], 0)
-  local disk_root_free = opt (vars["disk_root_free"], 0)
-  local disk_root_type = opt (vars["disk_root_type"])
+  local disk_root_util = util.opt (vars["disk_root_util"], 0.0)
+  local disk_root_used = util.opt (vars["disk_root_used"], 0)
+  local disk_root_free = util.opt (vars["disk_root_free"], 0)
+  local disk_root_type = util.opt (vars["disk_root_type"])
 
   disk_root_util = format.int (disk_root_util, "%02d")
   disk_root_used = format.int (disk_root_used, "%06d")
@@ -197,10 +188,10 @@ function conky_text ()
   text = text .. ln ("DISK ROOT " .. disk_root_type .. " " .. disk_root_util .. "% Ux " .. disk_root_used .. "MB Fx " .. disk_root_free .. "MB")
 
   if util.given(vars["disk_home_util"]) then
-    local disk_home_util = opt (vars["disk_home_util"], 0.0)
-    local disk_home_used = opt (vars["disk_home_used"], 0)
-    local disk_home_free = opt (vars["disk_home_free"], 0)
-    local disk_home_type = opt (vars["disk_home_type"])
+    local disk_home_util = util.opt (vars["disk_home_util"], 0.0)
+    local disk_home_used = util.opt (vars["disk_home_used"], 0)
+    local disk_home_free = util.opt (vars["disk_home_free"], 0)
+    local disk_home_type = util.opt (vars["disk_home_type"])
   
     disk_home_util = format.int (disk_home_util, "%02d")
     disk_home_used = format.int (disk_home_used, "%06d")
@@ -210,11 +201,11 @@ function conky_text ()
     text = text .. ln ("DISK HOME " .. disk_home_type .. " " .. disk_home_util .. "% Ux " .. disk_home_used .. "MB Fx " .. disk_home_free .. "MB")
   end
 
-  local disk_read = opt (vars["disk_read"], 0)
-  local disk_read_speed = opt (vars["disk_read_speed"], 0.0)
+  local disk_read = util.opt (vars["disk_read"], 0)
+  local disk_read_speed = util.opt (vars["disk_read_speed"], 0.0)
 
-  local disk_write = opt (vars["disk_write"], 0)
-  local disk_write_speed = opt (vars["disk_write_speed"], 0.0)
+  local disk_write = util.opt (vars["disk_write"], 0)
+  local disk_write_speed = util.opt (vars["disk_write_speed"], 0.0)
 
   disk_read = format.int (disk_read, "%05d")
   disk_read_speed = format.number (disk_read_speed, "%06.1f")
@@ -230,8 +221,8 @@ function conky_text ()
   local net_up_speed = 0.0
 
   if vars["net_up"] then
-    net_sent_bytes = opt (vars["net_sent_bytes"], 0)
-    net_up_speed = opt (vars["net_up_speed"], 0.0)
+    net_sent_bytes = util.opt (vars["net_sent_bytes"], 0)
+    net_up_speed = util.opt (vars["net_up_speed"], 0.0)
   end
 
   net_sent_bytes = format.int (net_sent_bytes, "%05d")
@@ -244,8 +235,8 @@ function conky_text ()
   local net_down_speed = 0.0
 
   if vars["net_up"] then
-    net_recv_bytes = opt (vars["net_recv_bytes"], 0)
-    net_down_speed = opt (vars["net_down_speed"], 0.0)
+    net_recv_bytes = util.opt (vars["net_recv_bytes"], 0)
+    net_down_speed = util.opt (vars["net_down_speed"], 0.0)
   end
 
   net_recv_bytes = format.int (net_recv_bytes, "%05d")
@@ -258,14 +249,14 @@ function conky_text ()
   local lan_ip = "x.x.x.x"
 
   if vars["net_up"] then
-    net_name = format.upper (opt (vars["net_name"]))
-    lan_ip = opt (vars["lan_ip"], "x.x.x.x")
+    net_name = format.upper (util.opt (vars["net_name"]))
+    lan_ip = util.opt (vars["lan_ip"], "x.x.x.x")
   end
 
   text = text .. ln ("NETWORK " .. net_name .. " IP " .. lan_ip) .. "\n"
 
   -- Build the uptime line text
-  local uptime = opt (vars["uptime"])
+  local uptime = util.opt (vars["uptime"])
 
   text = text .. ln ("UPTIME T+" .. uptime)
 

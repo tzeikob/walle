@@ -69,6 +69,15 @@ function given (value)
   return is_not_empty(value) and value ~= json.null
 end
 
+-- Returns the value itself unless it is nullish or empty
+function opt (value, default)
+  if not given (value) then
+    return default or "n/a"
+  end
+
+  return value
+end
+
 return {
   exec = exec,
   read = read,
@@ -83,5 +92,6 @@ return {
   is_empty = is_empty,
   is_not_empty = is_not_empty,
   default_to = default_to,
-  given = given
+  given = given,
+  opt = opt
 }
