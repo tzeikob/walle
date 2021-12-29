@@ -65,7 +65,7 @@ end
 
 -- Converts the number into a string with the given pattern
 function number (value, pattern)
-  if format then
+  if pattern then
     value = string.format (pattern, value)
   end
 
