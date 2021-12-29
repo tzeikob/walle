@@ -1,8 +1,8 @@
 -- A lua module for various util functions
 
-yaml = require "yaml"
-json = require "cjson"
-format = require "format"
+local yaml = require "yaml"
+local json = require "cjson"
+local format = require "format"
 
 -- Executes a native system command given as string
 function exec (command)

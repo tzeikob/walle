@@ -1,21 +1,21 @@
 -- Main lua entry point for the conkyrc file
 
 -- Resolved base and config paths at build time
-PKG_NAME = "#PKG_NAME"
-BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
-CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
-DATA_DIR = CONFIG_DIR .. "/.data"
+local PKG_NAME = "#PKG_NAME"
+local BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
+local CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
+local DATA_DIR = CONFIG_DIR .. "/.data"
 
-CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
-LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
+local CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
+local LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
 
 -- Add base directory to lua package path
 package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 
-util = require "util"
-logger = require "logger"
-context = require "context"
-format = require "format"
+local util = require "util"
+local logger = require "logger"
+local context = require "context"
+local format = require "format"
 
 -- Checks if the given cycle matches the current context loop
 function matches_cycle (cycle)

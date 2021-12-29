@@ -76,7 +76,7 @@ end
 function int (value, pattern)
   value = math.floor (value + 0.5)
 
-  return number(value, pattern)
+  return number (value, pattern)
 end
 
 return {

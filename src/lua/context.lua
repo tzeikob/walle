@@ -1,14 +1,14 @@
 -- A lua module to encapsulate the context lua script
 
-util = require "util"
-format = require "format"
+local util = require "util"
+local format = require "format"
 
 -- Initialize some state variables
-status = "init"
-loop = 0
+local status = "init"
+local loop = 0
 
 -- Initialize the interpolation variables
-vars = {}
+local vars = {}
 
 -- Maps static configuration data into the vars
 function map_config (data)
@@ -25,8 +25,8 @@ function map_config (data)
   vars["font_size"] = 12
   
   local font = data["theme"]["font"]
-
   local parts = format.split (font, ":")
+
   for _, part in ipairs (parts) do
     if format.matches (part, "bold") then
       vars["font_bold"] = true
