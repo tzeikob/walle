@@ -1,5 +1,5 @@
 conky.config = {
-    alignment = 'bottom_right',
+    alignment = 'top_left',
     xinerama_head = 0,
     background = false,
     border_width = 1,
@@ -14,8 +14,8 @@ conky.config = {
     draw_shades = false,
     extra_newline = false,
     font = 'DejaVu Sans Mono:size=12',
-    gap_x = 60,
-    gap_y = 60,
+    gap_x = 0,
+    gap_y = 0,
     minimum_height = 5,
     minimum_width = 5,
     net_avg_samples = 2,
@@ -41,4 +41,4 @@ conky.config = {
     lua_draw_hook_post = 'draw'
 }
 
-conky.text = [[${lua text}]]
+conky.text = [[]]

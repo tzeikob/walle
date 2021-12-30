@@ -12,6 +12,8 @@ local LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
 -- Add base directory to lua package path
 package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 
+local cairo = require "cairo"
+local ui = require "ui"
 local util = require "util"
 local logger = require "logger"
 local context = require "context"
@@ -78,7 +80,11 @@ function conky_draw ()
 
   local viewport = cairo_create (surface)
 
-  -- TODO: start drawing the ui
+  -- Initialize ui context
+  ui.init (conky_window.width, conky_window.height)
+
+  -- Start drawing ui modules
+  ui.draw_frame (viewport)
 
   -- Destroy and clean cairo render viewport
   cairo_destroy (viewport)

@@ -2,6 +2,7 @@
 
 import os
 import re
+import screeninfo
 from common import globals
 
 # Writes the given settings to the conkyrc file
@@ -27,6 +28,21 @@ def config (settings):
   with open(globals.CONKYRC_FILE_PATH, 'w') as conkyrc_file:
     conkyrc_file.write(newContent)
 
+# Initializes various conky settings
+def init ():
+  # Resolve primary monitor resolution
+  width = height = 0
+
+  for monitor in screeninfo.get_monitors():
+    if monitor.is_primary:
+      width = monitor.width
+      height = monitor.height
+
+  config({
+    'minimum_width': width,
+    'minimum_height': height
+  })
+
 # Sets the monitor index the conky should render on
 def switch (index):
   config({'xinerama_head': index})
@@ -38,4 +54,4 @@ def reset ():
     'default_color': 'white',
     'default_outline_color': 'white',
     'default_shade_color': 'white'
-    })
+  })

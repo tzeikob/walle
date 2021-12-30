@@ -43,6 +43,8 @@ def start_conky ():
   pid = system.read(globals.CONKY_PID_FILE_PATH)
 
   if not system.isUp(pid):
+    conky.init()
+
     pid = system.spawn(
       'conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH,
       globals.LOG_FILE_PATH)
