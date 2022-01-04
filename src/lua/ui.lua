@@ -8,9 +8,6 @@ local left = 0
 local bottom = 0
 local right = 0
 
-local border_width = 4
-local border_length = 30
-
 -- Initializes global ui properties
 function init (conky_width, conky_height, screen_width, screen_height, pan)
   -- Set the width and height equal to the conky viewport
@@ -47,11 +44,13 @@ function init (conky_width, conky_height, screen_width, screen_height, pan)
   right = right + pan['right']
 end
 
--- Draws the outer border
+-- Draws the outer border corners
 function draw_border (viewport)
-  cairo_set_line_width (viewport, border_width)
+  cairo_set_line_width (viewport, 4)
   cairo_set_line_cap (viewport, CAIRO_LINE_CAP_SQUARE)
-  cairo_set_source_rgba (viewport, 1, 0, 0, 1)
+  cairo_set_source_rgba (viewport, 1, 0, 0, 0.5)
+
+  local border_length = 30
 
   -- Draw the vertical edge of the top left corner
   local start_x = left
@@ -142,6 +141,7 @@ function draw_grid (viewport)
   local step = 20
   local padding = 15
 
+  -- Draw circles in a grid layout stepped in fixed gaps
   for x = left + padding, right, step do
     for y = top + padding, bottom, step do
       local radius = 1
