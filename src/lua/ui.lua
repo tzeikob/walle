@@ -32,16 +32,16 @@ function init (conky_width, conky_height, screen_width, screen_height, pan)
   left = origin
 
   -- Move top left edges with respect to the given pan
-  top = top + pan['top']
-  left = left + pan['left']
+  top = top + pan["top"]
+  left = left + pan["left"]
 
   -- Set bottom right viewport edges
   bottom = height - delta_height
   right = width - delta_width
 
   -- Move bottom right edges with respect to the given pan
-  bottom = bottom + pan['bottom']
-  right = right + pan['right']
+  bottom = bottom + pan["bottom"]
+  right = right + pan["right"]
 end
 
 -- Draws the outer border corners

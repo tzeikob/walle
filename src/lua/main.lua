@@ -84,12 +84,12 @@ function conky_draw ()
   ui.init (
     conky_window.width,
     conky_window.height,
-    context.vars['screen_width'],
-    context.vars['screen_height'],
-    config['viewport']['pan'])
+    context.vars["screen_width"],
+    context.vars["screen_height"],
+    config["viewport"]["pan"])
 
   -- Draw debug borders and grid
-  if config['debug'] == 'enabled' then
+  if config["debug"] == "enabled" then
     ui.draw_border (viewport)
     ui.draw_grid (viewport)
   end
