@@ -44,6 +44,18 @@ def update (opts):
   if opts.font != None:
     settings['theme']['font'] = opts.font.strip()
 
+  if opts.top != None:
+    settings['viewport']['pan']['top'] = opts.top
+
+  if opts.left != None:
+    settings['viewport']['pan']['left'] = opts.left
+
+  if opts.bottom != None:
+    settings['viewport']['pan']['bottom'] = opts.bottom
+
+  if opts.right != None:
+    settings['viewport']['pan']['right'] = opts.right
+
   if opts.debug != None:
     settings['debug'] = opts.debug.strip()
 
@@ -56,6 +68,10 @@ def reset ():
   settings['head'] = ''
   settings['theme']['mode'] = 'light'
   settings['theme']['font'] = ''
+  settings['viewport']['pan']['top'] = 0
+  settings['viewport']['pan']['left'] = 0
+  settings['viewport']['pan']['bottom'] = 0
+  settings['viewport']['pan']['right'] = 0
   settings['debug'] = 'disabled'
 
   write(settings)
@@ -69,6 +85,14 @@ def export (path):
       'theme': {
         'mode': settings['theme']['mode'],
         'font': settings['theme']['font']
+      },
+      'viewport': {
+        'pan': {
+          'top': settings['viewport']['pan']['top'],
+          'left': settings['viewport']['pan']['left'],
+          'bottom': settings['viewport']['pan']['bottom'],
+          'right': settings['viewport']['pan']['right']
+        }
       }
     }
 
@@ -87,5 +111,9 @@ def load (path):
 
   settings['theme']['mode'] = preset['theme']['mode']
   settings['theme']['font'] = scalar(preset['theme']['font'])
+  settings['viewport']['pan']['top'] = preset['viewport']['pan']['top']
+  settings['viewport']['pan']['left'] = preset['viewport']['pan']['left']
+  settings['viewport']['pan']['bottom'] = preset['viewport']['pan']['bottom']
+  settings['viewport']['pan']['right'] = preset['viewport']['pan']['right']
 
   write(settings)

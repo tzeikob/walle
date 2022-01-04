@@ -3,6 +3,15 @@
 import argparse
 import re
 
+# Asserts if the given value is an integer
+def any_int (value):
+  try:
+    number = int(value)
+  except ValueError:
+    raise argparse.ArgumentTypeError("'%s' is not an integer value" % value)
+
+  return number
+
 # Asserts if the given value is a zero positive integer
 def zero_pos_int (value):
   try:
@@ -61,6 +70,30 @@ def parse (name, version):
     type=font_style,
     metavar='font',
     help='the font style the text should appear with')
+
+  configParser.add_argument(
+    '--top',
+    type=any_int,
+    metavar='pixels',
+    help='the pixels the viewport top edge should be panned by')
+
+  configParser.add_argument(
+    '--left',
+    type=any_int,
+    metavar='pixels',
+    help='the pixels the viewport left edge should be panned by')
+
+  configParser.add_argument(
+    '--bottom',
+    type=any_int,
+    metavar='pixels',
+    help='the pixels the viewport bottom edge should be panned by')
+
+  configParser.add_argument(
+    '--right',
+    type=any_int,
+    metavar='pixels',
+    help='the pixels the viewport right edge should be panned by')
 
   configParser.add_argument(
     '--monitor',

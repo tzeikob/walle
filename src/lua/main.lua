@@ -85,7 +85,8 @@ function conky_draw ()
     conky_window.width,
     conky_window.height,
     context.vars['screen_width'],
-    context.vars['screen_height'])
+    context.vars['screen_height'],
+    config['viewport']['pan'])
 
   -- Start drawing ui modules
   ui.draw_border (viewport)
