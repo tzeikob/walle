@@ -48,7 +48,7 @@ end
 function draw_border (viewport)
   cairo_set_line_width (viewport, 4)
   cairo_set_line_cap (viewport, CAIRO_LINE_CAP_SQUARE)
-  cairo_set_source_rgba (viewport, 1, 0, 0, 0.5)
+  cairo_set_source_rgba (viewport, 0, 0, 0, 0.5)
 
   local border_length = 30
 
@@ -136,7 +136,7 @@ end
 -- Draws the dotted grid
 function draw_grid (viewport)
   cairo_set_line_width (viewport, 1)
-  cairo_set_source_rgba (viewport, 1, 0, 0, 0.4)
+  cairo_set_source_rgba (viewport, 0, 0, 0, 0.5)
 
   local step = 20
   local padding = 15
