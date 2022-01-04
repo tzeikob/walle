@@ -81,10 +81,14 @@ function conky_draw ()
   local viewport = cairo_create (surface)
 
   -- Initialize ui context
-  ui.init (conky_window.width, conky_window.height)
+  ui.init (
+    conky_window.width,
+    conky_window.height,
+    context.vars['screen_width'],
+    context.vars['screen_height'])
 
   -- Start drawing ui modules
-  ui.draw_frame (viewport)
+  ui.draw_border (viewport)
 
   -- Destroy and clean cairo render viewport
   cairo_destroy (viewport)
