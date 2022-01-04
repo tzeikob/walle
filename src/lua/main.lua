@@ -88,9 +88,11 @@ function conky_draw ()
     context.vars['screen_height'],
     config['viewport']['pan'])
 
-  -- Start drawing ui modules
-  ui.draw_border (viewport)
-  ui.draw_grid (viewport)
+  -- Draw debug borders and grid
+  if config['debug'] == 'enabled' then
+    ui.draw_border (viewport)
+    ui.draw_grid (viewport)
+  end
 
   -- Destroy and clean cairo render viewport
   cairo_destroy (viewport)
