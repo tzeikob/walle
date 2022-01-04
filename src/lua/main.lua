@@ -90,6 +90,7 @@ function conky_draw ()
 
   -- Start drawing ui modules
   ui.draw_border (viewport)
+  ui.draw_grid (viewport)
 
   -- Destroy and clean cairo render viewport
   cairo_destroy (viewport)

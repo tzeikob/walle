@@ -134,7 +134,28 @@ function draw_border (viewport)
   cairo_stroke (viewport)
 end
 
+-- Draws the dotted grid
+function draw_grid (viewport)
+  cairo_set_line_width (viewport, 1)
+  cairo_set_source_rgba (viewport, 1, 0, 0, 0.4)
+
+  local step = 20
+  local padding = 15
+
+  for x = left + padding, right, step do
+    for y = top + padding, bottom, step do
+      local radius = 1
+      local start_angle = 0
+      local end_angle = 2 / math.pi
+
+      cairo_arc (viewport, x, y, radius, start_angle, end_angle)
+      cairo_stroke (viewport)
+    end
+  end
+end
+
 return {
   init = init,
-  draw_border = draw_border
+  draw_border = draw_border,
+  draw_grid = draw_grid
 }
