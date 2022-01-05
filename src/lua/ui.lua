@@ -39,7 +39,7 @@ end
 -- Draws the outer border corners
 function draw_border (viewport)
   local line_width = 6
-  local offset = (line_width / 2) + 2
+  local offset = math.floor (line_width / 2) + 2
   local border_length = 30
 
   cairo_set_line_width (viewport, line_width)
