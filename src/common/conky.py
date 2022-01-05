@@ -39,6 +39,8 @@ def init ():
       height = monitor.height
 
   config({
+    'maximum_width': width,
+    'maximum_height': height,
     'minimum_width': width,
     'minimum_height': height
   })

@@ -1,8 +1,10 @@
 -- A lua script exposes utilities to draw the ui
 
+-- Viewport's width and height
 local width = 0
 local height = 0
 
+-- Edges of the drawing area
 local top = 0
 local left = 0
 local bottom = 0
@@ -18,44 +20,36 @@ function init (conky_width, conky_height, screen_width, screen_height, pan)
   local delta_width = width - screen_width
   local delta_height = height - screen_height
 
-  -- Calibrate top left position of the viewport origin
-  local origin = 0
+  -- Margin between viewport and drawing area
+  local margin = 10
 
-  if delta_width < delta_height then
-    origin = delta_width
-  elseif delta_width > delta_height then
-    origin = delta_height
-  end
+  -- Set top left bottom right viewport edges
+  top =  margin
+  left = margin
+  bottom = height - delta_height - margin
+  right = width - delta_width - margin
 
-  -- Set top left viewport edges
-  top = origin
-  left = origin
-
-  -- Move top left edges with respect to the given pan
+  -- Move edges with respect to the given panning
   top = top + pan["top"]
   left = left + pan["left"]
-
-  -- Set bottom right viewport edges
-  bottom = height - delta_height
-  right = width - delta_width
-
-  -- Move bottom right edges with respect to the given pan
   bottom = bottom + pan["bottom"]
   right = right + pan["right"]
 end
 
 -- Draws the outer border corners
 function draw_border (viewport)
-  cairo_set_line_width (viewport, 4)
-  cairo_set_line_cap (viewport, CAIRO_LINE_CAP_SQUARE)
-  cairo_set_source_rgba (viewport, 0, 0, 0, 0.5)
-
+  local line_width = 6
+  local offset = (line_width / 2) + 2
   local border_length = 30
 
+  cairo_set_line_width (viewport, line_width)
+  cairo_set_line_cap (viewport, CAIRO_LINE_CAP_SQUARE)
+  cairo_set_source_rgba (viewport, 0, 0, 0, 0.7)
+
   -- Draw the vertical edge of the top left corner
-  local start_x = left
-  local start_y = top
-  local end_x = left
+  local start_x = left + offset
+  local start_y = top + offset
+  local end_x = left + offset
   local end_y = start_y + border_length
 
   cairo_move_to (viewport, start_x, start_y)
@@ -63,19 +57,19 @@ function draw_border (viewport)
   cairo_stroke (viewport)
 
   -- Draw the horizontal edge of the top left corner
-  start_x = left
-  start_y = top
+  start_x = left + offset
+  start_y = top + offset
   end_x = start_x + border_length
-  end_y = top
+  end_y = top + offset
 
   cairo_move_to (viewport, start_x, start_y)
   cairo_line_to (viewport, end_x, end_y)
   cairo_stroke (viewport)
 
   -- Draw the vertical edge of the top right corner
-  start_x = right
-  start_y = top
-  end_x = right
+  start_x = right - offset
+  start_y = top + offset
+  end_x = right - offset
   end_y = start_y + border_length
 
   cairo_move_to (viewport, start_x, start_y)
@@ -83,19 +77,19 @@ function draw_border (viewport)
   cairo_stroke (viewport)
 
   -- Draw the horizontal edge of the top right corner
-  start_x = right
-  start_y = top
+  start_x = right - offset
+  start_y = top + offset
   end_x = start_x - border_length
-  end_y = top
+  end_y = top + offset
 
   cairo_move_to (viewport, start_x, start_y)
   cairo_line_to (viewport, end_x, end_y)
   cairo_stroke (viewport)
 
   -- Draw the vertical edge of the bottom right corner
-  start_x = right
-  start_y = bottom
-  end_x = right
+  start_x = right - offset
+  start_y = bottom - offset
+  end_x = right - offset
   end_y = start_y - border_length
 
   cairo_move_to (viewport, start_x, start_y)
@@ -103,19 +97,19 @@ function draw_border (viewport)
   cairo_stroke (viewport)
 
   -- Draw the horizontal edge of the bottom right corner
-  start_x = right
-  start_y = bottom
+  start_x = right - offset
+  start_y = bottom - offset
   end_x = start_x - border_length
-  end_y = bottom
+  end_y = bottom - offset
 
   cairo_move_to (viewport, start_x, start_y)
   cairo_line_to (viewport, end_x, end_y)
   cairo_stroke (viewport)
 
   -- Draw the vertical edge of the botom left corner
-  start_x = left
-  start_y = bottom
-  end_x = left
+  start_x = left + offset
+  start_y = bottom - offset
+  end_x = left + offset
   end_y = start_y - border_length
 
   cairo_move_to (viewport, start_x, start_y)
@@ -123,10 +117,10 @@ function draw_border (viewport)
   cairo_stroke (viewport)
 
   -- Draw the horizontal edge of the bottom left corner
-  start_x = left
-  start_y = bottom
+  start_x = left + offset
+  start_y = bottom - offset
   end_x = start_x + border_length
-  end_y = bottom
+  end_y = bottom - offset
 
   cairo_move_to (viewport, start_x, start_y)
   cairo_line_to (viewport, end_x, end_y)
@@ -135,19 +129,17 @@ end
 
 -- Draws the dotted grid
 function draw_grid (viewport)
+  local step = 20
+  local radius = 1
+  local start_angle = 0
+  local end_angle = 2 / math.pi
+
   cairo_set_line_width (viewport, 1)
   cairo_set_source_rgba (viewport, 0, 0, 0, 0.5)
 
-  local step = 20
-  local padding = 15
-
   -- Draw circles in a grid layout stepped in fixed gaps
-  for x = left + padding, right, step do
-    for y = top + padding, bottom, step do
-      local radius = 1
-      local start_angle = 0
-      local end_angle = 2 / math.pi
-
+  for x = left, right, step do
+    for y = top, bottom, step do
       cairo_arc (viewport, x, y, radius, start_angle, end_angle)
       cairo_stroke (viewport)
     end
