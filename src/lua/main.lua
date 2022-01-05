@@ -19,6 +19,9 @@ local logger = require "logger"
 local context = require "context"
 local format = require "format"
 
+-- Load configuration settings
+local config = util.yaml.load (CONFIG_FILE_PATH)
+
 -- Checks if the given cycle matches the current context loop
 function matches_cycle (cycle)
   local timer = (context.loop % cycle)
@@ -29,6 +32,36 @@ function matches_cycle (cycle)
   end
 
   return false
+end
+
+-- Initializes the lua context
+function conky_init ()
+  -- Initialize logger
+  logger.set_debug_mode (config["debug"])
+  logger.set_log_file (LOG_FILE_PATH)
+
+  -- Load static configuration variables
+  context.config.load (config)
+
+  -- Load hardware data
+  local hardware = util.json.load (DATA_DIR .. "/hardware")
+  context.hardware.load (hardware)
+
+  -- Load release data
+  local release = util.json.load (DATA_DIR .. "/release")
+  context.release.load (release)
+
+  -- Load login data
+  local login = util.json.load (DATA_DIR .. "/login")
+  context.login.load (login)
+
+  -- Load timings data
+  local timings = util.json.load (DATA_DIR .. "/timings")
+  context.timings.load (timings)
+
+  -- Load monitoring data
+  local monitor = util.json.load (DATA_DIR .. "/monitor")
+  context.monitor.load (monitor)
 end
 
 -- Resolves monitoring system data
@@ -292,33 +325,3 @@ function conky_text ()
 
   return conky_parse (text)
 end
-
--- Load configuration settings
-config = util.yaml.load (CONFIG_FILE_PATH)
-
--- Initialize logger
-logger.set_debug_mode (config["debug"])
-logger.set_log_file (LOG_FILE_PATH)
-
--- Load static configuration variables
-context.config.load (config)
-
--- Load hardware data
-hardware = util.json.load (DATA_DIR .. "/hardware")
-context.hardware.load (hardware)
-
--- Load release data
-release = util.json.load (DATA_DIR .. "/release")
-context.release.load (release)
-
--- Load login data
-login = util.json.load (DATA_DIR .. "/login")
-context.login.load (login)
-
--- Load timings data
-timings = util.json.load (DATA_DIR .. "/timings")
-context.timings.load (timings)
-
--- Load monitoring data
-monitor = util.json.load (DATA_DIR .. "/monitor")
-context.monitor.load (monitor)

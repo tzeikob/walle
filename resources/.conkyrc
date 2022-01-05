@@ -41,6 +41,7 @@ conky.config = {
     use_spacer = 'none',
     use_xft = true,
     lua_load = '/usr/share/#PKG_NAME/lua/main.lua',
+    lua_startup_hook = 'init',
     lua_draw_hook_pre = 'resolve',
     lua_draw_hook_post = 'draw'
 }
