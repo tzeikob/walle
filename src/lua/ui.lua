@@ -132,7 +132,7 @@ function draw_grid (viewport)
   local step = 20
   local radius = 1
   local start_angle = 0
-  local end_angle = 2 / math.pi
+  local end_angle = 2 * math.pi
 
   cairo_set_line_width (viewport, 1)
   cairo_set_source_rgba (viewport, 0, 0, 0, 0.5)
