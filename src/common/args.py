@@ -75,25 +75,25 @@ def parse (name, version):
     '--top',
     type=any_int,
     metavar='pixels',
-    help='the pixels the viewport top edge should be panned by')
+    help="the offset the viewport's top edge should be shifted by")
 
   configParser.add_argument(
     '--left',
     type=any_int,
     metavar='pixels',
-    help='the pixels the viewport left edge should be panned by')
+    help="the offset the viewport's left edge should be shifted by")
 
   configParser.add_argument(
     '--bottom',
     type=any_int,
     metavar='pixels',
-    help='the pixels the viewport bottom edge should be panned by')
+    help="the offset the viewport's bottom edge should be shifted by")
 
   configParser.add_argument(
     '--right',
     type=any_int,
     metavar='pixels',
-    help='the pixels the viewport right edge should be panned by')
+    help="the offset the viewport's right edge should be shifted by")
 
   configParser.add_argument(
     '--monitor',

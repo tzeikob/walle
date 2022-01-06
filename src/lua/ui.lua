@@ -1,43 +1,72 @@
 -- A lua script exposes utilities to draw the ui
 
--- Viewport's width and height
-local width = 0
-local height = 0
+local cairo = require "cairo"
 
--- Edges of the drawing area
+-- Conky's window width and height
+local conky_width = 0
+local conky_height = 0
+
+-- Margin between conky's window and viewport
+local margin = 10
+
+-- Edges of the viewport drawing area
 local top = 0
 local left = 0
 local bottom = 0
 local right = 0
 
--- Initializes global ui properties
-function init (conky_width, conky_height, screen_width, screen_height, pan)
-  -- Set the width and height equal to the conky viewport
-  width = conky_width
-  height = conky_height
+-- Viewport and surface cairo objects
+local viewport = nil
+local surface = nil
+
+-- Initializes the drawing viewport given the conky window and the screen size
+function init (window, screen_width, screen_height, offsets)
+  -- Read conky window properties
+  local display = window.display
+  local drawable = window.drawable
+  local visual = window.visual
+  local width = window.width
+  local height = window.height
+
+  -- Create the surface cairo object
+  surface = cairo_xlib_surface_create (display, drawable, visual, width, height)
+
+  -- Create the drawing viewport object
+  viewport = cairo_create (surface)
+
+  -- Store the width and height of the conky window
+  conky_width = width
+  conky_height = height
 
   -- Calculate deltas between conky and actual screen size
-  local delta_width = width - screen_width
-  local delta_height = height - screen_height
+  local delta_width = conky_width - screen_width
+  local delta_height = conky_height - screen_height
 
-  -- Margin between viewport and drawing area
-  local margin = 10
-
-  -- Set top left bottom right viewport edges
-  top =  margin
+  -- Set top left bottom and right viewport edges
+  top = margin
   left = margin
-  bottom = height - delta_height - margin
-  right = width - delta_width - margin
+  bottom = conky_height - delta_height - margin
+  right = conky_width - delta_width - margin
 
-  -- Move edges with respect to the given panning
-  top = top + pan["top"]
-  left = left + pan["left"]
-  bottom = bottom + pan["bottom"]
-  right = right + pan["right"]
+  -- Move viewport edges with respect to the given offsets
+  top = top + offsets["top"]
+  left = left + offsets["left"]
+  bottom = bottom + offsets["bottom"]
+  right = right + offsets["right"]
 end
 
--- Draws the outer border corners
-function draw_border (viewport)
+-- Destroys the viewport
+function destroy ()
+  cairo_destroy (viewport)
+  cairo_surface_destroy (surface)
+
+  -- Release object references from memory
+  viewport = nil
+  surface = nil
+end
+
+-- Draws the outer border module
+function draw_border ()
   local line_width = 6
   local offset = math.floor (line_width / 2) + 2
   local border_length = 30
@@ -127,8 +156,8 @@ function draw_border (viewport)
   cairo_stroke (viewport)
 end
 
--- Draws the dotted grid
-function draw_grid (viewport)
+-- Draws the dotted grid module
+function draw_grid ()
   local step = 20
   local radius = 1
   local start_angle = 0
@@ -146,8 +175,16 @@ function draw_grid (viewport)
   end
 end
 
+-- Renders ui modules into the viewport
+function render (debug)
+  if debug ~= nil and debug == "enabled" then
+    draw_border ()
+    draw_grid ()
+  end
+end
+
 return {
   init = init,
-  draw_border = draw_border,
-  draw_grid = draw_grid
+  destroy = destroy,
+  render = render
 }

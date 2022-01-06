@@ -12,7 +12,6 @@ local LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
 -- Add base directory to lua package path
 package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 
-local cairo = require "cairo"
 local ui = require "ui"
 local util = require "util"
 local logger = require "logger"
@@ -104,33 +103,18 @@ function conky_draw ()
     return
   end
 
-  -- Create the cairo render viewport
-  local surface = cairo_xlib_surface_create (conky_window.display,
-    conky_window.drawable,
-    conky_window.visual,
-    conky_window.width,
-    conky_window.height)
-
-  local viewport = cairo_create (surface)
-
   -- Initialize ui context
   ui.init (
-    conky_window.width,
-    conky_window.height,
+    conky_window,
     context.vars["screen_width"],
     context.vars["screen_height"],
-    config["viewport"]["pan"])
+    config["viewport"]["offsets"])
 
-  -- Draw debug borders and grid
-  if config["debug"] == "enabled" then
-    ui.draw_border (viewport)
-    ui.draw_grid (viewport)
-  end
+  -- Draw ui context
+  ui.render (config["debug"])
 
-  -- Destroy and clean cairo render viewport
-  cairo_destroy (viewport)
-  cairo_surface_destroy (surface)
-  viewport = nil
+  -- Destroy ui context
+  ui.destroy ()
 
   logger.debug ("exiting the post conky draw phase")
 end

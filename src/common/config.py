@@ -45,16 +45,16 @@ def update (opts):
     settings['theme']['font'] = opts.font.strip()
 
   if opts.top != None:
-    settings['viewport']['pan']['top'] = opts.top
+    settings['viewport']['offsets']['top'] = opts.top
 
   if opts.left != None:
-    settings['viewport']['pan']['left'] = opts.left
+    settings['viewport']['offsets']['left'] = opts.left
 
   if opts.bottom != None:
-    settings['viewport']['pan']['bottom'] = opts.bottom
+    settings['viewport']['offsets']['bottom'] = opts.bottom
 
   if opts.right != None:
-    settings['viewport']['pan']['right'] = opts.right
+    settings['viewport']['offsets']['right'] = opts.right
 
   if opts.debug != None:
     settings['debug'] = opts.debug.strip()
@@ -68,10 +68,10 @@ def reset ():
   settings['head'] = ''
   settings['theme']['mode'] = 'light'
   settings['theme']['font'] = ''
-  settings['viewport']['pan']['top'] = 0
-  settings['viewport']['pan']['left'] = 0
-  settings['viewport']['pan']['bottom'] = 0
-  settings['viewport']['pan']['right'] = 0
+  settings['viewport']['offsets']['top'] = 0
+  settings['viewport']['offsets']['left'] = 0
+  settings['viewport']['offsets']['bottom'] = 0
+  settings['viewport']['offsets']['right'] = 0
   settings['debug'] = 'disabled'
 
   write(settings)
@@ -87,11 +87,11 @@ def export (path):
         'font': settings['theme']['font']
       },
       'viewport': {
-        'pan': {
-          'top': settings['viewport']['pan']['top'],
-          'left': settings['viewport']['pan']['left'],
-          'bottom': settings['viewport']['pan']['bottom'],
-          'right': settings['viewport']['pan']['right']
+        'offsets': {
+          'top': settings['viewport']['offsets']['top'],
+          'left': settings['viewport']['offsets']['left'],
+          'bottom': settings['viewport']['offsets']['bottom'],
+          'right': settings['viewport']['offsets']['right']
         }
       }
     }
@@ -111,9 +111,9 @@ def load (path):
 
   settings['theme']['mode'] = preset['theme']['mode']
   settings['theme']['font'] = scalar(preset['theme']['font'])
-  settings['viewport']['pan']['top'] = preset['viewport']['pan']['top']
-  settings['viewport']['pan']['left'] = preset['viewport']['pan']['left']
-  settings['viewport']['pan']['bottom'] = preset['viewport']['pan']['bottom']
-  settings['viewport']['pan']['right'] = preset['viewport']['pan']['right']
+  settings['viewport']['offsets']['top'] = preset['viewport']['offsets']['top']
+  settings['viewport']['offsets']['left'] = preset['viewport']['offsets']['left']
+  settings['viewport']['offsets']['bottom'] = preset['viewport']['offsets']['bottom']
+  settings['viewport']['offsets']['right'] = preset['viewport']['offsets']['right']
 
   write(settings)
