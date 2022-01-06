@@ -51,16 +51,6 @@ function init (window, offsets)
   right = right + offsets["right"]
 end
 
--- Destroys the viewport
-function destroy ()
-  cairo_destroy (viewport)
-  cairo_surface_destroy (surface)
-
-  -- Release object references from memory
-  viewport = nil
-  surface = nil
-end
-
 -- Draws the outer border module
 function draw_border ()
   local line_width = 6
@@ -179,8 +169,18 @@ function render (debug)
   end
 end
 
+-- Destroys the viewport
+function destroy ()
+  cairo_destroy (viewport)
+  cairo_surface_destroy (surface)
+
+  -- Release object references from memory
+  viewport = nil
+  surface = nil
+end
+
 return {
   init = init,
-  destroy = destroy,
-  render = render
+  render = render,
+  destroy = destroy
 }
