@@ -48,10 +48,6 @@ function map_hardware (data)
   -- Read memory speed data
   vars["mem_speed"] = data["memory"]["speed"]
 
-  -- Read primary screen resolution
-  vars['screen_width'] = data['screen']['width']
-  vars['screen_height'] = data['screen']['height']
-
   return vars
 end
 

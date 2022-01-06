@@ -129,8 +129,7 @@ if opts.hardware:
     'mobo': resolve(hardware.mobo),
     'cpu': resolve(hardware.cpu),
     'memory': resolve(hardware.memory),
-    'gpu': resolve(hardware.gpu),
-    'screen': resolve(hardware.screen)
+    'gpu': resolve(hardware.gpu)
   }
 
   logger.disk.debug(f'hardware data resolved:\n{hardware_data}')

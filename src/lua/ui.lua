@@ -19,8 +19,8 @@ local right = 0
 local viewport = nil
 local surface = nil
 
--- Initializes the drawing viewport given the conky window and the screen size
-function init (window, screen_width, screen_height, offsets)
+-- Initializes the drawing viewport given the conky window
+function init (window, offsets)
   -- Read conky window properties
   local display = window.display
   local drawable = window.drawable
@@ -38,15 +38,11 @@ function init (window, screen_width, screen_height, offsets)
   conky_width = width
   conky_height = height
 
-  -- Calculate deltas between conky and actual screen size
-  local delta_width = conky_width - screen_width
-  local delta_height = conky_height - screen_height
-
   -- Set top left bottom and right viewport edges
   top = margin
   left = margin
-  bottom = conky_height - delta_height - margin
-  right = conky_width - delta_width - margin
+  bottom = conky_height - margin
+  right = conky_width - margin
 
   -- Move viewport edges with respect to the given offsets
   top = top + offsets["top"]

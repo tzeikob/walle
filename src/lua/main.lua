@@ -104,11 +104,7 @@ function conky_draw ()
   end
 
   -- Initialize ui context
-  ui.init (
-    conky_window,
-    context.vars["screen_width"],
-    context.vars["screen_height"],
-    config["viewport"]["offsets"])
+  ui.init (conky_window, config["viewport"]["offsets"])
 
   -- Draw ui context
   ui.render (config["debug"])
