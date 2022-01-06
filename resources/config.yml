@@ -4,6 +4,7 @@ theme:
   mode: light
   font: ''
 viewport:
+  scale: 1
   offsets:
     top: 0
     left: 0

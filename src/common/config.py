@@ -44,6 +44,9 @@ def update (opts):
   if opts.font != None:
     settings['theme']['font'] = opts.font.strip()
 
+  if opts.scale != None:
+    settings['viewport']['scale'] = opts.scale
+
   if opts.top != None:
     settings['viewport']['offsets']['top'] = opts.top
 
@@ -68,6 +71,7 @@ def reset ():
   settings['head'] = ''
   settings['theme']['mode'] = 'light'
   settings['theme']['font'] = ''
+  settings['viewport']['scale'] = 1
   settings['viewport']['offsets']['top'] = 0
   settings['viewport']['offsets']['left'] = 0
   settings['viewport']['offsets']['bottom'] = 0
@@ -87,6 +91,7 @@ def export (path):
         'font': settings['theme']['font']
       },
       'viewport': {
+        'scale': settings['viewport']['scale'],
         'offsets': {
           'top': settings['viewport']['offsets']['top'],
           'left': settings['viewport']['offsets']['left'],
@@ -111,6 +116,7 @@ def load (path):
 
   settings['theme']['mode'] = preset['theme']['mode']
   settings['theme']['font'] = scalar(preset['theme']['font'])
+  settings['viewport']['scale'] = preset['viewport']['scale']
   settings['viewport']['offsets']['top'] = preset['viewport']['offsets']['top']
   settings['viewport']['offsets']['left'] = preset['viewport']['offsets']['left']
   settings['viewport']['offsets']['bottom'] = preset['viewport']['offsets']['bottom']

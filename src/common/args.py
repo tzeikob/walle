@@ -24,6 +24,18 @@ def zero_pos_int (value):
 
   return number
 
+# Asserts if the given value is a positive integer
+def pos_int (value):
+  try:
+    number = int(value)
+  except ValueError:
+    raise argparse.ArgumentTypeError("'%s' is not an integer value" % value)
+  
+  if number <= 0:
+    raise argparse.ArgumentTypeError("'%s' is not a positive integer value" % value)
+
+  return number
+
 # Asserts if the given value is a conky valid font style value
 def font_style (value):
   if not re.match(r'^[a-zA-Z0-9]([a-zA-Z0-9_\- ])*(:bold)?(:italic)?(:size=[1-9][0-9]?[0-9]?)?$', value):
@@ -70,6 +82,12 @@ def parse (name, version):
     type=font_style,
     metavar='font',
     help='the font style the text should appear with')
+
+  configParser.add_argument(
+    '--scale',
+    type=pos_int,
+    metavar='number',
+    help="an integer factor the viewport should be scaled by")
 
   configParser.add_argument(
     '--top',

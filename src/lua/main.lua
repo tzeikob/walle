@@ -103,8 +103,12 @@ function conky_draw ()
     return
   end
 
+  -- Read scaling and offset factors
+  local scale = config["viewport"]["scale"]
+  local offsets = config["viewport"]["offsets"]
+
   -- Initialize ui context
-  ui.init (conky_window, config["viewport"]["offsets"])
+  ui.init (conky_window, scale, offsets)
 
   -- Draw ui context
   ui.render (config["debug"])
