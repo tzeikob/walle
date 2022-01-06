@@ -4,8 +4,10 @@ local util = require "util"
 local format = require "format"
 
 -- Initialize some state variables
-local status = "init"
-local loop = 0
+local state = {
+  phase = "init",
+  loop = 0
+}
 
 -- Initialize the interpolation variables
 local vars = {}
@@ -138,9 +140,6 @@ function map_timings (data)
 end
 
 return {
-  status = status,
-  loop = loop,
-  vars = vars,
   config = {
     load = map_config
   },
@@ -158,5 +157,7 @@ return {
   },
   timings = {
     load = map_timings
-  }
+  },
+  state = state,
+  vars = vars
 }

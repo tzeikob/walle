@@ -23,10 +23,10 @@ local config = util.yaml.load (CONFIG_FILE_PATH)
 
 -- Checks if the given cycle matches the current context loop
 function matches_cycle (cycle)
-  local timer = (context.loop % cycle)
+  local timer = (context.state.loop % cycle)
 
   -- Return true if in the given cycle or at start up
-  if timer == 0 or context.status == "init" then
+  if timer == 0 or context.state.phase == "init" then
     return true
   end
 
@@ -69,7 +69,7 @@ function conky_resolve ()
   logger.debug ("reading monitoring data...")
 
   -- Update the current conky loop index
-  context.loop = tonumber (conky_parse ("${updates}"))
+  context.state.loop = tonumber (conky_parse ("${updates}"))
 
   -- Load timings data
   local timings = util.json.load (DATA_DIR .. "/timings")
@@ -85,8 +85,8 @@ function conky_resolve ()
   logger.debug ("context:\n" .. util.json.stringify (context.vars))
 
   -- Mark conky as running in the subsequent cycles
-  if context.status == "init" then
-    context.status = "running"
+  if context.state.phase == "init" then
+    context.state.phase = "running"
 
     logger.debug ("changed from init to running state")
   end
