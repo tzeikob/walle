@@ -60,7 +60,7 @@ function draw_border ()
 
   cairo_set_line_width (canvas, line_width)
   cairo_set_line_cap (canvas, CAIRO_LINE_CAP_SQUARE)
-  cairo_set_source_rgba (canvas, 0, 0, 0, 0.5)
+  cairo_set_source_rgba (canvas, 0, 0, 0, 0.7)
 
   -- Draw the vertical edge of the top left corner
   local start_x = left + offset
@@ -149,12 +149,12 @@ function draw_grid ()
   local scale = viewport.scale
 
   local step = 20 * scale
-  local radius = 2 * scale
+  local radius = 1 * scale
   local start_angle = 0
   local end_angle = 2 * math.pi
 
   cairo_set_line_width (canvas, 1 * scale)
-  cairo_set_source_rgba (canvas, 0, 0, 0, 0.3)
+  cairo_set_source_rgba (canvas, 0, 0, 0, 0.5)
 
   -- Draw circles in a grid layout stepped in fixed gaps
   for x = left, right, step do
