@@ -2,10 +2,6 @@
 
 local cairo = require "cairo"
 
--- Conky's window width and height
-local conky_width = 0
-local conky_height = 0
-
 -- Boundary edges of the drawing area
 local top = 0
 local left = 0
@@ -37,18 +33,14 @@ function init (window, scale, offsets)
   -- Set the scaling factor
   viewport.scale = scale
 
-  -- Store the width and height of the conky window
-  conky_width = width
-  conky_height = height
-
   -- Set the margin between conky's window and viewport
   local margin = 10 * viewport.scale
 
   -- Set the boundary edges of the drawing area
   top = margin
   left = margin
-  bottom = conky_height - margin
-  right = conky_width - margin
+  bottom = height - margin
+  right = width - margin
 
   -- Move boudnary edges with respect to the given offsets
   top = top + offsets.top
