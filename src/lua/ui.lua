@@ -151,18 +151,18 @@ end
 -- Draws the dotted grid module
 function draw_grid ()
   local step = 20 * viewport.scale
-  local radius = 1 * viewport.scale
+  local radius = 2 * viewport.scale
   local start_angle = 0
   local end_angle = 2 * math.pi
 
   cairo_set_line_width (viewport.canvas, 1 * viewport.scale)
-  cairo_set_source_rgba (viewport.canvas, 0, 0, 0, 0.5)
+  cairo_set_source_rgba (viewport.canvas, 0, 0, 0, 0.3)
 
   -- Draw circles in a grid layout stepped in fixed gaps
   for x = left, right, step do
     for y = top, bottom, step do
       cairo_arc (viewport.canvas, x, y, radius, start_angle, end_angle)
-      cairo_stroke (viewport.canvas)
+      cairo_fill (viewport.canvas)
     end
   end
 end
