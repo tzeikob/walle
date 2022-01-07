@@ -78,6 +78,11 @@ function opt (value, default)
   return value
 end
 
+-- Converts the given value to boolean
+function to_boolean (value)
+  return value == "true"
+end
+
 return {
   exec = exec,
   read = read,
@@ -93,5 +98,6 @@ return {
   is_not_empty = is_not_empty,
   default_to = default_to,
   given = given,
-  opt = opt
+  opt = opt,
+  to_boolean = to_boolean
 }

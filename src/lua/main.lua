@@ -18,6 +18,9 @@ local logger = require "logger"
 local context = require "context"
 local format = require "format"
 
+-- Read debug mode env variable
+local debug_mode = util.to_boolean (os.getenv ("WALLE_DEBUG_MODE"))
+
 -- Load configuration settings
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
@@ -36,7 +39,7 @@ end
 -- Initializes the lua context
 function conky_init ()
   -- Initialize logger
-  logger.set_debug_mode (config["debug"])
+  logger.set_debug_mode (debug_mode)
   logger.set_log_file (LOG_FILE_PATH)
 
   -- Load static configuration variables
@@ -111,7 +114,7 @@ function conky_draw ()
   ui.init (conky_window, scale, offsets)
 
   -- Draw ui context
-  ui.render (config["debug"])
+  ui.render (debug_mode)
 
   -- Destroy ui context
   ui.destroy ()

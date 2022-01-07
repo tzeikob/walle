@@ -166,8 +166,8 @@ function draw_grid ()
 end
 
 -- Renders ui modules into the viewport
-function render (debug)
-  if debug ~= nil and debug == "enabled" then
+function render (debug_mode)
+  if debug_mode then
     draw_border ()
     draw_grid ()
   end

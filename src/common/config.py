@@ -59,9 +59,6 @@ def update (opts):
   if opts.right != None:
     settings['viewport']['offsets']['right'] = opts.right
 
-  if opts.debug != None:
-    settings['debug'] = opts.debug.strip()
-
   write(settings)
 
 # Resets configuration to default settings
@@ -76,7 +73,6 @@ def reset ():
   settings['viewport']['offsets']['left'] = 0
   settings['viewport']['offsets']['bottom'] = 0
   settings['viewport']['offsets']['right'] = 0
-  settings['debug'] = 'disabled'
 
   write(settings)
 

@@ -59,7 +59,22 @@ def parse (name, version):
   subparsers = parser.add_subparsers(metavar='command', dest='command')
   subparsers.required = True
 
-  subparsers.add_parser('start', help='launch %(prog)s widget')
+  startParser = subparsers.add_parser('start', help='launch %(prog)s widget')
+
+  startParser.add_argument(
+    '--debug',
+    dest='debug',
+    action='store_true',
+    help='enable debug mode')
+
+  startParser.add_argument(
+    '--no-debug',
+    dest='debug',
+    action='store_false',
+    help='disabled debug mode')
+
+  startParser.set_defaults(debug=False)
+
   subparsers.add_parser('restart', help='restart %(prog)s widget')
   subparsers.add_parser('stop', help='stop %(prog)s widget')
   subparsers.add_parser('reset', help='reset %(prog)s back to its default settings')
@@ -118,12 +133,6 @@ def parse (name, version):
     type=zero_pos_int,
     metavar='index',
     help='the monitor index the widget should render on (experimental)')
-
-  configParser.add_argument(
-    '--debug',
-    choices=['enabled', 'disabled'],
-    metavar='mode',
-    help="the debug mode either 'enabled' or 'disabled'")
 
   presetParser = subparsers.add_parser('preset', help='save and load %(prog)s preset files')
   presetGroup = presetParser.add_mutually_exclusive_group()
