@@ -19,7 +19,7 @@ local context = require "context"
 local format = require "format"
 
 -- Read debug mode env variable
-local debug_mode = util.to_boolean (os.getenv ("WALLE_DEBUG_MODE"))
+local debug_mode = util.to_boolean (os.getenv ("DEBUG_MODE"))
 
 -- Load configuration settings
 local config = util.yaml.load (CONFIG_FILE_PATH)

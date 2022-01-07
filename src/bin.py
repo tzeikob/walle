@@ -60,7 +60,7 @@ def start_conky (debug=False):
 
     # Define env variable to set debug mode or not
     debug_env = os.environ.copy()
-    debug_env['WALLE_DEBUG_MODE'] = str(debug).lower()
+    debug_env['DEBUG_MODE'] = str(debug).lower()
 
     # Spawn the conky process
     pid = system.spawn('conky' + options, globals.LOG_FILE_PATH, debug_env)
