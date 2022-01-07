@@ -38,6 +38,8 @@ end
 
 -- Initializes the lua context
 function conky_init ()
+  logger.debug ('entering initialization phase')
+
   -- Initialize logger
   logger.set_debug_mode (debug_mode)
   logger.set_log_file (LOG_FILE_PATH)
@@ -64,6 +66,8 @@ function conky_init ()
   -- Load monitoring data
   local monitor = util.json.load (DATA_DIR .. "/monitor")
   context.monitor.load (monitor)
+
+  logger.debug ("initialization completed successfully")
 end
 
 -- Resolves monitoring system data
@@ -91,7 +95,7 @@ function conky_resolve ()
   if context.state.phase == "init" then
     context.state.phase = "running"
 
-    logger.debug ("changed from init to running state")
+    logger.debug ("state changed from init to running")
   end
 
   logger.debug ("exiting the pre conky resolve phase")
