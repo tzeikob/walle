@@ -50,7 +50,7 @@ function init (window, scale, offsets)
 end
 
 -- Draws the outer border module
-function draw_border ()
+function render_borders ()
   local canvas = viewport.canvas
   local scale = viewport.scale
 
@@ -144,7 +144,7 @@ function draw_border ()
 end
 
 -- Draws the dotted grid module
-function draw_grid ()
+function render_grid ()
   local canvas = viewport.canvas
   local scale = viewport.scale
 
@@ -165,14 +165,6 @@ function draw_grid ()
   end
 end
 
--- Renders ui modules into the viewport
-function render (debug_mode)
-  if debug_mode then
-    draw_border ()
-    draw_grid ()
-  end
-end
-
 -- Destroys the viewport
 function destroy ()
   cairo_destroy (viewport.canvas)
@@ -185,6 +177,7 @@ end
 
 return {
   init = init,
-  render = render,
-  destroy = destroy
+  destroy = destroy,
+  render_borders = render_borders,
+  render_grid = render_grid
 }

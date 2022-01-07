@@ -118,7 +118,10 @@ function conky_draw ()
   ui.init (conky_window, scale, offsets)
 
   -- Draw ui context
-  ui.render (debug_mode)
+  if debug_mode then
+    ui.render_borders ()
+    ui.render_grid ()
+  end
 
   -- Destroy ui context
   ui.destroy ()
