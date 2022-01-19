@@ -37,19 +37,19 @@ def update (opts):
     settings['dark'] = opts.dark
 
   if opts.scale != None:
-    settings['viewport']['scale'] = opts.scale
+    settings['scale'] = opts.scale
 
   if opts.top != None:
-    settings['viewport']['offsets']['top'] = opts.top
+    settings['offsets']['top'] = opts.top
 
   if opts.left != None:
-    settings['viewport']['offsets']['left'] = opts.left
+    settings['offsets']['left'] = opts.left
 
   if opts.bottom != None:
-    settings['viewport']['offsets']['bottom'] = opts.bottom
+    settings['offsets']['bottom'] = opts.bottom
 
   if opts.right != None:
-    settings['viewport']['offsets']['right'] = opts.right
+    settings['offsets']['right'] = opts.right
 
   write(settings)
 
@@ -58,11 +58,11 @@ def reset ():
   settings = read()
 
   settings['dark'] = False
-  settings['viewport']['scale'] = 1
-  settings['viewport']['offsets']['top'] = 0
-  settings['viewport']['offsets']['left'] = 0
-  settings['viewport']['offsets']['bottom'] = 0
-  settings['viewport']['offsets']['right'] = 0
+  settings['scale'] = 1
+  settings['offsets']['top'] = 0
+  settings['offsets']['left'] = 0
+  settings['offsets']['bottom'] = 0
+  settings['offsets']['right'] = 0
 
   write(settings)
 
@@ -73,14 +73,12 @@ def export (path):
   preset = {
       'version': settings['version'],
       'dark': settings['dark'],
-      'viewport': {
-        'scale': settings['viewport']['scale'],
-        'offsets': {
-          'top': settings['viewport']['offsets']['top'],
-          'left': settings['viewport']['offsets']['left'],
-          'bottom': settings['viewport']['offsets']['bottom'],
-          'right': settings['viewport']['offsets']['right']
-        }
+      'scale': settings['scale'],
+      'offsets': {
+        'top': settings['offsets']['top'],
+        'left': settings['offsets']['left'],
+        'bottom': settings['offsets']['bottom'],
+        'right': settings['offsets']['right']
       }
     }
 
@@ -98,10 +96,10 @@ def load (path):
   settings  = read()
 
   settings['dark'] = preset['dark']
-  settings['viewport']['scale'] = preset['viewport']['scale']
-  settings['viewport']['offsets']['top'] = preset['viewport']['offsets']['top']
-  settings['viewport']['offsets']['left'] = preset['viewport']['offsets']['left']
-  settings['viewport']['offsets']['bottom'] = preset['viewport']['offsets']['bottom']
-  settings['viewport']['offsets']['right'] = preset['viewport']['offsets']['right']
+  settings['scale'] = preset['scale']
+  settings['offsets']['top'] = preset['offsets']['top']
+  settings['offsets']['left'] = preset['offsets']['left']
+  settings['offsets']['bottom'] = preset['offsets']['bottom']
+  settings['offsets']['right'] = preset['offsets']['right']
 
   write(settings)

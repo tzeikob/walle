@@ -109,8 +109,8 @@ function conky_draw ()
 
   -- Read various ui config settings
   local dark = config["dark"]
-  local scale = config["viewport"]["scale"]
-  local offsets = config["viewport"]["offsets"]
+  local scale = config["scale"]
+  local offsets = config["offsets"]
 
   -- Initialize ui context
   ui.init (conky_window, dark, scale, offsets)
