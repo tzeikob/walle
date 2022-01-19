@@ -18,7 +18,6 @@ def read ():
 
   # Recover string scalar values
   settings['version'] = scalar(settings['version'])
-  settings['head'] = scalar(settings['head'])
 
   return settings
 
@@ -33,9 +32,6 @@ def write (settings):
 # Update the configuration settings given the cmd line arguments
 def update (opts):
   settings = read()
-
-  if opts.head != None:
-    settings['head'] = opts.head.strip()
 
   if opts.dark != None:
     settings['dark'] = opts.dark
@@ -61,7 +57,6 @@ def update (opts):
 def reset ():
   settings = read()
 
-  settings['head'] = ''
   settings['dark'] = False
   settings['viewport']['scale'] = 1
   settings['viewport']['offsets']['top'] = 0

@@ -75,11 +75,6 @@ def parse (name, version):
   configParser = subparsers.add_parser('config', help='change configuration settings and restart')
 
   configParser.add_argument(
-    '--head',
-    metavar='text',
-    help='the text which will appear as head line')
-
-  configParser.add_argument(
     '--dark',
     dest='dark',
     action='store_true',

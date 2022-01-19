@@ -12,13 +12,6 @@ local state = {
 -- Initialize the interpolation variables
 local vars = {}
 
--- Maps static configuration data into the vars
-function map_config (data)
-  vars["head_line"] = data["head"]
-
-  return vars
-end
-
 -- Maps hardware data into the vars
 function map_hardware (data)
   -- Read memory speed data
@@ -114,9 +107,6 @@ function map_timings (data)
 end
 
 return {
-  config = {
-    load = map_config
-  },
   hardware = {
     load = map_hardware
   },

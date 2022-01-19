@@ -1,5 +1,4 @@
 version: '#PKG_VERSION'
-head: ''
 dark: false
 viewport:
   scale: 1
