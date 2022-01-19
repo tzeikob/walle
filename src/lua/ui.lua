@@ -13,6 +13,7 @@ local viewport = {
   canvas = nil,
   surface = nil,
   extents = nil,
+  dark = false,
   scale = 1
 }
 
@@ -20,7 +21,7 @@ local viewport = {
 local components = {}
 
 -- Initializes the viewport given the conky window
-function init (window, scale, offsets)
+function init (window, dark, scale, offsets)
   -- Read conky window properties
   local display = window.display
   local drawable = window.drawable
@@ -37,6 +38,9 @@ function init (window, scale, offsets)
   -- Initialize the processor to resolve text size in pixels
   viewport.extents = cairo_text_extents_t:create()
   tolua.takeownership(viewport.extents)
+
+  -- Set dark mode
+  viewport.dark = dark
 
   -- Set the scaling factor
   viewport.scale = scale
@@ -68,7 +72,15 @@ function render_borders ()
 
   cairo_set_line_width (canvas, line_width)
   cairo_set_line_cap (canvas, CAIRO_LINE_CAP_SQUARE)
-  cairo_set_source_rgba (canvas, 0, 0, 0, 0.7)
+
+  -- Set drawing color
+  local r, g, b = 1, 1, 1
+
+  if viewport.dark then
+    r, g, b = 0, 0, 0
+  end
+
+  cairo_set_source_rgba (canvas, r, g, b, 0.7)
 
   -- Draw the vertical edge of the top left corner
   local start_x = left + offset
@@ -162,7 +174,15 @@ function render_grid ()
   local end_angle = 2 * math.pi
 
   cairo_set_line_width (canvas, 1 * scale)
-  cairo_set_source_rgba (canvas, 0, 0, 0, 0.5)
+
+  -- Set drawing color
+  local r, g, b = 1, 1, 1
+
+  if viewport.dark then
+    r, g, b = 0, 0, 0
+  end
+
+  cairo_set_source_rgba (canvas, r, g, b, 0.5)
 
   -- Draw circles in a grid layout stepped in fixed gaps
   for x = left, right, step do
@@ -174,7 +194,7 @@ function render_grid ()
 end
 
 -- Resolves the given text as a text ui component
-function resolve_text (text, size, red, green, blue, alpha)
+function resolve_text (text, size)
   if text == nil or text == "" then
     return nil
   end
@@ -186,11 +206,7 @@ function resolve_text (text, size, red, green, blue, alpha)
     name = "Ubuntu Mono",
     slant = CAIRO_FONT_SLANT_ITALIC,
     face = CAIRO_FONT_WEIGHT_BOLD,
-    size = size * viewport.scale,
-    red = red,
-    green = green,
-    blue = blue,
-    alpha = alpha
+    size = size * viewport.scale
   }
 
   -- Set font and styles
@@ -211,9 +227,9 @@ end
 -- Register the given values as a concrete ui component
 function attach (label, val1, val2)
   -- Resolve any given argument into its text ui component
-  label = resolve_text (label, 30, 1, 1, 1, 1)
-  val1 = resolve_text (val1, 24, 1, 1, 1, 1)
-  val2 = resolve_text (val2, 24, 1, 1, 1, 1)
+  label = resolve_text (label, 30)
+  val1 = resolve_text (val1, 24)
+  val2 = resolve_text (val2, 24)
 
   -- Compute the total width and height of the component
   local padding = 6 * viewport.scale
@@ -250,7 +266,15 @@ function draw_text (text, x, y)
 
   cairo_select_font_face (canvas, font.name, font.slant, font.face)
   cairo_set_font_size (canvas, font.size)
-  cairo_set_source_rgba (canvas, font.red, font.green, font.blue, font.alpha)
+
+  -- Set font color
+  local r, g, b = 1, 1, 1
+
+  if viewport.dark then
+    r, g, b = 0, 0, 0
+  end
+
+  cairo_set_source_rgba (canvas, r, g, b, 1)
 
   -- Draw text at the location in canvas
   cairo_move_to (canvas, x, y)

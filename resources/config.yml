@@ -1,7 +1,6 @@
 version: '#PKG_VERSION'
 head: ''
-theme:
-  mode: light
+dark: false
 viewport:
   scale: 1
   offsets:

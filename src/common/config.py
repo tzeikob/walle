@@ -37,8 +37,8 @@ def update (opts):
   if opts.head != None:
     settings['head'] = opts.head.strip()
 
-  if opts.mode != None:
-    settings['theme']['mode'] = opts.mode.strip()
+  if opts.dark != None:
+    settings['dark'] = opts.dark
 
   if opts.scale != None:
     settings['viewport']['scale'] = opts.scale
@@ -62,7 +62,7 @@ def reset ():
   settings = read()
 
   settings['head'] = ''
-  settings['theme']['mode'] = 'light'
+  settings['dark'] = False
   settings['viewport']['scale'] = 1
   settings['viewport']['offsets']['top'] = 0
   settings['viewport']['offsets']['left'] = 0
@@ -77,9 +77,7 @@ def export (path):
 
   preset = {
       'version': settings['version'],
-      'theme': {
-        'mode': settings['theme']['mode']
-      },
+      'dark': settings['dark'],
       'viewport': {
         'scale': settings['viewport']['scale'],
         'offsets': {
@@ -104,7 +102,7 @@ def load (path):
   
   settings  = read()
 
-  settings['theme']['mode'] = preset['theme']['mode']
+  settings['dark'] = preset['dark']
   settings['viewport']['scale'] = preset['viewport']['scale']
   settings['viewport']['offsets']['top'] = preset['viewport']['offsets']['top']
   settings['viewport']['offsets']['left'] = preset['viewport']['offsets']['left']

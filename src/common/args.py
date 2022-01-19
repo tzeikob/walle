@@ -80,10 +80,18 @@ def parse (name, version):
     help='the text which will appear as head line')
 
   configParser.add_argument(
-    '-m', '--mode',
-    choices=['light', 'dark'],
-    metavar='mode',
-    help="the theme color mode either 'light' or 'dark'")
+    '--dark',
+    dest='dark',
+    action='store_true',
+    help='enable dark mode')
+
+  configParser.add_argument(
+    '--no-dark',
+    dest='dark',
+    action='store_false',
+    help='disabled dark mode')
+
+  configParser.set_defaults(dark=False)
 
   configParser.add_argument(
     '--scale',

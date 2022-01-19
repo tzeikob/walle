@@ -16,11 +16,6 @@ local vars = {}
 function map_config (data)
   vars["head_line"] = data["head"]
 
-  vars["theme_color"] = "white"
-  if data["theme"]["mode"] == "dark" then
-    vars["theme_color"] = "black"
-  end
-
   return vars
 end
 
