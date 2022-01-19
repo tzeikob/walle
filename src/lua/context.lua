@@ -21,27 +21,6 @@ function map_config (data)
     vars["theme_color"] = "black"
   end
 
-  vars["font_name"] = "DejaVu Sans Mono"
-  vars["font_bold"] = false
-  vars["font_italic"] = false
-  vars["font_size"] = 12
-  
-  local font = data["theme"]["font"]
-  local parts = format.split (font, ":")
-
-  for _, part in ipairs (parts) do
-    if format.matches (part, "bold") then
-      vars["font_bold"] = true
-    elseif format.matches (part, "italic") then
-      vars["font_italic"] = true
-    elseif format.matches (part, "size=.+") then
-      local size = format.split (part, "=")[2]
-      vars["font_size"] = tonumber (size)
-    elseif part ~= "" then
-      vars["font_name"] = part
-    end
-  end
-
   return vars
 end
 

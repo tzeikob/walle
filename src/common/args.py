@@ -36,13 +36,6 @@ def pos_int (value):
 
   return number
 
-# Asserts if the given value is a conky valid font style value
-def font_style (value):
-  if not re.match(r'^[a-zA-Z0-9]([a-zA-Z0-9_\- ])*(:bold)?(:italic)?(:size=[1-9][0-9]?[0-9]?)?$', value):
-    raise argparse.ArgumentTypeError("'%s' is not a valid conky font style value" % value)
-
-  return value
-
 # Parses the args schema to the given args
 def parse (name, version):
   parser = argparse.ArgumentParser(
@@ -91,12 +84,6 @@ def parse (name, version):
     choices=['light', 'dark'],
     metavar='mode',
     help="the theme color mode either 'light' or 'dark'")
-
-  configParser.add_argument(
-    '-f', '--font',
-    type=font_style,
-    metavar='font',
-    help='the font style the text should appear with')
 
   configParser.add_argument(
     '--scale',

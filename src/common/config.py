@@ -19,7 +19,6 @@ def read ():
   # Recover string scalar values
   settings['version'] = scalar(settings['version'])
   settings['head'] = scalar(settings['head'])
-  settings['theme']['font'] = scalar(settings['theme']['font'])
 
   return settings
 
@@ -40,9 +39,6 @@ def update (opts):
 
   if opts.mode != None:
     settings['theme']['mode'] = opts.mode.strip()
-
-  if opts.font != None:
-    settings['theme']['font'] = opts.font.strip()
 
   if opts.scale != None:
     settings['viewport']['scale'] = opts.scale
@@ -67,7 +63,6 @@ def reset ():
 
   settings['head'] = ''
   settings['theme']['mode'] = 'light'
-  settings['theme']['font'] = ''
   settings['viewport']['scale'] = 1
   settings['viewport']['offsets']['top'] = 0
   settings['viewport']['offsets']['left'] = 0
@@ -83,8 +78,7 @@ def export (path):
   preset = {
       'version': settings['version'],
       'theme': {
-        'mode': settings['theme']['mode'],
-        'font': settings['theme']['font']
+        'mode': settings['theme']['mode']
       },
       'viewport': {
         'scale': settings['viewport']['scale'],
@@ -111,7 +105,6 @@ def load (path):
   settings  = read()
 
   settings['theme']['mode'] = preset['theme']['mode']
-  settings['theme']['font'] = scalar(preset['theme']['font'])
   settings['viewport']['scale'] = preset['viewport']['scale']
   settings['viewport']['offsets']['top'] = preset['viewport']['offsets']['top']
   settings['viewport']['offsets']['left'] = preset['viewport']['offsets']['left']
