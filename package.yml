@@ -19,6 +19,7 @@ dependencies:
     - 'requests'
     - 'psutil'
     - 'gputil'
+    - 'screeninfo'
   lua:
     - 'yaml'
     - 'lua-cjson'

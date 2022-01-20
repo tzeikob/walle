@@ -1,23 +1,26 @@
 conky.config = {
-    alignment = 'bottom_right',
+    alignment = 'middle_middle',
     xinerama_head = 0,
     background = false,
-    border_width = 1,
+    border_width = 0,
+    border_inner_margin = 0,
+    border_outer_margin = 0,
     cpu_avg_samples = 2,
     default_color = 'white',
     default_outline_color = 'white',
     default_shade_color = 'white',
     double_buffer = true,
     draw_borders = false,
-    draw_graph_borders = true,
+    draw_graph_borders = false,
     draw_outline = false,
     draw_shades = false,
     extra_newline = false,
     font = 'DejaVu Sans Mono:size=12',
-    gap_x = 60,
-    gap_y = 60,
-    minimum_height = 5,
+    gap_x = 0,
+    gap_y = 0,
+    maximum_width = 5,
     minimum_width = 5,
+    minimum_height = 5,
     net_avg_samples = 2,
     no_buffers = true,
     out_to_console = false,
@@ -37,7 +40,9 @@ conky.config = {
     use_spacer = 'none',
     use_xft = true,
     lua_load = '/usr/share/#PKG_NAME/lua/main.lua',
-    lua_draw_hook_post = 'main'
+    lua_startup_hook = 'init',
+    lua_draw_hook_pre = 'resolve',
+    lua_draw_hook_post = 'draw'
 }
 
-conky.text = [[${lua text}]]
+conky.text = [[]]

@@ -1,8 +1,8 @@
 -- A lua module for various util functions
 
-yaml = require "yaml"
-json = require "cjson"
-format = require "format"
+local yaml = require "yaml"
+local json = require "cjson"
+local format = require "format"
 
 -- Executes a native system command given as string
 function exec (command)
@@ -69,6 +69,20 @@ function given (value)
   return is_not_empty(value) and value ~= json.null
 end
 
+-- Returns the value itself unless it is nullish or empty
+function opt (value, default)
+  if not given (value) then
+    return default or "n/a"
+  end
+
+  return value
+end
+
+-- Converts the given value to boolean
+function to_boolean (value)
+  return value == "true"
+end
+
 return {
   exec = exec,
   read = read,
@@ -83,5 +97,7 @@ return {
   is_empty = is_empty,
   is_not_empty = is_not_empty,
   default_to = default_to,
-  given = given
+  given = given,
+  opt = opt,
+  to_boolean = to_boolean
 }

@@ -18,8 +18,6 @@ def read ():
 
   # Recover string scalar values
   settings['version'] = scalar(settings['version'])
-  settings['head'] = scalar(settings['head'])
-  settings['theme']['font'] = scalar(settings['theme']['font'])
 
   return settings
 
@@ -35,17 +33,23 @@ def write (settings):
 def update (opts):
   settings = read()
 
-  if opts.head != None:
-    settings['head'] = opts.head.strip()
+  if opts.dark != None:
+    settings['dark'] = opts.dark
 
-  if opts.mode != None:
-    settings['theme']['mode'] = opts.mode.strip()
+  if opts.scale != None:
+    settings['scale'] = opts.scale
 
-  if opts.font != None:
-    settings['theme']['font'] = opts.font.strip()
+  if opts.top != None:
+    settings['offsets']['top'] = opts.top
 
-  if opts.debug != None:
-    settings['debug'] = opts.debug.strip()
+  if opts.left != None:
+    settings['offsets']['left'] = opts.left
+
+  if opts.bottom != None:
+    settings['offsets']['bottom'] = opts.bottom
+
+  if opts.right != None:
+    settings['offsets']['right'] = opts.right
 
   write(settings)
 
@@ -53,10 +57,12 @@ def update (opts):
 def reset ():
   settings = read()
 
-  settings['head'] = ''
-  settings['theme']['mode'] = 'light'
-  settings['theme']['font'] = ''
-  settings['debug'] = 'disabled'
+  settings['dark'] = False
+  settings['scale'] = 1
+  settings['offsets']['top'] = 0
+  settings['offsets']['left'] = 0
+  settings['offsets']['bottom'] = 0
+  settings['offsets']['right'] = 0
 
   write(settings)
 
@@ -66,9 +72,13 @@ def export (path):
 
   preset = {
       'version': settings['version'],
-      'theme': {
-        'mode': settings['theme']['mode'],
-        'font': settings['theme']['font']
+      'dark': settings['dark'],
+      'scale': settings['scale'],
+      'offsets': {
+        'top': settings['offsets']['top'],
+        'left': settings['offsets']['left'],
+        'bottom': settings['offsets']['bottom'],
+        'right': settings['offsets']['right']
       }
     }
 
@@ -85,7 +95,11 @@ def load (path):
   
   settings  = read()
 
-  settings['theme']['mode'] = preset['theme']['mode']
-  settings['theme']['font'] = scalar(preset['theme']['font'])
+  settings['dark'] = preset['dark']
+  settings['scale'] = preset['scale']
+  settings['offsets']['top'] = preset['offsets']['top']
+  settings['offsets']['left'] = preset['offsets']['left']
+  settings['offsets']['bottom'] = preset['offsets']['bottom']
+  settings['offsets']['right'] = preset['offsets']['right']
 
   write(settings)

@@ -65,7 +65,7 @@ end
 
 -- Converts the number into a string with the given pattern
 function number (value, pattern)
-  if format then
+  if pattern then
     value = string.format (pattern, value)
   end
 
@@ -76,7 +76,7 @@ end
 function int (value, pattern)
   value = math.floor (value + 0.5)
 
-  return number(value, pattern)
+  return number (value, pattern)
 end
 
 return {

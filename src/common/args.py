@@ -3,6 +3,15 @@
 import argparse
 import re
 
+# Asserts if the given value is an integer
+def any_int (value):
+  try:
+    number = int(value)
+  except ValueError:
+    raise argparse.ArgumentTypeError("'%s' is not an integer value" % value)
+
+  return number
+
 # Asserts if the given value is a zero positive integer
 def zero_pos_int (value):
   try:
@@ -15,12 +24,17 @@ def zero_pos_int (value):
 
   return number
 
-# Asserts if the given value is a conky valid font style value
-def font_style (value):
-  if not re.match(r'^[a-zA-Z0-9]([a-zA-Z0-9_\- ])*(:bold)?(:italic)?(:size=[1-9][0-9]?[0-9]?)?$', value):
-    raise argparse.ArgumentTypeError("'%s' is not a valid conky font style value" % value)
+# Asserts if the given value is a positive integer
+def pos_int (value):
+  try:
+    number = int(value)
+  except ValueError:
+    raise argparse.ArgumentTypeError("'%s' is not an integer value" % value)
+  
+  if number <= 0:
+    raise argparse.ArgumentTypeError("'%s' is not a positive integer value" % value)
 
-  return value
+  return number
 
 # Parses the args schema to the given args
 def parse (name, version):
@@ -38,7 +52,22 @@ def parse (name, version):
   subparsers = parser.add_subparsers(metavar='command', dest='command')
   subparsers.required = True
 
-  subparsers.add_parser('start', help='launch %(prog)s widget')
+  startParser = subparsers.add_parser('start', help='launch %(prog)s widget')
+
+  startParser.add_argument(
+    '--debug',
+    dest='debug',
+    action='store_true',
+    help='enable debug mode')
+
+  startParser.add_argument(
+    '--no-debug',
+    dest='debug',
+    action='store_false',
+    help='disabled debug mode')
+
+  startParser.set_defaults(debug=False)
+
   subparsers.add_parser('restart', help='restart %(prog)s widget')
   subparsers.add_parser('stop', help='stop %(prog)s widget')
   subparsers.add_parser('reset', help='reset %(prog)s back to its default settings')
@@ -46,33 +75,54 @@ def parse (name, version):
   configParser = subparsers.add_parser('config', help='change configuration settings and restart')
 
   configParser.add_argument(
-    '--head',
-    metavar='text',
-    help='the text which will appear as head line')
+    '--dark',
+    dest='dark',
+    action='store_true',
+    help='enable dark mode')
 
   configParser.add_argument(
-    '-m', '--mode',
-    choices=['light', 'dark'],
-    metavar='mode',
-    help="the theme color mode either 'light' or 'dark'")
+    '--no-dark',
+    dest='dark',
+    action='store_false',
+    help='disabled dark mode')
+
+  configParser.set_defaults(dark=False)
 
   configParser.add_argument(
-    '-f', '--font',
-    type=font_style,
-    metavar='font',
-    help='the font style the text should appear with')
+    '--scale',
+    type=pos_int,
+    metavar='number',
+    help="an integer factor the viewport should be scaled by")
+
+  configParser.add_argument(
+    '--top',
+    type=any_int,
+    metavar='pixels',
+    help="the offset the viewport's top edge should be shifted by")
+
+  configParser.add_argument(
+    '--left',
+    type=any_int,
+    metavar='pixels',
+    help="the offset the viewport's left edge should be shifted by")
+
+  configParser.add_argument(
+    '--bottom',
+    type=any_int,
+    metavar='pixels',
+    help="the offset the viewport's bottom edge should be shifted by")
+
+  configParser.add_argument(
+    '--right',
+    type=any_int,
+    metavar='pixels',
+    help="the offset the viewport's right edge should be shifted by")
 
   configParser.add_argument(
     '--monitor',
     type=zero_pos_int,
     metavar='index',
     help='the monitor index the widget should render on (experimental)')
-
-  configParser.add_argument(
-    '--debug',
-    choices=['enabled', 'disabled'],
-    metavar='mode',
-    help="the debug mode either 'enabled' or 'disabled'")
 
   presetParser = subparsers.add_parser('preset', help='save and load %(prog)s preset files')
   presetGroup = presetParser.add_mutually_exclusive_group()

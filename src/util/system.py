@@ -14,13 +14,14 @@ def isUp (pid):
   return os.path.exists('/proc/' + str(pid))
 
 # Spawns a new process given the command
-def spawn (command, log_file_path):
+def spawn (command, log_file_path, env_var=None):
   with open(log_file_path, 'a') as log_file:
     process = subprocess.Popen(
       command.split(),
       stdout=log_file,
       stderr=log_file,
-      universal_newlines=True)
+      universal_newlines=True,
+      env=env_var)
 
   # Give time to the process to be spawn
   time.sleep(2)

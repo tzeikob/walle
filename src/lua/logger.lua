@@ -1,10 +1,10 @@
 -- A lua module exporting logging functions
 
 -- Initialize the debug mode to off
-debug_mode = "disabled"
+local debug_mode = false
 
 -- Initialize the log file path to nil
-log_file_path = nil
+local log_file_path = nil
 
 -- Enables or disables the debug mode
 function set_debug_mode (mode)
@@ -32,7 +32,7 @@ end
 
 -- Logs a message only if debug mode is enabled
 function debug (message)
-  if debug_mode == "enabled" then
+  if debug_mode then
     log (message)
   end
 end

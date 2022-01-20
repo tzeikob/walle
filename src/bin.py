@@ -9,6 +9,7 @@ if getpass.getuser() == 'root':
   print("[Errno 13] Don't run as root user")
   sys.exit(1)
 
+import os
 import time
 from common import globals
 from common import args
@@ -18,13 +19,19 @@ from util import system
 from util.logger import Router
 
 # Starts the resolver process
-def start_resolver ():
+def start_resolver (debug=False):
   pid = system.read(globals.RESOLVER_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    pid = system.spawn(
-      globals.RESOLVER_FILE_PATH + ' --release --login --timings --monitor',
-      globals.LOG_FILE_PATH)
+    options = ' --release --login --timings --monitor'
+
+    if debug:
+      options += ' --debug'
+
+    # Spawn resolver process
+    pid = system.spawn(globals.RESOLVER_FILE_PATH + options, globals.LOG_FILE_PATH)
+
+    # Save the pid to the disk
     system.write(pid, globals.RESOLVER_PID_FILE_PATH)
 
   logger.disk.info(f"resolver process is up with pid '{pid}'")
@@ -39,13 +46,26 @@ def stop_resolver ():
   logger.disk.info('resolver process is down')
 
 # Starts the conky process
-def start_conky ():
+def start_conky (debug=False):
   pid = system.read(globals.CONKY_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    pid = system.spawn(
-      'conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH,
-      globals.LOG_FILE_PATH)
+    # Initialize conky with respect to the system
+    conky.init()
+
+    options = ' -b -p 1 -c ' + globals.CONKYRC_FILE_PATH
+
+    if debug:
+      options += ' --debug'
+
+    # Define env variable to set debug mode or not
+    debug_env = os.environ.copy()
+    debug_env['DEBUG_MODE'] = str(debug).lower()
+
+    # Spawn the conky process
+    pid = system.spawn('conky' + options, globals.LOG_FILE_PATH, debug_env)
+
+    # Save pid to the dsk
     system.write(pid, globals.CONKY_PID_FILE_PATH)
 
   logger.disk.info(f"conky process is up with pid '{pid}'")
@@ -83,14 +103,8 @@ def should_restart ():
   return True
 
 try:
-  # Read the configuration settings
-  settings = config.read()
-
   # Initialize logging router
   logger = Router(globals.PKG_NAME, globals.LOG_FILE_PATH)
-
-  if settings['debug'] == 'enabled':
-    logger.set_level('DEBUG')
 
   # Parse given command line arguments into options
   opts = args.parse(globals.PKG_NAME, globals.PKG_VERSION)
@@ -99,9 +113,13 @@ try:
   if opts.command == 'start':
     logger.disk.info('starting processes...')
 
-    start_resolver()
+    if opts.debug:
+      logger.set_level('DEBUG')
+      logger.disk.debug('debug mode has been enabled')
+
+    start_resolver(opts.debug)
     time.sleep(1)
-    start_conky()
+    start_conky(opts.debug)
 
   # Stop processes
   if opts.command == 'stop':

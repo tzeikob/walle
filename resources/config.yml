@@ -1,6 +1,8 @@
 version: '#PKG_VERSION'
-head: ''
-theme:
-  mode: light
-  font: ''
-debug: disabled
+dark: false
+scale: 1
+offsets:
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0

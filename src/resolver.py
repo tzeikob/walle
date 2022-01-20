@@ -7,7 +7,6 @@ import json
 import time
 import threading
 from common import globals
-from common import config
 from util.logger import Router
 from resolvers import hardware
 from resolvers import system
@@ -103,16 +102,16 @@ parser.add_argument('--release', action='store_true')
 parser.add_argument('--login', action='store_true')
 parser.add_argument('--timings', action='store_true')
 parser.add_argument('--monitor', action='store_true')
+parser.add_argument('--debug', dest='debug', action='store_true')
+parser.add_argument('--no-debug', dest='debug', action='store_false')
+parser.set_defaults(debug=False)
 
 opts = parser.parse_args()
-
-# Read the configuration settings
-settings = config.read()
 
 # Initialize logging router
 logger = Router('resolver', globals.LOG_FILE_PATH)
 
-if settings['debug'] == 'enabled':
+if opts.debug:
   logger.set_level('DEBUG')
 
 # Mark script as up and running
