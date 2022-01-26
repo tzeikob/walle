@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# A script to be ran before installation
+
+set -e
+
+echo -e "Startig pre installation script"
+
+echo -e "Installing python third-party dependencies..."
+
+su $SUDO_USER -c "pip3 install #PKG_PYTHON_DEPS --upgrade"
+
+echo -e "Python dependencies have been installed"
+
+echo -e "Installing lua third-party dependencies..."
+
+#PKG_LUA_DEPS
+
+echo -e "Lua dependencies have been installed"
+
+echo -e "Exiting pre installation script"
+
+exit 0

@@ -51,6 +51,7 @@ os.makedirs(INSTALL_DIR)
 
 # Copy meta and hook debian files
 shutil.copy2('./meta/control', META_DIR)
+shutil.copy2('./hooks/preinst', META_DIR)
 shutil.copy2('./hooks/postinst', META_DIR)
 shutil.copy2('./hooks/postrm', META_DIR)
 shutil.copy2('./hooks/prerm', META_DIR)
@@ -119,8 +120,8 @@ for path, dirs, files in os.walk(BUILD_DIR):
 
       contents = contents.replace("#PKG_DEPENDS", deps)
 
-    # Inject python and lua dependencies in post installation hook
-    if file_path.endswith('postinst'):
+    # Inject python and lua dependencies in pre installation hook
+    if file_path.endswith('preinst'):
       deps = pkg['dependencies']['python']
       deps = ' '.join([x for x in deps])
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# A script to be run after apt install
+# A script to be ran after installation
 
 set -e
 
@@ -55,18 +55,6 @@ echo "Comment=$PKG_NAME Start Up" >> $DESKTOP_FILE
 chown $SUDO_USER:$SUDO_USER $DESKTOP_FILE
 
 echo -e "Autostart desktop file created at '$DESKTOP_FILE'"
-
-echo -e "Installing python third-party dependencies..."
-
-su $SUDO_USER -c "pip3 install #PKG_PYTHON_DEPS --upgrade"
-
-echo -e "Python dependencies have been installed"
-
-echo -e "Installing lua third-party dependencies..."
-
-#PKG_LUA_DEPS
-
-echo -e "Lua dependencies have been installed"
 
 echo -e "Exiting post installation script"
 

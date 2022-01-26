@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# A script to be run after apt remove
+# A script to be ran after remove
 
 set -e
 
