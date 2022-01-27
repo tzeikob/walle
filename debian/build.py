@@ -77,6 +77,11 @@ shutil.copytree('../src/resolvers', BIN_DIR + '/resolvers')
 
 print('Resolver modules have been added')
 
+# Copy listener module files
+shutil.copytree('../src/listeners', BIN_DIR + '/listeners')
+
+print('Listener modules have been added')
+
 # Copy lua files
 shutil.copytree('../src/lua', LUA_DIR)
 

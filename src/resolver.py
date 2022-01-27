@@ -19,6 +19,7 @@ from resolvers import moment
 def mark_shutdown (*args):
   global is_up
   is_up = False
+  keyboard.listener.stop()
 
 # Resolve the given module task with fallback protection
 def resolve (task):
@@ -94,6 +95,26 @@ def monitor ():
     # Wait before start the next cycle
     time.sleep(1)
 
+# Resolves keyboard listener events endlessly until the resolver goes down
+def listen ():
+  while is_up:
+    listeners_data = {}
+
+    logger.disk.debug(f'resolving listeners data at {time.strftime(globals.TIME_FORMAT)}')
+
+    # Read a shared value among main and keyboard thread, but it's okay for just reading
+    listeners_data['keyboard'] = keyboard.state['counters']
+
+    logger.disk.debug(f"listeners data resolved:\n{listeners_data}")
+
+    with open(globals.DATA_DIR_PATH + '/listeners', 'w') as listeners_file:
+      listeners_file.write(json.dumps(listeners_data))
+
+    logger.disk.debug('turning into the next listeners resolve cycle...')
+
+    # Wait before start the next cycle
+    time.sleep(1)
+
 # Parse command line arguments schema
 parser = argparse.ArgumentParser(prog='resolver')
 
@@ -102,6 +123,7 @@ parser.add_argument('--release', action='store_true')
 parser.add_argument('--login', action='store_true')
 parser.add_argument('--timings', action='store_true')
 parser.add_argument('--monitor', action='store_true')
+parser.add_argument('--listeners', action='store_true')
 parser.add_argument('--debug', dest='debug', action='store_true')
 parser.add_argument('--no-debug', dest='debug', action='store_false')
 parser.set_defaults(debug=False)
@@ -169,6 +191,18 @@ if opts.monitor:
   monitor_thread.start()
 
   logger.disk.debug('monitor thread spawn successfully')
+
+if opts.listeners:
+  # Load the keyboard module here, as pynput throws an error at postinst hook
+  from listeners import keyboard
+
+  # Launch keyboard listener thread
+  keyboard.listener.start()
+
+  # Resolve current keyboard listener data
+  listen()
+
+  logger.disk.debug('listeners thread spawn successfully')
 
 # Wait until any spawn threads have been terminated
 if opts.timings:

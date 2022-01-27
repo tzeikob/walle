@@ -23,7 +23,7 @@ def start_resolver (debug=False):
   pid = system.read(globals.RESOLVER_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    options = ' --release --login --timings --monitor'
+    options = ' --release --login --timings --monitor --listeners'
 
     if debug:
       options += ' --debug'
