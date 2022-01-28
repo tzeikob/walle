@@ -106,6 +106,11 @@ function map_timings (data)
   return vars
 end
 
+-- Maps listeners data into the vars
+function map_listeners (data)
+  vars["kb_pressed"] = data["keyboard"]["pressed"]
+end
+
 return {
   hardware = {
     load = map_hardware
@@ -121,6 +126,9 @@ return {
   },
   timings = {
     load = map_timings
+  },
+  listeners = {
+    load = map_listeners
   },
   state = state,
   vars = vars

@@ -64,6 +64,10 @@ function conky_init ()
   local monitor = util.json.load (DATA_DIR .. "/monitor")
   context.monitor.load (monitor)
 
+  -- Load listeners data
+  local listeners = util.json.load (DATA_DIR .. "/listeners")
+  context.listeners.load (listeners)
+
   logger.debug ("initialization completed successfully")
 end
 
@@ -83,6 +87,10 @@ function conky_resolve ()
     -- Load dynamic data from the monitor data file
     local monitor = util.json.load (DATA_DIR .. "/monitor")
     context.monitor.load (monitor)
+
+    -- Load dynamic data from the listeners data file
+    local listeners = util.json.load (DATA_DIR .. "/listeners")
+    context.listeners.load (listeners)
   end
 
   logger.debug ("monitoring data has been loaded to context")
@@ -161,6 +169,12 @@ function conky_draw ()
   disk_root_type = format.upper (disk_root_type)
 
   ui.attach ("DISK " .. disk_root_type, disk_root_used, disk_root_util)
+
+  -- Attach keyboard ui component
+  local kb_pressed = util.opt (vars["kb_pressed"], 0)
+  kb_pressed = format.int (kb_pressed, "%06d")
+
+  ui.attach ("KEYBOARD", kb_pressed, "Keys")
 
   -- Render ui into the canvas
   ui.render ()
