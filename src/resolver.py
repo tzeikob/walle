@@ -19,7 +19,10 @@ from resolvers import moment
 def mark_shutdown (*args):
   global is_up
   is_up = False
+
+  # Terminate keyboard and mouse listeners
   keyboard.listener.stop()
+  mouse.listener.stop()
 
 # Resolve the given module task with fallback protection
 def resolve (task):
@@ -104,6 +107,7 @@ def listen ():
 
     # Read a shared value among main and keyboard thread, but it's okay for just reading
     listeners_data['keyboard'] = keyboard.state['counters']
+    listeners_data['mouse'] = mouse.state['counters']
 
     logger.disk.debug(f"listeners data resolved:\n{listeners_data}")
 
@@ -193,16 +197,17 @@ if opts.monitor:
   logger.disk.debug('monitor thread spawn successfully')
 
 if opts.listeners:
-  # Load the keyboard module here, as pynput throws an error at postinst hook
-  from listeners import keyboard
+  # Load the keyboard and mouse listener modules
+  from listeners import keyboard, mouse
 
-  # Launch keyboard listener thread
+  # Launch keyboard and mouse listener threads
   keyboard.listener.start()
+  mouse.listener.start()
 
-  # Resolve current keyboard listener data
+  # Start monitoring user input events
   listen()
 
-  logger.disk.debug('listeners thread spawn successfully')
+  logger.disk.debug('listener threads spawn successfully')
 
 # Wait until any spawn threads have been terminated
 if opts.timings:
