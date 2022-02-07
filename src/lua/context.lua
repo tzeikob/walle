@@ -106,6 +106,17 @@ function map_timings (data)
   return vars
 end
 
+-- Maps listeners data into the vars
+function map_listeners (data)
+  vars["kb_press"] = data["keyboard"]["press"]
+  vars["ms_left"] = data["mouse"]["left"]
+  vars["ms_right"] = data["mouse"]["right"]
+  vars["ms_middle"] = data["mouse"]["middle"]
+  vars["ms_scroll_x"] = data["mouse"]["scroll_x"]
+  vars["ms_scroll_y"] = data["mouse"]["scroll_y"]
+  vars["ms_move"] = data["mouse"]["move"]
+end
+
 return {
   hardware = {
     load = map_hardware
@@ -121,6 +132,9 @@ return {
   },
   timings = {
     load = map_timings
+  },
+  listeners = {
+    load = map_listeners
   },
   state = state,
   vars = vars
