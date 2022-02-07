@@ -171,10 +171,16 @@ function conky_draw ()
   ui.attach ("DISK " .. disk_root_type, disk_root_used, disk_root_util)
 
   -- Attach keyboard ui component
-  local kb_pressed = util.opt (vars["kb_pressed"], 0)
-  kb_pressed = format.int (kb_pressed, "%06d")
+  local kb_press = util.opt (vars["kb_press"], 0)
+  kb_press = format.int (kb_press, "%06d")
 
-  ui.attach ("KEYBOARD", kb_pressed, "Keys")
+  ui.attach ("KEYBOARD", kb_press, "Keys")
+
+  -- Attach mouse clicks ui component
+  local ms_clicks = util.opt (vars["ms_left"], 0) + util.opt (vars["ms_right"], 0) + util.opt (vars["ms_middle"], 0)
+  kb_clicks = format.int (ms_clicks, "%06d")
+
+  ui.attach ("MOUSE", ms_clicks, "Clks")
 
   -- Render ui into the canvas
   ui.render ()
