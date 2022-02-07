@@ -9,7 +9,8 @@ state = {
     'right': 0,
     'middle': 0,
     'scroll_x': 0,
-    'scroll_y': 0
+    'scroll_y': 0,
+    'moves': 0
   }
 }
 
@@ -20,6 +21,7 @@ def reset ():
   state['counters']['middle'] = 0
   state['counters']['scroll_x'] = 0
   state['counters']['scroll_y'] = 0
+  state['counters']['moves'] = 0
 
 # Counts up left, middle and right click events ignoring any releases
 def on_click (x, y, button, pressed):
@@ -38,5 +40,9 @@ def on_scroll (x, y, dx, dy):
   state['counters']['scroll_x'] += abs(dx)
   state['counters']['scroll_y'] += abs(dy)
 
+# Counts up move events
+def on_move (x, y):
+  state['counters']['moves'] += 1
+
 # Creating the actual mouse listener
-listener = mouse.Listener(on_click=on_click, on_scroll=on_scroll)
+listener = mouse.Listener(on_click=on_click, on_scroll=on_scroll, on_move=on_move)
