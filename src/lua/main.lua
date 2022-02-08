@@ -44,10 +44,6 @@ function conky_init ()
   logger.set_debug_mode (debug_mode)
   logger.set_log_file (LOG_FILE_PATH)
 
-  -- Load hardware data
-  local hardware = util.json.load (DATA_DIR .. "/hardware")
-  context.hardware.load (hardware)
-
   -- Load release data
   local release = util.json.load (DATA_DIR .. "/release")
   context.release.load (release)

@@ -13,7 +13,6 @@ dependencies:
     - 'curl'
     - 'iproute2'
     - 'lsb-release'
-    - 'dmidecode'
   python:
     - 'ruamel.yaml'
     - 'requests'

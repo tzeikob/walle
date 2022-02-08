@@ -15,27 +15,25 @@ echo -e "Startig post installation script"
 # Set the current sudo user to files need user's name
 sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/lua/main.lua
 
+echo -e "User placeholder values have been injected"
+
 # Create the executable's symbolic link file
 ln -s $INSTALLATION_DIR/bin/$PKG_NAME.py /usr/bin/$PKG_NAME
 
-# Create config folder
+echo -e "Binary symlink file has been created"
+
+# Create config folders
 mkdir -p $CONFIG_DIR
+mkdir -p $DATA_DIR
 
 # Copy config files to config folder
 cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml
 cp $INSTALLATION_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
-echo -e "Config folder has been created"
-
-echo -e "Resolving system hardware information..."
-
-mkdir -p $DATA_DIR
-$INSTALLATION_DIR/bin/resolver.py --hardware
-
-echo -e "Hardware information has been resolved"
-
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
+
+echo -e "Config folders and files have been created"
 
 # Create the autostart gnome desktop file
 mkdir -p $AUTOSTART_DIR

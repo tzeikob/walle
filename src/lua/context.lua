@@ -12,14 +12,6 @@ local state = {
 -- Initialize the interpolation variables
 local vars = {}
 
--- Maps hardware data into the vars
-function map_hardware (data)
-  -- Read memory speed data
-  vars["mem_speed"] = data["memory"]["speed"]
-
-  return vars
-end
-
 -- Maps release data into the vars
 function map_release (data)
   -- Read the release name and codename
@@ -118,9 +110,6 @@ function map_listeners (data)
 end
 
 return {
-  hardware = {
-    load = map_hardware
-  },
   release = {
     load = map_release
   },

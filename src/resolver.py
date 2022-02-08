@@ -14,6 +14,7 @@ from resolvers import loads
 from resolvers import thermals
 from resolvers import network
 from resolvers import moment
+from listeners import keyboard, mouse
 
 # Marks process as not up and running on kill signals
 def mark_shutdown (*args):
@@ -122,12 +123,6 @@ def listen ():
 # Parse command line arguments schema
 parser = argparse.ArgumentParser(prog='resolver')
 
-parser.add_argument('--hardware', action='store_true')
-parser.add_argument('--release', action='store_true')
-parser.add_argument('--login', action='store_true')
-parser.add_argument('--timings', action='store_true')
-parser.add_argument('--monitor', action='store_true')
-parser.add_argument('--listeners', action='store_true')
 parser.add_argument('--debug', dest='debug', action='store_true')
 parser.add_argument('--no-debug', dest='debug', action='store_false')
 parser.set_defaults(debug=False)
@@ -147,73 +142,63 @@ is_up = True
 signal.signal(signal.SIGINT, mark_shutdown)
 signal.signal(signal.SIGTERM, mark_shutdown)
 
-if opts.hardware:
-  logger.disk.debug(f"resolving hardware data at {time.strftime(globals.TIME_FORMAT)}")
+# Resolve hardware information
+logger.disk.debug(f"resolving hardware data at {time.strftime(globals.TIME_FORMAT)}")
 
-  hardware_data = {
-    'mobo': resolve(hardware.mobo),
-    'cpu': resolve(hardware.cpu),
-    'memory': resolve(hardware.memory),
-    'gpu': resolve(hardware.gpu)
-  }
+hardware_data = {
+  'mobo': resolve(hardware.mobo),
+  'cpu': resolve(hardware.cpu),
+  'gpu': resolve(hardware.gpu)
+}
 
-  logger.disk.debug(f'hardware data resolved:\n{hardware_data}')
+logger.disk.debug(f'hardware data resolved:\n{hardware_data}')
 
-  with open(globals.DATA_DIR_PATH + '/hardware', 'w') as hardware_file:
-    hardware_file.write(json.dumps(hardware_data))
+with open(globals.DATA_DIR_PATH + '/hardware', 'w') as hardware_file:
+  hardware_file.write(json.dumps(hardware_data))
 
-if opts.release:
-  logger.disk.debug(f'resolving release data at {time.strftime(globals.TIME_FORMAT)}')
+# Resolve system release information
+logger.disk.debug(f'resolving release data at {time.strftime(globals.TIME_FORMAT)}')
 
-  release_data = resolve(system.release)
+release_data = resolve(system.release)
 
-  logger.disk.debug(f'release data resolved:\n{release_data}')
+logger.disk.debug(f'release data resolved:\n{release_data}')
 
-  with open(globals.DATA_DIR_PATH + '/release', 'w') as release_file:
-    release_file.write(json.dumps(release_data))
+with open(globals.DATA_DIR_PATH + '/release', 'w') as release_file:
+  release_file.write(json.dumps(release_data))
 
-if opts.login:
-  logger.disk.debug(f'resolving login data at {time.strftime(globals.TIME_FORMAT)}')
+# Resolve login session information
+logger.disk.debug(f'resolving login data at {time.strftime(globals.TIME_FORMAT)}')
 
-  login_data = resolve(system.login)
+login_data = resolve(system.login)
 
-  logger.disk.debug(f'login data resolved:\n{login_data}')
+logger.disk.debug(f'login data resolved:\n{login_data}')
 
-  with open(globals.DATA_DIR_PATH + '/login', 'w') as login_file:
-    login_file.write(json.dumps(login_data))
+with open(globals.DATA_DIR_PATH + '/login', 'w') as login_file:
+  login_file.write(json.dumps(login_data))
 
-if opts.timings:
-  # Launching timings tasks in a separate parallel thread
-  timings_thread = threading.Thread(target=timings)
-  timings_thread.start()
+# Launching timings tasks in a separate parallel thread
+timings_thread = threading.Thread(target=timings)
+timings_thread.start()
 
-  logger.disk.debug('timings thread spawn successfully')
+logger.disk.debug('timings thread spawn successfully')
 
-if opts.monitor:
-  # Launching monitor tasks in a separate parallel thread
-  monitor_thread = threading.Thread(target=monitor)
-  monitor_thread.start()
+# Launching monitor tasks in a separate parallel thread
+monitor_thread = threading.Thread(target=monitor)
+monitor_thread.start()
 
-  logger.disk.debug('monitor thread spawn successfully')
+logger.disk.debug('monitor thread spawn successfully')
 
-if opts.listeners:
-  # Load the keyboard and mouse listener modules
-  from listeners import keyboard, mouse
+# Launch keyboard and mouse listener threads
+keyboard.listener.start()
+mouse.listener.start()
 
-  # Launch keyboard and mouse listener threads
-  keyboard.listener.start()
-  mouse.listener.start()
+# Start monitoring user input events
+listen()
 
-  # Start monitoring user input events
-  listen()
-
-  logger.disk.debug('listener threads spawn successfully')
+logger.disk.debug('listener threads spawn successfully')
 
 # Wait until any spawn threads have been terminated
-if opts.timings:
-  timings_thread.join()
-
-if opts.monitor:
-  monitor_thread.join()
+timings_thread.join()
+monitor_thread.join()
 
 logger.disk.info('shutting down gracefully...')
