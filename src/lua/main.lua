@@ -174,7 +174,7 @@ function conky_draw ()
 
   -- Attach mouse clicks ui component
   local ms_clicks = util.opt (vars["ms_left"], 0) + util.opt (vars["ms_right"], 0) + util.opt (vars["ms_middle"], 0)
-  kb_clicks = format.int (ms_clicks, "%06d")
+  ms_clicks = format.int (ms_clicks, "%06d")
 
   ui.attach ("MOUSE", ms_clicks, "Clks")
 
