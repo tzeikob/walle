@@ -8,8 +8,7 @@ import time
 import threading
 from common import globals
 from util.logger import Router
-from resolvers import hardware
-from resolvers import system
+from resolvers import static
 from resolvers import loads
 from resolvers import thermals
 from resolvers import network
@@ -142,39 +141,15 @@ is_up = True
 signal.signal(signal.SIGINT, mark_shutdown)
 signal.signal(signal.SIGTERM, mark_shutdown)
 
-# Resolve hardware information
-logger.disk.debug(f"resolving hardware data at {time.strftime(globals.TIME_FORMAT)}")
+# Resolve once the system's static information
+logger.disk.debug(f'resolving static information at {time.strftime(globals.TIME_FORMAT)}')
 
-hardware_data = {
-  'mobo': resolve(hardware.mobo),
-  'cpu': resolve(hardware.cpu),
-  'gpu': resolve(hardware.gpu)
-}
+static.resolve()
 
-logger.disk.debug(f'hardware data resolved:\n{hardware_data}')
+logger.disk.debug(f"static information resolved:\n{static.state}")
 
-with open(globals.DATA_DIR_PATH + '/hardware', 'w') as hardware_file:
-  hardware_file.write(json.dumps(hardware_data))
-
-# Resolve system release information
-logger.disk.debug(f'resolving release data at {time.strftime(globals.TIME_FORMAT)}')
-
-release_data = resolve(system.release)
-
-logger.disk.debug(f'release data resolved:\n{release_data}')
-
-with open(globals.DATA_DIR_PATH + '/release', 'w') as release_file:
-  release_file.write(json.dumps(release_data))
-
-# Resolve login session information
-logger.disk.debug(f'resolving login data at {time.strftime(globals.TIME_FORMAT)}')
-
-login_data = resolve(system.login)
-
-logger.disk.debug(f'login data resolved:\n{login_data}')
-
-with open(globals.DATA_DIR_PATH + '/login', 'w') as login_file:
-  login_file.write(json.dumps(login_data))
+with open(globals.DATA_DIR_PATH + '/static', 'w') as system_file:
+  system_file.write(json.dumps(static.state))
 
 # Launching timings tasks in a separate parallel thread
 timings_thread = threading.Thread(target=timings)

@@ -44,13 +44,9 @@ function conky_init ()
   logger.set_debug_mode (debug_mode)
   logger.set_log_file (LOG_FILE_PATH)
 
-  -- Load release data
-  local release = util.json.load (DATA_DIR .. "/release")
-  context.release.load (release)
-
-  -- Load login data
-  local login = util.json.load (DATA_DIR .. "/login")
-  context.login.load (login)
+  -- Load static data
+  local static = util.json.load (DATA_DIR .. "/static")
+  context.static.load (static)
 
   -- Load timings data
   local timings = util.json.load (DATA_DIR .. "/timings")
