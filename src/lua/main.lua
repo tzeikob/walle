@@ -4,7 +4,6 @@
 local PKG_NAME = "#PKG_NAME"
 local BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
 local CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
-local DATA_DIR = CONFIG_DIR .. "/.data"
 
 local CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
 local LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
@@ -15,7 +14,6 @@ package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 local ui = require "ui"
 local util = require "util"
 local logger = require "logger"
-local context = require "context"
 local format = require "format"
 
 -- Read debug mode env variable
@@ -24,17 +22,8 @@ local debug_mode = util.to_boolean (os.getenv ("DEBUG_MODE"))
 -- Load configuration settings
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
--- Checks if the given cycle matches the current context loop
-function matches_cycle (cycle)
-  local timer = (context.state.loop % cycle)
-
-  -- Return true if in the given cycle or at start up
-  if timer == 0 or context.state.phase == "init" then
-    return true
-  end
-
-  return false
-end
+-- Initialize resolved data map
+local data = {}
 
 -- Initializes the lua context
 function conky_init ()
@@ -44,21 +33,8 @@ function conky_init ()
   logger.set_debug_mode (debug_mode)
   logger.set_log_file (LOG_FILE_PATH)
 
-  -- Load static data
-  local static = util.json.load (DATA_DIR .. "/static")
-  context.static.load (static)
-
-  -- Load timings data
-  local timings = util.json.load (DATA_DIR .. "/timings")
-  context.timings.load (timings)
-
-  -- Load monitoring data
-  local monitor = util.json.load (DATA_DIR .. "/monitor")
-  context.monitor.load (monitor)
-
-  -- Load listeners data
-  local listeners = util.json.load (DATA_DIR .. "/listeners")
-  context.listeners.load (listeners)
+  -- Load resolved data
+  data = util.json.load (CONFIG_DIR .. "/.data")
 
   logger.debug ("initialization completed successfully")
 end
@@ -68,32 +44,11 @@ function conky_resolve ()
   logger.debug ("entering the pre conky resolve phase")
   logger.debug ("reading monitoring data...")
 
-  -- Update the current conky loop index
-  context.state.loop = tonumber (conky_parse ("${updates}"))
-
-  -- Load timings data
-  local timings = util.json.load (DATA_DIR .. "/timings")
-  context.timings.load (timings)
-
-  if matches_cycle (1) then
-    -- Load dynamic data from the monitor data file
-    local monitor = util.json.load (DATA_DIR .. "/monitor")
-    context.monitor.load (monitor)
-
-    -- Load dynamic data from the listeners data file
-    local listeners = util.json.load (DATA_DIR .. "/listeners")
-    context.listeners.load (listeners)
-  end
+  -- Load resolved data
+  data = util.json.load (CONFIG_DIR .. "/.data")
 
   logger.debug ("monitoring data has been loaded to context")
-  logger.debug ("context:\n" .. util.json.stringify (context.vars))
-
-  -- Mark conky as running in the subsequent cycles
-  if context.state.phase == "init" then
-    context.state.phase = "running"
-
-    logger.debug ("state changed from init to running")
-  end
+  logger.debug ("context:\n" .. util.json.stringify (data))
 
   logger.debug ("exiting the pre conky resolve phase")
 end
@@ -121,12 +76,9 @@ function conky_draw ()
     ui.render_grid ()
   end
 
-  -- Read context vars
-  local vars = context.vars
-
   -- Attach processor ui component
-  local cpu_clock = util.opt (vars["cpu_clock"], 0)
-  local cpu_util = util.opt (vars["cpu_util"], 0.0)
+  local cpu_clock = util.opt (data["monitor"]["cpu"]["clock"], 0)
+  local cpu_util = util.opt (data["monitor"]["cpu"]["util"], 0.0)
 
   cpu_clock = format.int (cpu_clock, "%04d") .. "MHz"
   cpu_util = format.int (cpu_util, "%02d") .. "%"
@@ -134,8 +86,8 @@ function conky_draw ()
   ui.attach ("PROCESSOR", cpu_clock, cpu_util)
 
   -- Attach graphics ui component
-  local gpu_used = util.opt (vars["gpu_used"], 0)
-  local gpu_util = util.opt (vars["gpu_util"], 0.0)
+  local gpu_used = util.opt (data["monitor"]["gpu"]["used"], 0)
+  local gpu_util = util.opt (data["monitor"]["gpu"]["util"], 0.0)
 
   gpu_used = format.int (gpu_used, "%05d") .. "MB"
   gpu_util = format.int (gpu_util, "%02d") .. "%"
@@ -143,8 +95,8 @@ function conky_draw ()
   ui.attach ("GRAPHICS", gpu_used, gpu_util)
 
   -- Attach memory ui component
-  local mem_used = util.opt (vars["mem_used"], 0)
-  local mem_util = util.opt (vars["mem_util"], 0.0)
+  local mem_used = util.opt (data["monitor"]["memory"]["used"], 0)
+  local mem_util = util.opt (data["monitor"]["memory"]["util"], 0.0)
 
   mem_used = format.int (mem_used, "%06d") .. "MB"
   mem_util = format.int (mem_util, "%02d") .. "%"
@@ -152,27 +104,28 @@ function conky_draw ()
   ui.attach ("MEMORY", mem_used, mem_util)
 
   -- Attach root disk ui component
-  local disk_root_used = util.opt (vars["disk_root_used"], 0)
-  local disk_root_util = util.opt (vars["disk_root_util"], 0.0)
-  local disk_root_type = util.opt (vars["disk_root_type"])
+  local disk_root_used = util.opt (data["monitor"]["disk"]["used"], 0)
+  local disk_root_util = util.opt (data["monitor"]["disk"]["util"], 0.0)
 
   disk_root_used = format.int (disk_root_used, "%06d") .. "MB"
   disk_root_util = format.int (disk_root_util, "%02d") .. "%"
-  disk_root_type = format.upper (disk_root_type)
 
-  ui.attach ("DISK " .. disk_root_type, disk_root_used, disk_root_util)
+  ui.attach ("DISK " .. 'EXT4', disk_root_used, disk_root_util)
 
   -- Attach keyboard ui component
-  local kb_press = util.opt (vars["kb_press"], 0)
+  local kb_press = util.opt (data["keyboard"]["press"], 0)
   kb_press = format.int (kb_press, "%06d")
 
   ui.attach ("KEYBOARD", kb_press, "Keys")
 
   -- Attach mouse clicks ui component
-  local ms_clicks = util.opt (vars["ms_left"], 0) + util.opt (vars["ms_right"], 0) + util.opt (vars["ms_middle"], 0)
+  local ms_clicks = util.opt (data["mouse"]["left"], 0) + util.opt (data["mouse"]["right"], 0) + util.opt (data["mouse"]["middle"], 0)
   ms_clicks = format.int (ms_clicks, "%06d")
 
   ui.attach ("MOUSE", ms_clicks, "Clks")
+
+  -- Attach the uptime component
+  ui.attach ("UPTIME", "T+" .. data["uptime"]["hours"] .. ":" .. data["uptime"]["mins"] .. ":" .. data["uptime"]["secs"], "-")
 
   -- Render ui into the canvas
   ui.render ()

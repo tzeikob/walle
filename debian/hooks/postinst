@@ -7,7 +7,6 @@ PKG_NAME="#PKG_NAME"
 INSTALLATION_DIR=/usr/share/$PKG_NAME
 HOME_DIR=/home/$SUDO_USER
 CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
-DATA_DIR=$CONFIG_DIR/.data
 AUTOSTART_DIR=$HOME_DIR/.config/autostart
 
 echo -e "Startig post installation script"
@@ -22,9 +21,8 @@ ln -s $INSTALLATION_DIR/bin/$PKG_NAME.py /usr/bin/$PKG_NAME
 
 echo -e "Binary symlink file has been created"
 
-# Create config folders
+# Create config folder
 mkdir -p $CONFIG_DIR
-mkdir -p $DATA_DIR
 
 # Copy config files to config folder
 cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml
@@ -33,7 +31,7 @@ cp $INSTALLATION_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
 
-echo -e "Config folders and files have been created"
+echo -e "Config folder and files have been created"
 
 # Create the autostart gnome desktop file
 mkdir -p $AUTOSTART_DIR

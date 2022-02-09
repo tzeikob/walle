@@ -60,25 +60,4 @@ def resolve ():
     }
   }
 
-  # Use psutil to get all disk partitions
-  partitions = psutil.disk_partitions()
-
-  # Match only partitions mounted at root and home paths
-  for partition in partitions:
-    mountpoint = partition.mountpoint
-
-    if mountpoint == '/' or mountpoint == '/home':
-      fstype = partition.fstype
-      disk = psutil.disk_usage(mountpoint)
-      util = disk.percent
-      used = disk.used
-      free = disk.free
-
-      data[mountpoint] = {
-        'type': fstype,
-        'util': decimal(util, 1),
-        'used': integer(MB(used)),
-        'free': integer(MB(free))
-      }
-
   return data
