@@ -1,62 +1,29 @@
 # A monitoring resolver to resolve disk loads
 
-from datetime import datetime
 import psutil
+from util.meter import Meter
 from util.convert import integer, decimal, MB
 
-# Last date time since the last call
-last = datetime.now()
-
-# Read and written bytes since the last call
-last_read = 0
-last_write = 0
+# Initialize read and write speedometers
+read = Meter()
+write = Meter()
 
 # Returns a data object populated with disk load data
 def resolve ():
-  # Calculate the secs past since the last call
-  now = datetime.now()
-
-  global last
-  past_secs = (now - last).total_seconds()
-
-  # Save last checkpoint for the next call
-  last = now
-
-  # Read system-wide disk read and write io counters
   io = psutil.disk_io_counters()
 
-  read = io.read_bytes
-  write = io.write_bytes
-
-  # Calculate current read and write speeds
-  global last_read, last_write
-
-  # Report zero read speed in case of invalid read values
-  if last_read == 0 or last_read >= read or past_secs <= 0:
-    read_speed = 0
-  else:
-    delta = read - last_read
-    read_speed = delta / past_secs
-
-  # Report zero write speed in case of invalid write values
-  if last_write == 0 or last_write >= write or past_secs <= 0:
-    write_speed = 0
-  else:
-    delta = write - last_write
-    write_speed = delta / past_secs
-
-  # Save last read and write values
-  last_read = read
-  last_write = write
+  # Update current value in speedometers
+  read.update(io.read_bytes)
+  write.update(io.write_bytes)
 
   data = {
     'read': {
-      'bytes': integer(MB(read)),
-      'speed': decimal(MB(read_speed), 1)
+      'bytes': integer(MB(read.value)),
+      'speed': decimal(MB(read.speed), 1)
     },
     'write': {
-      'bytes': integer(MB(write)),
-      'speed': decimal(MB(write_speed), 1)
+      'bytes': integer(MB(write.value)),
+      'speed': decimal(MB(write.speed), 1)
     }
   }
 

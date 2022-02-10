@@ -1,16 +1,13 @@
 # A monitoring resolver to resolve lan network information
 
-from datetime import datetime
 import subprocess
 import psutil
+from util.meter import Meter
 from util.convert import text, integer, decimal, MB, Mb
 
-# Last date time since the last call
-last = datetime.now()
-
-# Sent and recv bytes since the last call
-last_sent = 0
-last_recv = 0
+# Initialize upload and download speedometers
+sent = Meter()
+recv = Meter()
 
 # Returns a data object populated with lan network data
 def resolve ():
@@ -39,47 +36,18 @@ def resolve ():
   # Read network sent and received bytes
   io = psutil.net_io_counters(pernic=True)[name]
 
-  sent = io.bytes_sent
-  recv = io.bytes_recv
-
-  # Calculate the secs past since the last call
-  now = datetime.now()
-
-  global last
-  past_secs = (now - last).total_seconds()
-
-  # Save last checkpoint for the next call
-  last = now
-
-  # Calculate current download and upload speeds
-  global last_sent, last_recv
-
-  # Report zero up speed in case of invalid sent values
-  if last_sent == 0 or last_sent >= sent or past_secs <= 0:
-    up_speed = 0
-  else:
-    delta = sent - last_sent
-    up_speed = delta / past_secs
-
-  # Report zero down speed in case of invalid recv values
-  if last_recv == 0 or last_recv >= recv or past_secs <= 0:
-    down_speed = 0
-  else:
-    delta = recv - last_recv
-    down_speed = delta / past_secs
-
-  # Save last sent and recv bytes for the next call
-  last_sent = sent
-  last_recv = recv
+  # Update current values in speedometers
+  sent.update(io.bytes_sent)
+  recv.update(io.bytes_recv)
 
   data = {
     'up': up,
     'name': text(name),
     'ip': text(ip),
-    'sent': integer(MB(sent)),
-    'recv': integer(MB(recv)),
-    'upspeed': decimal(Mb(up_speed), 2),
-    'downspeed': decimal(Mb(down_speed), 2)
+    'sent': integer(MB(sent.value)),
+    'recv': integer(MB(recv.value)),
+    'upspeed': decimal(Mb(sent.speed), 2),
+    'downspeed': decimal(Mb(recv.speed), 2)
   }
 
   return data
