@@ -26,7 +26,9 @@ state = {
     },
     'disk': {
       'util': 0,
-      'used': 0
+      'used': 0,
+      'read': 0,
+      'write': 0
     }
   }
 }
@@ -94,6 +96,11 @@ def callback ():
 
     state['data']['disk']['util'] = decimal(utilization, 1)
     state['data']['disk']['used'] = integer(MB(used))
+
+    io = psutil.disk_io_counters()
+
+    state['data']['disk']['read'] = integer(MB(io.read_bytes))
+    state['data']['disk']['write'] = integer(MB(io.write_bytes))
 
     time.sleep(1)
 
