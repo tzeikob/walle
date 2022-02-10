@@ -10,6 +10,7 @@ from util.logger import Router
 from resolvers import static
 from resolvers import uptime
 from resolvers import monitor
+from resolvers import network
 from listeners import keyboard, mouse
 
 # Parse command line arguments schema
@@ -47,9 +48,10 @@ signal.signal(signal.SIGTERM, mark_shutdown)
 # Resolve once the system's static information
 static.resolve()
 
-# Start monitoring system uptime, loads and thermals
+# Start monitoring system uptime, loads and network
 uptime.start()
 monitor.start()
+network.start()
 
 # Start listening for keyboard and mouse events
 keyboard.start()
@@ -64,6 +66,7 @@ while state['up']:
   # Read monitoring data
   data['uptime'] = uptime.state['data']
   data['monitor'] = monitor.state['data']
+  data['network'] = network.state['data']
 
   # Read keyboard and mouse state
   data['keyboard'] = keyboard.state['data']
