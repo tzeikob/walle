@@ -38,27 +38,13 @@ def callback ():
       state['data']['conn'] = True
       state['data']['nic'] = text(name)
 
-      # Map io network counters per nic in the system
-      counters = psutil.net_io_counters(pernic=True)
+      # Read system-wide io counters
+      io = psutil.net_io_counters(pernic=False)
 
-      # Iterate through each nic and aggregate bytes and packets
-      bytes_sent = 0
-      bytes_recv = 0
-      packets_sent = 0
-      packets_recv = 0
-
-      for nic in counters:
-        io = counters[nic]
-
-        bytes_sent += io.bytes_sent
-        bytes_recv += io.bytes_recv
-        packets_sent += io.packets_sent
-        packets_recv += io.packets_recv
-
-      state['data']['bytes']['sent'] = integer(MB(bytes_sent))
-      state['data']['bytes']['recv'] = integer(MB(bytes_recv))
-      state['data']['packets']['sent'] = integer(packets_sent)
-      state['data']['packets']['recv'] = integer(packets_recv)
+      state['data']['bytes']['sent'] = integer(MB(io.bytes_sent))
+      state['data']['bytes']['recv'] = integer(MB(io.bytes_recv))
+      state['data']['packets']['sent'] = integer(io.packets_sent)
+      state['data']['packets']['recv'] = integer(io.packets_recv)
     else:
       state['data']['conn'] = False
       state['data']['nic'] = ''
