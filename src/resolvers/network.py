@@ -8,8 +8,10 @@ from util.meter import Meter
 from util.convert import text, integer, decimal, MB, Mb
 
 # Initialize upload and download speedometers
-sent = Meter()
-recv = Meter()
+bytes_sent = Meter()
+bytes_recv = Meter()
+packets_sent = Meter()
+packets_recv = Meter()
 
 state = {
   'up': False,
@@ -17,10 +19,18 @@ state = {
     'conn': False,
     'nic': '',
     'ip': '',
-    'sent': 0,
-    'recv': 0,
-    'up': 0,
-    'down': 0
+    'bytes': {
+      'sent': 0,
+      'recv': 0,
+      'up': 0,
+      'down': 0
+    },
+    'packets': {
+      'sent': 0,
+      'recv': 0,
+      'up': 0,
+      'down': 0
+    }
   }
 }
 
@@ -37,8 +47,10 @@ def callback ():
     state['data']['conn'] = False
     state['data']['nic'] = ''
     state['data']['ip'] = ''
-    state['data']['up'] = 0
-    state['data']['down'] = 0
+    state['data']['bytes']['up'] = 0
+    state['data']['bytes']['down'] = 0
+    state['data']['packets']['up'] = 0
+    state['data']['packets']['down'] = 0
 
     if not route.stderr:
       # Extract network name and local ip address
@@ -50,16 +62,22 @@ def callback ():
       io = psutil.net_io_counters(pernic=True)[name]
 
       # Update current values in speedometers
-      sent.update(io.bytes_sent)
-      recv.update(io.bytes_recv)
+      bytes_sent.update(io.bytes_sent)
+      bytes_recv.update(io.bytes_recv)
+      packets_sent.update(io.packets_sent)
+      packets_recv.update(io.packets_recv)
 
       state['data']['conn'] = True
       state['data']['nic'] = text(name)
       state['data']['ip'] = text(ip)
-      state['data']['sent'] = integer(MB(sent.value))
-      state['data']['recv'] = integer(MB(recv.value))
-      state['data']['up'] = decimal(Mb(sent.speed), 2)
-      state['data']['down'] = decimal(Mb(recv.speed), 2)
+      state['data']['bytes']['sent'] = integer(MB(bytes_sent.value))
+      state['data']['bytes']['recv'] = integer(MB(bytes_recv.value))
+      state['data']['bytes']['up'] = decimal(Mb(bytes_sent.speed), 2)
+      state['data']['bytes']['down'] = decimal(Mb(bytes_recv.speed), 2)
+      state['data']['packets']['sent'] = integer(packets_sent.value)
+      state['data']['packets']['recv'] = integer(packets_recv.value)
+      state['data']['packets']['up'] = decimal(packets_sent.speed, 2)
+      state['data']['packets']['down'] = decimal(packets_recv.speed, 2)
 
     time.sleep(1)
 
