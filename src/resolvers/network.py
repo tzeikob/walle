@@ -18,7 +18,6 @@ state = {
   'data':{
     'conn': False,
     'nic': '',
-    'ip': '',
     'bytes': {
       'sent': 0,
       'recv': 0,
@@ -46,17 +45,14 @@ def callback ():
     # Consider network initially as down
     state['data']['conn'] = False
     state['data']['nic'] = ''
-    state['data']['ip'] = ''
     state['data']['bytes']['up'] = 0
     state['data']['bytes']['down'] = 0
     state['data']['packets']['up'] = 0
     state['data']['packets']['down'] = 0
 
     if not route.stderr:
-      # Extract network name and local ip address
-      parts = route.stdout.split()
-      name = parts[4]
-      ip = parts[6]
+      # Extract network nic name
+      name = route.stdout.split()[4]
 
       # Read network sent and received bytes
       io = psutil.net_io_counters(pernic=True)[name]
@@ -69,7 +65,6 @@ def callback ():
 
       state['data']['conn'] = True
       state['data']['nic'] = text(name)
-      state['data']['ip'] = text(ip)
       state['data']['bytes']['sent'] = integer(MB(bytes_sent.value))
       state['data']['bytes']['recv'] = integer(MB(bytes_recv.value))
       state['data']['bytes']['up'] = decimal(Mb(bytes_sent.speed), 2)
