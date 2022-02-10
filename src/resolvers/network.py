@@ -4,14 +4,7 @@ import threading
 import time
 import subprocess
 import psutil
-from util.meter import Meter
-from util.convert import text, integer, decimal, MB, Mb
-
-# Initialize upload and download speedometers
-bytes_sent = Meter()
-bytes_recv = Meter()
-packets_sent = Meter()
-packets_recv = Meter()
+from util.convert import text, integer, MB
 
 state = {
   'up': False,
@@ -20,15 +13,11 @@ state = {
     'nic': '',
     'bytes': {
       'sent': 0,
-      'recv': 0,
-      'up': 0,
-      'down': 0
+      'recv': 0
     },
     'packets': {
       'sent': 0,
-      'recv': 0,
-      'up': 0,
-      'down': 0
+      'recv': 0
     }
   }
 }
@@ -41,38 +30,38 @@ def callback ():
       stdout=subprocess.PIPE,
       stderr=subprocess.PIPE,
       universal_newlines=True)
-    
-    # Consider network initially as down
-    state['data']['conn'] = False
-    state['data']['nic'] = ''
-    state['data']['bytes']['up'] = 0
-    state['data']['bytes']['down'] = 0
-    state['data']['packets']['up'] = 0
-    state['data']['packets']['down'] = 0
 
     if not route.stderr:
-      # Extract network nic name
+      # Extract the name of the active network interface
       name = route.stdout.split()[4]
-
-      # Read network sent and received bytes
-      io = psutil.net_io_counters(pernic=True)[name]
-
-      # Update current values in speedometers
-      bytes_sent.update(io.bytes_sent)
-      bytes_recv.update(io.bytes_recv)
-      packets_sent.update(io.packets_sent)
-      packets_recv.update(io.packets_recv)
 
       state['data']['conn'] = True
       state['data']['nic'] = text(name)
-      state['data']['bytes']['sent'] = integer(MB(bytes_sent.value))
-      state['data']['bytes']['recv'] = integer(MB(bytes_recv.value))
-      state['data']['bytes']['up'] = decimal(Mb(bytes_sent.speed), 2)
-      state['data']['bytes']['down'] = decimal(Mb(bytes_recv.speed), 2)
-      state['data']['packets']['sent'] = integer(packets_sent.value)
-      state['data']['packets']['recv'] = integer(packets_recv.value)
-      state['data']['packets']['up'] = decimal(packets_sent.speed, 2)
-      state['data']['packets']['down'] = decimal(packets_recv.speed, 2)
+
+      # Map io network counters per nic in the system
+      counters = psutil.net_io_counters(pernic=True)
+
+      # Iterate through each nic and aggregate bytes and packets
+      bytes_sent = 0
+      bytes_recv = 0
+      packets_sent = 0
+      packets_recv = 0
+
+      for nic in counters:
+        io = counters[nic]
+
+        bytes_sent += io.bytes_sent
+        bytes_recv += io.bytes_recv
+        packets_sent += io.packets_sent
+        packets_recv += io.packets_recv
+
+      state['data']['bytes']['sent'] = integer(MB(bytes_sent))
+      state['data']['bytes']['recv'] = integer(MB(bytes_recv))
+      state['data']['packets']['sent'] = integer(packets_sent)
+      state['data']['packets']['recv'] = integer(packets_recv)
+    else:
+      state['data']['conn'] = False
+      state['data']['nic'] = ''
 
     time.sleep(1)
 
