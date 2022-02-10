@@ -22,10 +22,6 @@ parser.set_defaults(debug=False)
 
 opts = parser.parse_args()
 
-state = {
-  'up': True
-}
-
 # Initialize logging router
 logger = Router('resolver', globals.LOG_FILE_PATH)
 
@@ -44,6 +40,10 @@ def mark_shutdown (*args):
 # Attach shutdown handlers
 signal.signal(signal.SIGINT, mark_shutdown)
 signal.signal(signal.SIGTERM, mark_shutdown)
+
+state = {
+  'up': True
+}
 
 # Resolve once the system's static information
 static.resolve()
