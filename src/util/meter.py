@@ -23,3 +23,7 @@ class Meter:
     # Restore new values
     self.value = value
     self.last = now
+
+  def reset (self):
+    self.value = 0
+    self.last = datetime.now()
