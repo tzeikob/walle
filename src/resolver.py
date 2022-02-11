@@ -32,6 +32,7 @@ if opts.debug:
 def mark_shutdown (*args):
   uptime.stop()
   monitor.stop()
+  network.stop()
   keyboard.stop()
   mouse.stop()
 
