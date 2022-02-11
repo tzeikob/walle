@@ -50,6 +50,4 @@ def switch (index):
 
 # Resets conky configuration to default settings
 def reset ():
-  config({
-    'xinerama_head': 0
-  })
+  config({'xinerama_head': 0})
