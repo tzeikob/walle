@@ -47,7 +47,7 @@ def start_conky (debug=False):
   pid = system.read(globals.CONKY_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    # Initialize conky with respect to the system
+    # Initialize conky for the current system setup
     conky.init()
 
     cmd = 'conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH + (' --debug' if debug else '')
