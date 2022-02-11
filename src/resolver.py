@@ -29,7 +29,7 @@ if opts.debug:
   logger.set_level('DEBUG')
 
 # Terminates the main and child threads
-def mark_shutdown (*args):
+def shutdown (*args):
   uptime.stop()
   monitor.stop()
   network.stop()
@@ -39,8 +39,8 @@ def mark_shutdown (*args):
   state['up'] = False
 
 # Attach shutdown handlers
-signal.signal(signal.SIGINT, mark_shutdown)
-signal.signal(signal.SIGTERM, mark_shutdown)
+signal.signal(signal.SIGINT, shutdown)
+signal.signal(signal.SIGTERM, shutdown)
 
 state = {
   'up': True
