@@ -1,7 +1,6 @@
 # A module exporting the arguments parser
 
 import argparse
-import re
 
 # Asserts if the given value is an integer
 def any_int (value):

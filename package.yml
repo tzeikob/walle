@@ -10,12 +10,9 @@ dependencies:
     - 'luarocks'
     - 'conky'
     - 'conky-all'
-    - 'curl'
     - 'iproute2'
-    - 'lsb-release'
   python:
     - 'ruamel.yaml'
-    - 'requests'
     - 'psutil'
     - 'gputil'
     - 'screeninfo'

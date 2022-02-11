@@ -92,7 +92,7 @@ def load (path):
 
   with open(path) as preset_file:
     preset = yaml.load(preset_file)
-  
+
   settings  = read()
 
   settings['dark'] = preset['dark']
