@@ -23,13 +23,10 @@ def start_resolver (debug=False):
   pid = system.read(globals.RESOLVER_PID_FILE_PATH)
 
   if not system.isUp(pid):
-    options = ''
-
-    if debug:
-      options += ' --debug'
+    cmd = globals.RESOLVER_FILE_PATH + (' --debug' if debug else '')
 
     # Spawn resolver process
-    pid = system.spawn(globals.RESOLVER_FILE_PATH + options, globals.LOG_FILE_PATH)
+    pid = system.spawn(cmd, globals.LOG_FILE_PATH)
 
     # Save the pid to the disk
     system.write(pid, globals.RESOLVER_PID_FILE_PATH)
@@ -53,19 +50,16 @@ def start_conky (debug=False):
     # Initialize conky with respect to the system
     conky.init()
 
-    options = ' -b -p 1 -c ' + globals.CONKYRC_FILE_PATH
-
-    if debug:
-      options += ' --debug'
+    cmd = 'conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH + (' --debug' if debug else '')
 
     # Define env variable to set debug mode or not
     debug_env = os.environ.copy()
     debug_env['DEBUG_MODE'] = str(debug).lower()
 
     # Spawn the conky process
-    pid = system.spawn('conky' + options, globals.LOG_FILE_PATH, debug_env)
+    pid = system.spawn(cmd, globals.LOG_FILE_PATH, debug_env)
 
-    # Save pid to the dsk
+    # Save pid to the disk
     system.write(pid, globals.CONKY_PID_FILE_PATH)
 
   logger.disk.info(f"conky process is up with pid '{pid}'")
