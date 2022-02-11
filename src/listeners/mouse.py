@@ -2,7 +2,6 @@
 
 from pynput import mouse
 
-# The internal state of the listener
 state = {
   'up': False,
   'data': {

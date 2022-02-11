@@ -2,7 +2,6 @@
 
 from pynput import keyboard
 
-# The internal state of the listener
 state = {
   'up': False,
   'data': {
