@@ -92,7 +92,7 @@ def callback ():
         used += disk.used
         free += disk.free
 
-    utilization = used / (used + free)
+    utilization = (used / (used + free)) * 100
 
     state['data']['disk']['util'] = decimal(utilization, 1)
     state['data']['disk']['used'] = integer(MB(used))
