@@ -1,5 +1,8 @@
 -- Main lua entry point for the conkyrc file
 
+-- Set debug mode variable in global scope
+debug_mode = os.getenv ("DEBUG_MODE") == "true" or false
+
 -- Resolved base and config paths at build time
 local PKG_NAME = "#PKG_NAME"
 local BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
@@ -16,9 +19,6 @@ local util = require "util"
 local logger = require "logger"
 local format = require "format"
 
--- Read debug mode env variable
-local debug_mode = util.to_boolean (os.getenv ("DEBUG_MODE"))
-
 -- Load configuration settings
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
@@ -29,8 +29,7 @@ local data = {}
 function conky_init ()
   logger.debug ('entering initialization phase')
 
-  -- Initialize logger
-  logger.set_debug_mode (debug_mode)
+  -- Set the log file path
   logger.set_log_file (LOG_FILE_PATH)
 
   -- Load resolved data
