@@ -16,8 +16,11 @@ package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 
 local ui = require "ui"
 local util = require "util"
-local logger = require "logger"
+local logging = require "logging"
 local format = require "format"
+
+-- create logger and set it in global scope
+logger = logging.Logger:new (LOG_FILE_PATH)
 
 -- Load configuration settings
 local config = util.yaml.load (CONFIG_FILE_PATH)
@@ -27,37 +30,34 @@ local data = {}
 
 -- Initializes the lua context
 function conky_init ()
-  logger.debug ('entering initialization phase')
-
-  -- Set the log file path
-  logger.set_log_file (LOG_FILE_PATH)
+  logger:debug ('entering initialization phase')
 
   -- Load resolved data
   data = util.json.load (CONFIG_DIR .. "/.data")
 
-  logger.debug ("initialization completed successfully")
+  logger:debug ("initialization completed successfully")
 end
 
 -- Resolves monitoring system data
 function conky_resolve ()
-  logger.debug ("entering the pre conky resolve phase")
-  logger.debug ("reading monitoring data...")
+  logger:debug ("entering the pre conky resolve phase")
+  logger:debug ("reading monitoring data...")
 
   -- Load resolved data
   data = util.json.load (CONFIG_DIR .. "/.data")
 
-  logger.debug ("monitoring data has been loaded to context")
-  logger.debug ("context:\n" .. util.json.stringify (data))
+  logger:debug ("monitoring data has been loaded to context")
+  logger:debug ("context:\n" .. util.json.stringify (data))
 
-  logger.debug ("exiting the pre conky resolve phase")
+  logger:debug ("exiting the pre conky resolve phase")
 end
 
 -- Draws the ui in conky's viewport
 function conky_draw ()
-  logger.debug ("entering the post conky draw phase")
+  logger:debug ("entering the post conky draw phase")
 
   if conky_window == nil then
-    logger.debug ("aborting since no conky window is ready")
+    logger:debug ("aborting since no conky window is ready")
     return
   end
 
@@ -71,7 +71,7 @@ function conky_draw ()
 
   -- Draw ui context
   if debug_mode then
-    ui.render_borders ()
+    -- ui.render_borders ()
     ui.render_grid ()
   end
 
@@ -132,5 +132,5 @@ function conky_draw ()
   -- Destroy ui context
   ui.destroy ()
 
-  logger.debug ("exiting the post conky draw phase")
+  logger:debug ("exiting the post conky draw phase")
 end
