@@ -59,8 +59,10 @@ end
 
 -- Renders all the ui components
 function render ()
-  local grid = grid.Grid:new ({ 1, 1, 1, 0.8 })
-  grid:render ()
+  if debug_mode then
+    local grid = grid.Grid:new ({ 1, 1, 1, 0.8 })
+    grid:render ()
+  end
 end
 
 -- Destroys the viewport references
