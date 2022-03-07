@@ -12,7 +12,9 @@ local CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
 local LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
 
 -- Add base directory to lua package path
-package.path = package.path .. ";" .. BASE_DIR .. "/?.lua;" .. BASE_DIR .. "/components/?.lua"
+package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
+package.path = package.path .. ";" .. BASE_DIR .. "/common/?.lua"
+package.path = package.path .. ";" .. BASE_DIR .. "/components/?.lua"
 
 local ui = require "ui"
 local util = require "util"
