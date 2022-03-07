@@ -1,19 +1,18 @@
 -- A lua script exposes utilities to draw the ui
 
 local cairo = require "cairo"
-
--- Boundary edges of the drawing area
-local top = 0
-local left = 0
-local bottom = 0
-local right = 0
+local grid = require "grid"
 
 -- Viewport rendering object
-local viewport = {
+viewport = {
   canvas = nil,
   surface = nil,
   extents = nil,
   dark = false,
+  left = 0,
+  top = 0,
+  right = 0,
+  bottom = 0,
   scale = 1
 }
 
@@ -49,148 +48,16 @@ function init (window, dark, scale, offsets)
   local margin = 10 * viewport.scale
 
   -- Set the boundary edges of the drawing area
-  top = margin
-  left = margin
-  bottom = height - margin
-  right = width - margin
+  viewport.top = margin
+  viewport.left = margin
+  viewport.bottom = height - margin
+  viewport.right = width - margin
 
   -- Move boudnary edges with respect to the given offsets
-  top = top + offsets.top
-  left = left + offsets.left
-  bottom = bottom + offsets.bottom
-  right = right + offsets.right
-end
-
--- Draws the outer border module
-function render_borders ()
-  local canvas = viewport.canvas
-  local scale = viewport.scale
-
-  local line_width = 6 * scale
-  local offset = (math.floor (line_width / 2) + 2) * scale
-  local border_length = 30 * scale
-
-  cairo_set_line_width (canvas, line_width)
-  cairo_set_line_cap (canvas, CAIRO_LINE_CAP_SQUARE)
-
-  -- Set drawing color
-  local r, g, b = 1, 1, 1
-
-  if viewport.dark then
-    r, g, b = 0, 0, 0
-  end
-
-  cairo_set_source_rgba (canvas, r, g, b, 0.7)
-
-  -- Draw the vertical edge of the top left corner
-  local start_x = left + offset
-  local start_y = top + offset
-  local end_x = left + offset
-  local end_y = start_y + border_length
-
-  cairo_move_to (canvas, start_x, start_y)
-  cairo_line_to (canvas, end_x, end_y)
-  cairo_stroke (canvas)
-
-  -- Draw the horizontal edge of the top left corner
-  start_x = left + offset
-  start_y = top + offset
-  end_x = start_x + border_length
-  end_y = top + offset
-
-  cairo_move_to (canvas, start_x, start_y)
-  cairo_line_to (canvas, end_x, end_y)
-  cairo_stroke (canvas)
-
-  -- Draw the vertical edge of the top right corner
-  start_x = right - offset
-  start_y = top + offset
-  end_x = right - offset
-  end_y = start_y + border_length
-
-  cairo_move_to (canvas, start_x, start_y)
-  cairo_line_to (canvas, end_x, end_y)
-  cairo_stroke (canvas)
-
-  -- Draw the horizontal edge of the top right corner
-  start_x = right - offset
-  start_y = top + offset
-  end_x = start_x - border_length
-  end_y = top + offset
-
-  cairo_move_to (canvas, start_x, start_y)
-  cairo_line_to (canvas, end_x, end_y)
-  cairo_stroke (canvas)
-
-  -- Draw the vertical edge of the bottom right corner
-  start_x = right - offset
-  start_y = bottom - offset
-  end_x = right - offset
-  end_y = start_y - border_length
-
-  cairo_move_to (canvas, start_x, start_y)
-  cairo_line_to (canvas, end_x, end_y)
-  cairo_stroke (canvas)
-
-  -- Draw the horizontal edge of the bottom right corner
-  start_x = right - offset
-  start_y = bottom - offset
-  end_x = start_x - border_length
-  end_y = bottom - offset
-
-  cairo_move_to (canvas, start_x, start_y)
-  cairo_line_to (canvas, end_x, end_y)
-  cairo_stroke (canvas)
-
-  -- Draw the vertical edge of the botom left corner
-  start_x = left + offset
-  start_y = bottom - offset
-  end_x = left + offset
-  end_y = start_y - border_length
-
-  cairo_move_to (canvas, start_x, start_y)
-  cairo_line_to (canvas, end_x, end_y)
-  cairo_stroke (canvas)
-
-  -- Draw the horizontal edge of the bottom left corner
-  start_x = left + offset
-  start_y = bottom - offset
-  end_x = start_x + border_length
-  end_y = bottom - offset
-
-  cairo_move_to (canvas, start_x, start_y)
-  cairo_line_to (canvas, end_x, end_y)
-  cairo_stroke (canvas)
-end
-
--- Draws the dotted grid module
-function render_grid ()
-  local canvas = viewport.canvas
-  local scale = viewport.scale
-
-  local step = 20 * scale
-  local radius = 1 * scale
-  local start_angle = 0
-  local end_angle = 2 * math.pi
-
-  cairo_set_line_width (canvas, 1 * scale)
-
-  -- Set drawing color
-  local r, g, b = 1, 1, 1
-
-  if viewport.dark then
-    r, g, b = 0, 0, 0
-  end
-
-  cairo_set_source_rgba (canvas, r, g, b, 0.5)
-
-  -- Draw circles in a grid layout stepped in fixed gaps
-  for x = left, right, step do
-    for y = top, bottom, step do
-      cairo_arc (canvas, x, y, radius, start_angle, end_angle)
-      cairo_fill (canvas)
-    end
-  end
+  viewport.top = viewport.top + offsets.top
+  viewport.left = viewport.left + offsets.left
+  viewport.bottom = viewport.bottom + offsets.bottom
+  viewport.right = viewport.right + offsets.right
 end
 
 -- Resolves the given text as a text ui component
@@ -284,13 +151,16 @@ end
 
 -- Renders all the ui components
 function render ()
+  local grid = grid.Grid:new ({ 1, 1, 1, 0.8 })
+  grid:render ()
+
   local scale = viewport.scale
 
   local offset = 30 * scale
   local padding = 6 * scale
 
-  local x = right - offset
-  local y = top + offset
+  local x = viewport.right - offset
+  local y = viewport.top + offset
 
   for i, component in ipairs (components) do
     x = x - component.width
@@ -329,8 +199,6 @@ end
 return {
   init = init,
   destroy = destroy,
-  render_borders = render_borders,
-  render_grid = render_grid,
   attach = attach,
   render = render
 }

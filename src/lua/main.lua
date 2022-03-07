@@ -12,7 +12,7 @@ local CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
 local LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
 
 -- Add base directory to lua package path
-package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
+package.path = package.path .. ";" .. BASE_DIR .. "/?.lua;" .. BASE_DIR .. "/components/?.lua"
 
 local ui = require "ui"
 local util = require "util"
@@ -68,12 +68,6 @@ function conky_draw ()
 
   -- Initialize ui context
   ui.init (conky_window, dark, scale, offsets)
-
-  -- Draw ui context
-  if debug_mode then
-    -- ui.render_borders ()
-    ui.render_grid ()
-  end
 
   -- Attach processor ui component
   local cpu_clock = util.opt (data["monitor"]["cpu"]["clock"], 0)
