@@ -26,7 +26,7 @@ function Logger:log (message)
 end
 
 function Logger:info (message)
-  self:log(message)
+  self:log (message)
 end
 
 function Logger:debug (message)
