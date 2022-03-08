@@ -1,8 +1,5 @@
 -- Main lua entry point for the conkyrc file
 
--- Set debug mode variable in global scope
-debug_mode = os.getenv ("DEBUG_MODE") == "true" or false
-
 -- Resolved base and config paths at build time
 local PKG_NAME = "#PKG_NAME"
 local BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
@@ -21,8 +18,11 @@ local logging = require "logging"
 local canvas = require "canvas"
 local grid = require "grid"
 
--- create logger and set it in global scope
-logger = logging.Logger:new (LOG_FILE_PATH)
+-- Set debug mode variable
+local debug_mode = util.to_boolean (os.getenv ("DEBUG_MODE"))
+
+-- Create the logger
+local logger = logging.Logger:new (LOG_FILE_PATH, debug_mode)
 
 -- Load configuration settings
 local config = util.yaml.load (CONFIG_FILE_PATH)
