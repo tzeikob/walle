@@ -7,6 +7,7 @@ local CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
 
 local CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
 local LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
+local DATA_FILE_PATH = CONFIG_DIR .. "/.data"
 
 -- Add base directory to lua package path
 package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
@@ -35,7 +36,7 @@ function conky_init ()
   logger:debug ('entering initialization phase')
 
   -- Load resolved data
-  data = util.json.load (CONFIG_DIR .. "/.data")
+  data = util.json.load (DATA_FILE_PATH)
 
   logger:debug ("initialization completed successfully")
 end
@@ -46,7 +47,7 @@ function conky_resolve ()
   logger:debug ("reading monitoring data...")
 
   -- Load resolved data
-  data = util.json.load (CONFIG_DIR .. "/.data")
+  data = util.json.load (DATA_FILE_PATH)
 
   logger:debug ("monitoring data has been loaded to context")
   logger:debug ("context:\n" .. util.json.stringify (data))
