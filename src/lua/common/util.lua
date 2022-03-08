@@ -66,7 +66,7 @@ end
 
 -- Return if the given value is not nullish not empty
 local function given (value)
-  return is_not_empty(value) and value ~= json.null
+  return is_not_empty (value) and value ~= json.null
 end
 
 -- Returns the value itself unless it is nullish or empty

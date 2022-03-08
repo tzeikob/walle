@@ -33,7 +33,7 @@ local data = {}
 
 -- Initializes the lua context
 function conky_init ()
-  logger:debug ('entering initialization phase')
+  logger:debug ("entering initialization phase")
 
   -- Load resolved data
   data = util.json.load (DATA_FILE_PATH)

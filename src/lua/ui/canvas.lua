@@ -51,16 +51,16 @@ function Canvas:new (window, dark, scale, offsets)
   o.margin = o.margin * o.scale
 
   -- Set the boundary edges of the drawing area
-  o.top = o.margin
   o.left = o.margin
-  o.bottom = o.height - o.margin
+  o.top = o.margin
   o.right = o.width - o.margin
+  o.bottom = o.height - o.margin
 
   -- Move boudnary edges with respect to the given offsets
-  o.top = o.top + offsets.top
   o.left = o.left + offsets.left
-  o.bottom = o.bottom + offsets.bottom
+  o.top = o.top + offsets.top
   o.right = o.right + offsets.right
+  o.bottom = o.bottom + offsets.bottom
 
   return o
 end
