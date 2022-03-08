@@ -1,4 +1,4 @@
--- A lua module to convert between different units
+-- A utility module to convert between different units
 
 -- Rounds the given value to the given number of decimal places
 local function round (value, precision)

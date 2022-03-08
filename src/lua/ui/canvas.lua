@@ -1,4 +1,4 @@
--- A lua module to expose cairo 2d canvas to draw ui components on
+-- A cairo based 2d canvas to draw ui components on
 
 local cairo = require "cairo"
 
@@ -34,20 +34,17 @@ function Canvas:new (window, dark, scale, offsets)
   -- Create the surface cairo object
   o.surface = cairo_xlib_surface_create (o.display, o.drawable, o.visual, o.width, o.height)
 
-  -- Create the drawing context object
+  -- Create the context object to draw on
   o.context = cairo_create (o.surface)
 
-  -- Initialize the processor to resolve text size in pixels
+  -- Create a text processor to resolve text size in pixels
   o.extents = cairo_text_extents_t:create ()
   tolua.takeownership (o.extents)
 
   -- Set dark mode
   o.dark = dark or false
 
-  -- Set the scaling factor
   o.scale = scale or 1
-
-  -- Apply scaliing to the margins
   o.margin = o.margin * o.scale
 
   -- Set the boundary edges of the drawing area
@@ -56,7 +53,7 @@ function Canvas:new (window, dark, scale, offsets)
   o.right = o.width - o.margin
   o.bottom = o.height - o.margin
 
-  -- Move boudnary edges with respect to the given offsets
+  -- Shift boudnary edges with respect to the given offsets
   o.left = o.left + offsets.left
   o.top = o.top + offsets.top
   o.right = o.right + offsets.right

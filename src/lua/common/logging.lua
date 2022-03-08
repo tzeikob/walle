@@ -1,4 +1,4 @@
--- A lua module exporting logging utilities
+-- A module to export logging utilities
 
 local Logger = {
   file_path = nil,

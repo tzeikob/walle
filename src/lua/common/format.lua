@@ -1,4 +1,4 @@
--- A lua module to format and manage text
+-- A utilty module to format and manage text
 
 -- Splits the string by the given delimiter
 local function split (str, delimiter, lazy)
@@ -45,7 +45,7 @@ local function cap (str)
   return str:gsub ("^%l", string.upper)
 end
 
--- Converts the given string to upper case
+-- Converts the given string to all upper case
 local function upper (str)
   if str == nil or str == "" then
     return str

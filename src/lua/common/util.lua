@@ -1,4 +1,4 @@
--- A lua module for various util functions
+-- A module to export various generic utility methods
 
 local yaml = require "yaml"
 local json = require "cjson"
@@ -45,12 +45,12 @@ local function stringify (dict)
   return json.encode (dict)
 end
 
--- Check if the given value is nil or empty
+-- Checks if the given value is nil or empty
 local function is_empty (value)
   return value == nil or value == ""
 end
 
--- Check if the given value is not nil and not empty
+-- Checks if the given value is not nil and not empty
 local function is_not_empty (value)
   return not is_empty (value)
 end
@@ -64,7 +64,7 @@ local function default_to (value, default)
   return value
 end
 
--- Return if the given value is not nullish not empty
+-- Returns if the given value is not nullish not empty
 local function given (value)
   return is_not_empty (value) and value ~= json.null
 end

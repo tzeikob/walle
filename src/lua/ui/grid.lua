@@ -1,4 +1,4 @@
--- A lua module to expose a dotted grid ui component
+-- A dotted grid ui component
 
 local Grid = {
   canvas = nil,
@@ -91,7 +91,7 @@ function Grid:render ()
 
   self.canvas:draw_line (x1, y1, x2, y2, width, self.color)
 
-  -- Draw the grid's dots
+  -- Draw the dots of the grid
   local step = 20 * scale
 
   for x = left, right, step do
