@@ -1,12 +1,12 @@
--- A lua module to expose cairo graphics utility methods
+-- A lua module to expose cairo 2d canvas to draw ui components on
 
 local cairo = require "cairo"
 
-local Graphics = {
+local Canvas = {
   display = nil,
   drawable = nil,
   visual = nil,
-  canvas = nil,
+  context = nil,
   surface = nil,
   extents = nil,
   dark = false,
@@ -20,7 +20,7 @@ local Graphics = {
   bottom = 0
 }
 
-function Graphics:new (window, dark, scale, offsets)
+function Canvas:new (window, dark, scale, offsets)
   local o = setmetatable ({}, self)
   self.__index = self
 
@@ -35,7 +35,7 @@ function Graphics:new (window, dark, scale, offsets)
   o.surface = cairo_xlib_surface_create (o.display, o.drawable, o.visual, o.width, o.height)
 
   -- Create the drawing context object
-  o.canvas = cairo_create (o.surface)
+  o.context = cairo_create (o.surface)
 
   -- Initialize the processor to resolve text size in pixels
   o.extents = cairo_text_extents_t:create ()
@@ -65,36 +65,36 @@ function Graphics:new (window, dark, scale, offsets)
   return o
 end
 
-function Graphics:dispose ()
-  cairo_destroy (self.canvas)
+function Canvas:dispose ()
+  cairo_destroy (self.context)
   cairo_surface_destroy (self.surface)
 
   -- Release object references from memory
-  self.canvas = nil
+  self.context = nil
   self.surface = nil
   self.extents = nil
 end
 
-function Graphics:draw_line (x1, y1, x2, y2, width, color)
-  cairo_set_source_rgba (self.canvas, unpack (color))
+function Canvas:draw_line (x1, y1, x2, y2, width, color)
+  cairo_set_source_rgba (self.context, unpack (color))
 
-  cairo_set_line_width (self.canvas, width)
-  cairo_set_line_cap (self.canvas, CAIRO_LINE_CAP_SQUARE)
+  cairo_set_line_width (self.context, width)
+  cairo_set_line_cap (self.context, CAIRO_LINE_CAP_SQUARE)
 
-  cairo_move_to (self.canvas, x1, y1)
-  cairo_line_to (self.canvas, x2, y2)
-  cairo_stroke (self.canvas)
+  cairo_move_to (self.context, x1, y1)
+  cairo_line_to (self.context, x2, y2)
+  cairo_stroke (self.context)
 end
 
-function Graphics:draw_dot (x, y, radius, color)
-  cairo_set_source_rgba (self.canvas, unpack (color))
+function Canvas:draw_dot (x, y, radius, color)
+  cairo_set_source_rgba (self.context, unpack (color))
 
-  cairo_set_line_width (self.canvas, 1 * self.scale)
+  cairo_set_line_width (self.context, 1 * self.scale)
 
-  cairo_arc (self.canvas, x, y, radius, 0, 2 * math.pi)
-  cairo_fill (self.canvas)
+  cairo_arc (self.context, x, y, radius, 0, 2 * math.pi)
+  cairo_fill (self.context)
 end
 
 return {
-  Graphics = Graphics
+  Canvas = Canvas
 }

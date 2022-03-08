@@ -18,7 +18,7 @@ package.path = package.path .. ";" .. BASE_DIR .. "/components/?.lua"
 
 local util = require "util"
 local logging = require "logging"
-local ui = require "ui"
+local canvas = require "canvas"
 local grid = require "grid"
 
 -- create logger and set it in global scope
@@ -63,17 +63,17 @@ function conky_draw ()
     return
   end
 
-  -- Initialize ui graphics context
-  local graphics = ui.Graphics:new (conky_window, config["dark"], config["scale"], config["offsets"])
+  -- Initialize the ui 2d context
+  local canvas = canvas.Canvas:new (conky_window, config["dark"], config["scale"], config["offsets"])
 
-  -- Create and render ui components
+  -- Create and render ui components on the 2d context
   if debug_mode then
-    local grid = grid.Grid:new (graphics, { 1, 1, 1, 0.8 })
+    local grid = grid.Grid:new (canvas, { 1, 1, 1, 0.8 })
     grid:render ()
   end
 
-  -- Destroy ui graphics context
-  graphics:dispose ()
+  -- Destroy the ui context
+  canvas:dispose ()
 
   logger:debug ("exiting the post conky draw phase")
 end
