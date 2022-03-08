@@ -16,9 +16,10 @@ package.path = package.path .. ";" .. BASE_DIR .. "/?.lua"
 package.path = package.path .. ";" .. BASE_DIR .. "/common/?.lua"
 package.path = package.path .. ";" .. BASE_DIR .. "/components/?.lua"
 
-local ui = require "ui"
 local util = require "util"
 local logging = require "logging"
+local ui = require "ui"
+local grid = require "grid"
 
 -- create logger and set it in global scope
 logger = logging.Logger:new (LOG_FILE_PATH)
@@ -62,19 +63,17 @@ function conky_draw ()
     return
   end
 
-  -- Read various ui config settings
-  local dark = config["dark"]
-  local scale = config["scale"]
-  local offsets = config["offsets"]
+  -- Initialize ui graphics context
+  local graphics = ui.Graphics:new (conky_window, config["dark"], config["scale"], config["offsets"])
 
-  -- Initialize ui context
-  ui.init (conky_window, dark, scale, offsets)
+  -- Create and render ui components
+  if debug_mode then
+    local grid = grid.Grid:new (graphics, { 1, 1, 1, 0.8 })
+    grid:render ()
+  end
 
-  -- Render ui components
-  ui.render ()
-
-  -- Destroy ui context
-  ui.destroy ()
+  -- Destroy ui graphics context
+  graphics:dispose ()
 
   logger:debug ("exiting the post conky draw phase")
 end
