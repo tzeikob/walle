@@ -68,7 +68,7 @@ function conky_draw ()
     local grid_width = canvas.right - canvas.margin
     local grid_height = canvas.bottom - canvas.margin
 
-    local grid = grid.Grid:new (canvas, grid_x, grid_y, grid_width, grid_height, { 0, 0, 0, 1 })
+    local grid = grid.Grid:new (canvas, grid_x, grid_y, grid_width, grid_height)
     grid:render ()
   end
 
