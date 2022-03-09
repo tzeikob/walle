@@ -63,7 +63,12 @@ function conky_draw ()
 
   -- Render ui components for debugging purposes
   if debug_mode then
-    local grid = grid.Grid:new (canvas, { 1, 1, 1, 0.8 })
+    local grid_x = canvas.left
+    local grid_y = canvas.top
+    local grid_width = canvas.right - canvas.margin
+    local grid_height = canvas.bottom - canvas.margin
+
+    local grid = grid.Grid:new (canvas, grid_x, grid_y, grid_width, grid_height, { 0, 0, 0, 1 })
     grid:render ()
   end
 
