@@ -14,7 +14,7 @@ local Grid = {
   border_color = { 1, 1, 1, 1 }
 }
 
-function Grid:new (canvas, x, y, width, height, color)
+function Grid:new (canvas, x, y, width, height)
   local o = setmetatable ({}, self)
   self.__index = self
 
