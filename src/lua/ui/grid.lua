@@ -6,10 +6,12 @@ local Grid = {
   y = 0,
   width = 0,
   height = 0,
-  thickness = 6,
+  thickness = 4,
   length = 30,
   radius = 1,
-  step = 20
+  step = 20,
+  dot_color = { 1, 1, 1, 0.6 },
+  border_color = { 1, 1, 1, 1 }
 }
 
 function Grid:new (canvas, x, y, width, height, color)
@@ -41,7 +43,7 @@ function Grid:render ()
   -- Draw the dots of the grid
   for x = self.x + self.thickness + shift_x, self.width + self.thickness * 2, self.step do
     for y = self.y + self.thickness + shift_y, self.height + self.thickness * 2, self.step do
-      self.canvas:draw_dot (x, y, self.radius, { 1, 1, 1, 0.6 })
+      self.canvas:draw_dot (x, y, self.radius, self.dot_color)
     end
   end
 
@@ -54,7 +56,7 @@ function Grid:render ()
   local x2 = x1
   local y2 = y1 + self.length
 
-  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, { 1, 1, 1, 1 })
+  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, self.border_color)
 
   -- Draw the horizontal edge of the top left corner
   x1 = self.x + offset
@@ -62,7 +64,7 @@ function Grid:render ()
   x2 = x1 + self.length
   y2 = y1
 
-  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, { 1, 1, 1, 1 })
+  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, self.border_color)
 
   -- Draw the vertical edge of the top right corner
   x1 = self.x + self.width - offset
@@ -70,7 +72,7 @@ function Grid:render ()
   x2 = x1
   y2 = y1 + self.length
 
-  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, { 1, 1, 1, 1 })
+  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, self.border_color)
 
   -- Draw the horizontal edge of the top right corner
   x1 = self.x + self.width - offset
@@ -78,7 +80,7 @@ function Grid:render ()
   x2 = x1 - self.length
   y2 = y1
 
-  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, { 1, 1, 1, 1 })
+  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, self.border_color)
 
   -- Draw the vertical edge of the bottom right corner
   x1 = self.x + self.width - offset
@@ -86,7 +88,7 @@ function Grid:render ()
   x2 = x1
   y2 = y1 - self.length
 
-  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, { 1, 1, 1, 1 })
+  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, self.border_color)
 
   -- Draw the horizontal edge of the bottom right corner
   x1 = self.x + self.width - offset
@@ -94,7 +96,7 @@ function Grid:render ()
   x2 = x1 - self.length
   y2 = y1
 
-  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, { 1, 1, 1, 1 })
+  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, self.border_color)
 
   -- Draw the vertical edge of the botom left corner
   x1 = self.x + offset
@@ -102,7 +104,7 @@ function Grid:render ()
   x2 = x1
   y2 = y1 - self.length
 
-  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, { 1, 1, 1, 1 })
+  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, self.border_color)
 
   -- Draw the horizontal edge of the bottom left corner
   x1 = self.x + offset
@@ -110,7 +112,7 @@ function Grid:render ()
   x2 = x1 + self.length
   y2 = y1
 
-  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, { 1, 1, 1, 1 })
+  self.canvas:draw_line (x1, y1, x2, y2, self.thickness, self.border_color)
 end
 
 return {
