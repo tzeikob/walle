@@ -86,8 +86,6 @@ end
 function Canvas:draw_dot (x, y, radius, color)
   cairo_set_source_rgba (self.context, unpack (color))
 
-  cairo_set_line_width (self.context, 1 * self.scale)
-
   cairo_arc (self.context, x, y, radius, 0, 2 * math.pi)
   cairo_fill (self.context)
 end

@@ -6,11 +6,12 @@ local Grid = {
   y = 0,
   width = 0,
   height = 0,
-  thickness = 4,
+  thickness = 6,
   length = 30,
-  radius = 1,
+  radius = 2,
   step = 20,
-  dot_color = { 1, 1, 1, 0.6 },
+  margin = 10,
+  dot_color = { 1, 1, 1, 0.7 },
   border_color = { 1, 1, 1, 1 }
 }
 
@@ -19,35 +20,57 @@ function Grid:new (canvas, x, y, width, height)
   self.__index = self
 
   o.canvas = canvas
+
   o.x = x
   o.y = y
   o.width = width
   o.height = height
+
   o.thickness = o.thickness * o.canvas.scale
   o.length = o.length * o.canvas.scale
+
   o.radius = o.radius * o.canvas.scale
   o.step = o.step * o.canvas.scale
+  o.margin = o.margin * o.canvas.scale
 
   return o
 end
 
 function Grid:render ()
   -- Calculate the actual width and height the dots should be drawn within
-  local dots_width = self.width - self.thickness * 2
-  local dots_height = self.height - self.thickness * 2
+  local dots_width = self.width - (self.thickness * 2) - (self.margin * 2)
+  local dots_height = self.height - (self.thickness * 2) - (self.margin * 2)
 
-  -- Calculate the remaining empty space given the step gap
-  local shift_x = math.fmod (dots_width, self.step) / 2
-  local shift_y = math.fmod (dots_height, self.step) / 2
+  -- Adjust the step to the actual space between two dots
+  local step = self.step + (self.radius * 2)
+
+  -- Calculate the half of the remaining space left after any drawn dot
+  local shift_x = math.fmod (dots_width, step) / 2
+  local shift_y = math.fmod (dots_height, step) / 2
+
+  -- Calculate the number of dot columns and rows
+  local cols = math.floor (dots_width / step)
+  local rows = math.floor (dots_height / step)
+
+  -- Set the starting point for the first dot
+  local start_x = self.x + self.thickness + self.margin + shift_x
+  local start_y = self.y + self.thickness + self.margin + shift_y
 
   -- Draw the dots of the grid
-  for x = self.x + self.thickness + shift_x, self.width + self.thickness * 2, self.step do
-    for y = self.y + self.thickness + shift_y, self.height + self.thickness * 2, self.step do
+  local x, y = start_x, start_y
+
+  for i = 1, rows + 1, 1 do
+    for j = 1, cols + 1, 1 do
       self.canvas:draw_dot (x, y, self.radius, self.dot_color)
+
+      x = x + step
     end
+
+    x = start_x
+    y = y + step
   end
 
-  -- Calculate the offset each line should be shifted
+  -- Calculate the offset each edge line should be shifted
   local offset = self.thickness / 2
 
   -- Draw the vertical edge of the top left corner
