@@ -90,6 +90,4 @@ function Canvas:draw_dot (x, y, radius, color)
   cairo_fill (self.context)
 end
 
-return {
-  Canvas = Canvas
-}
+return Canvas

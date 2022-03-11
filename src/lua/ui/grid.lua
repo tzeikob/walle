@@ -138,6 +138,4 @@ function Grid:render ()
   self.canvas:draw_line (x1, y1, x2, y2, self.thickness, self.border_color)
 end
 
-return {
-  Grid = Grid
-}
+return Grid

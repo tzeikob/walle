@@ -15,8 +15,9 @@ package.path = package.path .. ";" .. BASE_DIR .. "/ui/?.lua"
 
 local util = require "util"
 local logging = require "logging"
-local canvas = require "canvas"
-local grid = require "grid"
+
+local Canvas = require "canvas"
+local Grid = require "grid"
 
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
@@ -59,7 +60,7 @@ function conky_draw ()
   end
 
   -- Create the ui context as a 2d canvas
-  local canvas = canvas.Canvas:new (conky_window, config["dark"], config["scale"], config["offsets"])
+  local canvas = Canvas:new (conky_window, config["dark"], config["scale"], config["offsets"])
 
   -- Render ui components for debugging purposes
   if debug_mode then
@@ -68,7 +69,7 @@ function conky_draw ()
     local grid_width = canvas.right - canvas.margin
     local grid_height = canvas.bottom - canvas.margin
 
-    local grid = grid.Grid:new (canvas, grid_x, grid_y, grid_width, grid_height)
+    local grid = Grid:new (canvas, grid_x, grid_y, grid_width, grid_height)
     grid:render ()
   end
 
