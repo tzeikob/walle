@@ -25,14 +25,14 @@ function Scalar:new (canvas, glyph, size, value)
   o.size = size or 0
   o.value = value or 0
 
-  o.box = Glyph:new (canvas, Glyph.Box, o.size, { 1, 1, 1, 0.8 })
-  o.shade = Glyph:new (canvas, Glyph.Scalars[o.value], o.size, { 1, 0.6, 0, 0.8 })
-  o.glyph = Glyph:new (canvas, glyph, o.size, { 0.2, 0.2, 0.2, 1 })
+  o.box = Glyph:new (o.canvas, Glyph.Box, o.size, { 1, 1, 1, 0.8 })
+  o.shade = Glyph:new (o.canvas, Glyph.Scalars[o.value], o.size, { 1, 0.6, 0, 0.8 })
+  o.glyph = Glyph:new (o.canvas, glyph, o.size, { 0.2, 0.2, 0.2, 1 })
 
   if o.value >= 5 then
-    o.tag = Glyph:new (canvas, Glyph.High, o.size, { 1, 1, 1, 0.4 })
+    o.tag = Glyph:new (o.canvas, Glyph.High, o.size, { 1, 1, 1, 0.4 })
   elseif o.value <= 1 then
-    o.tag = Glyph:new (canvas, Glyph.Low, o.size, { 1, 1, 1, 0.4 })
+    o.tag = Glyph:new (o.canvas, Glyph.Low, o.size, { 1, 1, 1, 0.4 })
   end
 
   o.x = 0
@@ -60,7 +60,9 @@ function Scalar:render ()
   self.glyph:render ()
 
   if self.tag then
-    self.tag:locate (self.x, self.y + self.tag.height + (20 * self.canvas.scale))
+    local y = self.y + (20 * self.canvas.scale) + self.tag.height
+
+    self.tag:locate (self.x, y)
     self.tag:render ()
   end
 end
