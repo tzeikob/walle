@@ -15,14 +15,12 @@ local Grid = {
   border_color = { 1, 1, 1, 1 }
 }
 
-function Grid:new (canvas, x, y, width, height)
+function Grid:new (canvas, width, height)
   local o = setmetatable ({}, self)
   self.__index = self
 
   o.canvas = canvas
 
-  o.x = x
-  o.y = y
   o.width = width
   o.height = height
 
@@ -34,6 +32,11 @@ function Grid:new (canvas, x, y, width, height)
   o.margin = o.margin * o.canvas.scale
 
   return o
+end
+
+function Grid:locate (x, y)
+  self.x = x
+  self.y = y
 end
 
 function Grid:render ()
