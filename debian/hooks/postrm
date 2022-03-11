@@ -20,6 +20,11 @@ rm -rf $CONFIG_DIR
 
 echo -e "Config folder has been removed"
 
+# Remove installed font files
+rm -rf /usr/local/share/fonts/$PKG_NAME
+
+echo -e "Fonts have been removed"
+
 # Remove autostart desktop file
 rm -f $AUTOSTART_DIR/$PKG_NAME.desktop
 

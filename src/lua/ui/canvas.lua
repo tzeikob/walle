@@ -72,6 +72,46 @@ function Canvas:dispose ()
   self.extents = nil
 end
 
+function Canvas:set_font (face, size, slanted, bold)
+  local slant = CAIRO_FONT_SLANT_NORMAL
+
+  if slanted then
+    slant = CAIRO_FONT_SLANT_ITALIC
+  end
+
+  local weight = CAIRO_FONT_WEIGHT_NORMAL
+
+  if bold then
+    weight = CAIRO_FONT_WEIGHT_BOLD
+  end
+
+  cairo_select_font_face (self.context, face, slant, weight)
+  cairo_set_font_size (self.context, size)
+end
+
+function Canvas:set_font_size (size)
+  cairo_set_font_size (self.context, size)
+end
+
+function Canvas:set_color (color)
+  cairo_set_source_rgba (self.context, unpack (color))
+end
+
+function Canvas:resolve_text (text)
+  cairo_text_extents (self.context, text, self.extents)
+
+  return {
+    width = self.extents.width,
+    height = self.extents.height
+  }
+end
+
+function Canvas:draw_text (x, y, text)
+  cairo_move_to (self.context, x, y)
+  cairo_text_path (self.context, text)
+  cairo_fill (self.context)
+end
+
 function Canvas:draw_line (x1, y1, x2, y2, width, color)
   cairo_set_source_rgba (self.context, unpack (color))
 

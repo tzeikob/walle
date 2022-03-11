@@ -38,6 +38,7 @@ META_DIR = BUILD_DIR + '/DEBIAN'
 INSTALL_DIR = BUILD_DIR + '/usr/share/' + pkg['name']
 BIN_DIR = INSTALL_DIR + '/bin'
 LUA_DIR = INSTALL_DIR + '/lua'
+FONTS_DIR = INSTALL_DIR + '/fonts'
 
 print(f"Debian build process started for '{pkg['name']} v{pkg['version']}'")
 
@@ -93,6 +94,13 @@ shutil.copy2('../resources/config.yml', INSTALL_DIR)
 
 print('Resources files have been added')
 
+# Copy font files
+os.makedirs(FONTS_DIR)
+
+shutil.copy2('../fonts/wallecons.ttf', FONTS_DIR)
+
+print('Font files have been added')
+
 # Set file size to zero bytes
 pkg['size'] = 0
 
@@ -103,6 +111,10 @@ for path, dirs, files in os.walk(BUILD_DIR):
 
     # Add file size to the total build size
     pkg['size'] += os.path.getsize(file_path)
+
+    # Do not apply package props injection to binary files
+    if file_path.endswith('ttf'):
+      continue
 
     # Read file contents
     with open(file_path, 'rt') as f:

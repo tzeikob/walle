@@ -5,6 +5,7 @@ set -e
 
 PKG_NAME="#PKG_NAME"
 INSTALLATION_DIR=/usr/share/$PKG_NAME
+FONTS_DIR=$INSTALLATION_DIR/fonts
 HOME_DIR=/home/$SUDO_USER
 CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
 AUTOSTART_DIR=$HOME_DIR/.config/autostart
@@ -32,6 +33,13 @@ cp $INSTALLATION_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
 
 echo -e "Config folder and files have been created"
+
+echo -e "Installing fonts..."
+
+mkdir -p /usr/local/share/fonts/$PKG_NAME
+cp $FONTS_DIR/*.ttf /usr/local/share/fonts/$PKG_NAME
+
+echo -e "Fonts have been installed successfully"
 
 # Create the autostart gnome desktop file
 mkdir -p $AUTOSTART_DIR
