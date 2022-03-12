@@ -26,7 +26,11 @@ function Scalar:new (canvas, glyph, size, value)
   o.value = value or 0
 
   o.box = Glyph:new (o.canvas, Glyph.Box, o.size, { 1, 1, 1, 0.8 })
-  o.shade = Glyph:new (o.canvas, Glyph.Scalars[o.value], o.size, { 1, 0.6, 0, 0.8 })
+
+  if o.value > 0 then
+    o.shade = Glyph:new (o.canvas, Glyph.Scalars[o.value], o.size, { 1, 0.6, 0, 0.8 })
+  end
+
   o.glyph = Glyph:new (o.canvas, glyph, o.size, { 0.2, 0.2, 0.2, 1 })
 
   if o.value >= 5 then
@@ -53,8 +57,10 @@ function Scalar:render ()
   self.box:locate (self.x, self.y)
   self.box:render ()
 
-  self.shade:locate (self.x, self.y)
-  self.shade:render ()
+  if self.shade then
+    self.shade:locate (self.x, self.y)
+    self.shade:render ()
+  end
 
   self.glyph:locate (self.x, self.y)
   self.glyph:render ()

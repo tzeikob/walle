@@ -30,10 +30,10 @@ function Skills:new (canvas)
     Glyph:new (o.canvas, Glyph.Infinity, 36 * o.canvas.scale, { 1, 1, 1, 0.4 })
   }
 
-  o.scrolls = Scalar:new (o.canvas, Glyph.Scroll, 48 * o.canvas.scale, 1)
-  o.moves = Scalar:new (o.canvas, Glyph.Move, 48 * o.canvas.scale, 1)
-  o.clicks = Scalar:new (o.canvas, Glyph.Click, 48 * o.canvas.scale, 1)
-  o.keys = Scalar:new (o.canvas, Glyph.Key, 48 * o.canvas.scale, 1)
+  o.scrolls = Scalar:new (o.canvas, Glyph.Scroll, 48 * o.canvas.scale, 0)
+  o.moves = Scalar:new (o.canvas, Glyph.Move, 48 * o.canvas.scale, 0)
+  o.clicks = Scalar:new (o.canvas, Glyph.Click, 48 * o.canvas.scale, 0)
+  o.keys = Scalar:new (o.canvas, Glyph.Key, 48 * o.canvas.scale, 0)
 
   o.x = 0
   o.y = 0
