@@ -4,7 +4,7 @@ local Text = require "text"
 
 local Metric = {
   canvas = nil,
-  face = "Ubuntu Mono",
+  face = "Kenyan Coffee",
   value = 0,
   size = 0,
   color = { 1, 1, 1, 1 },

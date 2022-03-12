@@ -23,7 +23,7 @@ function Skills:new (canvas)
 
   o.canvas = canvas
 
-  o.score = Metric:new (o.canvas, 333, 555, 32 * o.canvas.scale, { 1, 1, 1, 0.8 }, "%05d")
+  o.score = Metric:new (o.canvas, 0, 5555, 32 * o.canvas.scale, { 1, 1, 1, 0.8 }, "%04d")
   o.hand = Glyph:new (o.canvas, Glyph.Hand, 48 * o.canvas.scale, { 1, 1, 1, 0.8 })
 
   o.tags = {
