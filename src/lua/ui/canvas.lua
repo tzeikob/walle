@@ -97,6 +97,19 @@ function Canvas:set_color (color)
   cairo_set_source_rgba (self.context, unpack (color))
 end
 
+function Canvas:apply_transform (xx, yx, xy, yy, x0, y0)
+  cairo_save (self.context)
+
+  local matrix = cairo_matrix_t:create ()
+  cairo_matrix_init (matrix, xx, yx, xy, yy, x0, y0)
+
+  cairo_transform (self.context, matrix)
+end
+
+function Canvas:restore_transform ()
+  cairo_restore (self.context)
+end
+
 function Canvas:resolve_text (text)
   cairo_text_extents (self.context, text, self.extents)
 

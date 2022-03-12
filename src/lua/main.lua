@@ -18,6 +18,7 @@ local logging = require "logging"
 
 local Canvas = require "canvas"
 local Grid = require "grid"
+local Skills = require "skills"
 
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
@@ -71,6 +72,13 @@ function conky_draw ()
     grid:locate (canvas.left, canvas.top)
     grid:render ()
   end
+
+  -- Render the user skills component
+  local skills = Skills:new (canvas)
+  skills:locate (
+    canvas.right - (50 * canvas.scale),
+    canvas.bottom - (80 * canvas.scale))
+  skills:render ()
 
   -- Destroy the ui context
   canvas:dispose ()
