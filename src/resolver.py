@@ -69,9 +69,32 @@ while state['up']:
   data['monitor'] = monitor.state['data']
   data['network'] = network.state['data']
 
-  # Read keyboard and mouse state
-  data['keyboard'] = keyboard.state['data']
-  data['mouse'] = mouse.state['data']
+  # Read keyboard and mouse actions
+  actions = {}
+
+  keyboard_data = keyboard.state['data']
+  mouse_data = mouse.state['data']
+
+  # Calculate keyboard and mouse action rates
+  actions['strokes'] = keyboard_data['strokes']
+  actions['clicks'] = mouse_data['clicks']
+  actions['scrolls'] = mouse_data['scrolls']
+  actions['moves'] = mouse_data['moves']
+
+  actions['total'] = actions['strokes'] + actions['clicks'] + actions['scrolls'] + actions['moves']
+
+  actions['strokes_rate'] = 0
+  actions['clicks_rate'] = 0
+  actions['scrolls_rate'] = 0
+  actions['moves_rate'] = 0
+
+  if actions['total'] > 0:
+    actions['strokes_rate'] = actions['strokes'] / actions['total']
+    actions['clicks_rate'] = actions['clicks'] / actions['total']
+    actions['scrolls_rate'] = actions['scrolls'] / actions['total']
+    actions['moves_rate'] = actions['moves'] / actions['total']
+
+  data['actions'] = actions
 
   with open(globals.DATA_FILE_PATH, 'w') as data_file:
     data_file.write(json.dumps(data))

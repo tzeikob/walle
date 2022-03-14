@@ -1,8 +1,8 @@
 -- A utility module to convert between different units
 
 -- Rounds the given value to the given number of decimal places
-local function round (value, precision)
-  local mult = 10 ^ (precision or 0)
+local function round (value, places)
+  local mult = 10 ^ (places or 0)
 
   return math.floor (value * mult + 0.5) / mult
 end

@@ -1,39 +1,49 @@
 -- A ui component to render metrics for the user input skills
 
+local convert = require "convert"
 local Glyph = require "glyph"
 local Metric = require "metric"
 local Scalar = require "scalar"
 
 local Skills = {
   canvas = nil,
+  data = nil,
   score = nil,
   hand = nil,
   tags = nil,
   scrolls = nil,
   moves = nil,
   clicks = nil,
-  keys = nil,
+  strokes = nil,
   x = 0,
   y = 0
 }
 
-function Skills:new (canvas)
+function Skills:new (canvas, data)
   local o = setmetatable ({}, self)
   self.__index = self
 
   o.canvas = canvas
+  o.data = data
 
-  o.score = Metric:new (o.canvas, 0, 5555, 32 * o.canvas.scale, { 1, 1, 1, 0.8 }, "%04d")
+  o.score = Metric:new (o.canvas, data.total, nil, 32 * o.canvas.scale, { 1, 1, 1, 0.8 }, "%06d")
   o.hand = Glyph:new (o.canvas, Glyph.Hand, 48 * o.canvas.scale, { 1, 1, 1, 0.8 })
 
   o.tags = {
     Glyph:new (o.canvas, Glyph.Infinity, 36 * o.canvas.scale, { 1, 1, 1, 0.4 })
   }
 
-  o.scrolls = Scalar:new (o.canvas, Glyph.Scroll, 48 * o.canvas.scale, 0)
-  o.moves = Scalar:new (o.canvas, Glyph.Move, 48 * o.canvas.scale, 0)
-  o.clicks = Scalar:new (o.canvas, Glyph.Click, 48 * o.canvas.scale, 0)
-  o.keys = Scalar:new (o.canvas, Glyph.Key, 48 * o.canvas.scale, 0)
+  local scalar = convert.round (data.scrolls_rate, 1) * 10
+  o.scrolls = Scalar:new (o.canvas, Glyph.Scroll, 48 * o.canvas.scale, scalar)
+
+  scalar = convert.round (data.moves_rate, 1) * 10
+  o.moves = Scalar:new (o.canvas, Glyph.Move, 48 * o.canvas.scale, scalar)
+
+  scalar = convert.round (data.clicks_rate, 1) * 10
+  o.clicks = Scalar:new (o.canvas, Glyph.Click, 48 * o.canvas.scale, scalar)
+
+  scalar = convert.round (data.strokes_rate, 1) * 10
+  o.strokes = Scalar:new (o.canvas, Glyph.Stroke, 48 * o.canvas.scale, scalar)
 
   o.x = 0
   o.y = 0
@@ -107,10 +117,10 @@ function Skills:render ()
 
   self.canvas:draw_line (x1, y1, x2, y2, 1 * scale, { 1, 1, 1, 0.4 })
 
-  self.keys:locate (
-    self.clicks.x - self.keys.width - (30 * scale),
+  self.strokes:locate (
+    self.clicks.x - self.strokes.width - (30 * scale),
     self.clicks.y)
-  self.keys:render ()
+  self.strokes:render ()
 
   self.canvas:restore_transform ()
 end

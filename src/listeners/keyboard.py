@@ -5,13 +5,13 @@ from pynput import keyboard
 state = {
   'up': False,
   'data': {
-    'press': 0
+    'strokes': 0
   }
 }
 
 # Counts up the key press event
 def on_press (key):
-  state['data']['press'] += 1
+  state['data']['strokes'] += 1
 
 # Stops the listener thread
 def stop ():

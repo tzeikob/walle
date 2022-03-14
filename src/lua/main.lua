@@ -74,7 +74,7 @@ function conky_draw ()
   end
 
   -- Render the user skills component
-  local skills = Skills:new (canvas)
+  local skills = Skills:new (canvas, data.actions)
   skills:locate (
     canvas.right - (50 * canvas.scale),
     canvas.bottom - (80 * canvas.scale))
