@@ -97,7 +97,7 @@ print('Resources files have been added')
 # Copy font files
 os.makedirs(FONTS_DIR)
 
-shutil.copy2('../fonts/wallecons.ttf', FONTS_DIR)
+shutil.copy2('../fonts/glyphs.ttf', FONTS_DIR)
 
 print('Font files have been added')
 

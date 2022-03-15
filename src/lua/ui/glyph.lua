@@ -2,7 +2,7 @@
 
 local Glyph = {
   canvas = nil,
-  face = "Wallecons",
+  face = "Walle Glyphs",
   char = "",
   size = 0,
   color = { 1, 1, 1, 1 },
