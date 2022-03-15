@@ -98,6 +98,7 @@ print('Resources files have been added')
 os.makedirs(FONTS_DIR)
 
 shutil.copy2('../fonts/glyphs.ttf', FONTS_DIR)
+shutil.copy2('../fonts/digits.ttf', FONTS_DIR)
 
 print('Font files have been added')
 

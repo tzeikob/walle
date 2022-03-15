@@ -38,13 +38,6 @@ echo -e "Config folder and files have been created"
 mkdir -p $FONTS_DIR
 cp $INSTALLATION_DIR/fonts/*.ttf $FONTS_DIR
 
-wget --no-show-progress \
-  -O $FONTS_DIR/kenyan-coffee.zip \
-  https://dl.dafont.com/dl/?f=kenyan_coffee
-
-unzip $FONTS_DIR/kenyan-coffee.zip -d $FONTS_DIR
-rm $FONTS_DIR/kenyan-coffee.zip
-
 echo -e "Fonts have been installed successfully"
 
 # Create the autostart gnome desktop file

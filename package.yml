@@ -11,8 +11,6 @@ dependencies:
     - 'conky'
     - 'conky-all'
     - 'iproute2'
-    - 'unzip'
-    - 'wget'
   python:
     - 'ruamel.yaml'
     - 'psutil'
