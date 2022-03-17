@@ -18,6 +18,7 @@ local logging = require "logging"
 
 local Canvas = require "canvas"
 local Grid = require "grid"
+local Stamina = require "stamina"
 local Skills = require "skills"
 
 local config = util.yaml.load (CONFIG_FILE_PATH)
@@ -73,7 +74,14 @@ function conky_draw ()
     grid:render ()
   end
 
-  -- Render the user skills component
+  -- Render the stamina component
+  local stamina = Stamina:new (canvas, { energy = 999 })
+  stamina:locate (
+    canvas.left + (50 * canvas.scale),
+    canvas.bottom - (80 * canvas.scale))
+  stamina:render ()
+
+  -- Render the skills component
   local skills = Skills:new (canvas, data.actions)
   skills:locate (
     canvas.right - (50 * canvas.scale),
