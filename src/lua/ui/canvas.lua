@@ -136,6 +136,13 @@ function Canvas:draw_line (x1, y1, x2, y2, width, color)
   cairo_stroke (self.context)
 end
 
+function Canvas:draw_rectangle (x, y, width, height, color)
+  cairo_set_source_rgba (self.context, unpack (color))
+
+  cairo_rectangle (self.context, x, y, width, height)
+  cairo_fill (self.context)
+end
+
 function Canvas:draw_dot (x, y, radius, color)
   cairo_set_source_rgba (self.context, unpack (color))
 

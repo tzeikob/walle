@@ -589,7 +589,7 @@ StartChar: space
 Encoding: 32 32 11
 Width: 169
 VWidth: 1000
-Flags: HWO
+Flags: HW
 LayerCount: 2
 EndChar
 EndChars
