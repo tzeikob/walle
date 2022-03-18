@@ -3,7 +3,7 @@
 local convert = require "convert"
 local Glyph = require "glyph"
 local Metric = require "metric"
-local Scalar = require "scalar"
+local BoxScalar = require "box-scalar"
 
 local Skills = {
   canvas = nil,
@@ -34,16 +34,16 @@ function Skills:new (canvas, data)
   }
 
   local scalar = convert.round (data.scrolls_rate, 1) * 10
-  o.scrolls = Scalar:new (o.canvas, Glyph.Scroll, 48 * o.canvas.scale, scalar)
+  o.scrolls = BoxScalar:new (o.canvas, scalar, Glyph.Scroll, 48 * o.canvas.scale)
 
   scalar = convert.round (data.moves_rate, 1) * 10
-  o.moves = Scalar:new (o.canvas, Glyph.Move, 48 * o.canvas.scale, scalar)
+  o.moves = BoxScalar:new (o.canvas, scalar, Glyph.Move, 48 * o.canvas.scale)
 
   scalar = convert.round (data.clicks_rate, 1) * 10
-  o.clicks = Scalar:new (o.canvas, Glyph.Click, 48 * o.canvas.scale, scalar)
+  o.clicks = BoxScalar:new (o.canvas, scalar, Glyph.Click, 48 * o.canvas.scale)
 
   scalar = convert.round (data.strokes_rate, 1) * 10
-  o.strokes = Scalar:new (o.canvas, Glyph.Stroke, 48 * o.canvas.scale, scalar)
+  o.strokes = BoxScalar:new (o.canvas, scalar, Glyph.Stroke, 48 * o.canvas.scale)
 
   o.x = 0
   o.y = 0
