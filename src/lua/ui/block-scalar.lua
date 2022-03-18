@@ -6,7 +6,7 @@ local BlockScalar = {
   canvas = nil,
   data = {
     value = 0,
-    max = 100
+    max = 0
   },
   style = {
     blocks = 20,
