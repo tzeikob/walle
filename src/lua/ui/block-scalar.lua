@@ -66,7 +66,7 @@ function BlockScalar:render ()
         else
           color = self.style.normal
         end
-      elseif block >= 3 and block <= 9 then
+      elseif block >= 3 and block <= self.style.blocks - 3 then
         color = self.style.normal
       else
         -- Use high color for the last 3 blocks
