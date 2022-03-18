@@ -9,7 +9,7 @@ local BlockScalar = {
     max = 100
   },
   style = {
-    blocks = 12,
+    blocks = 20,
     padding = 2,
     dim = { 1, 1, 1, 0.4 },
     normal = { 1, 1, 1, 0.8 },
