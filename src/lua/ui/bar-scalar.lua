@@ -1,35 +1,25 @@
--- A component for scalar values drawn a horizontal bar
+-- A component for scalar values drawn as a horizontal bar
 
 local BarScalar = {
   canvas = nil,
-  data =  {
-    value = 0,
-    max = 0,
-  },
   style = {
-    front = { 1, 1, 1, 0.8 },
-    back = { 1, 1, 1, 0.4 },
-    offset = 2
-  },
-  x = 0,
-  y = 0,
-  width = 0,
-  height = 0
+    offset = 2,
+    background = { 1, 1, 1, 0.4 },
+    forecolor = { 1, 0.6, 0.1, 0.8 }
+  }
 }
 
-function BarScalar:new (canvas, value, max, width, height, color)
+function BarScalar:new (canvas, value, max, width, height)
   local o = setmetatable ({}, self)
   self.__index = self
 
   o.canvas = canvas
-  o.data.value = value
-  o.data.max = max
-
-  o.style.front = color or o.style.front
-  o.style.offset = o.style.offset * o.canvas.scale
+  o.value = value
+  o.max = max
 
   o.x = 0
   o.y = 0
+
   o.width = width
   o.height = height
 
@@ -42,23 +32,23 @@ function BarScalar:locate (x, y)
 end
 
 function BarScalar:render ()
-  local scale = self.canvas.scale
+  local offset = self.style.offset * self.canvas.scale
 
   self.canvas:draw_rectangle (
-    self.x + self.style.offset,
-    self.y + self.style.offset,
+    self.x + offset,
+    self.y + offset,
     self.width,
     self.height,
-    self.style.back)
+    self.style.background)
 
-  local ratio = self.data.value / self.data.max
+  local ratio = self.value / self.max
 
   self.canvas:draw_rectangle (
     self.x,
     self.y,
     self.width * ratio,
     self.height,
-    self.style.front)
+    self.style.forecolor)
 end
 
 return BarScalar

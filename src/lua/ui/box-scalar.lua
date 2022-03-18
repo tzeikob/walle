@@ -1,57 +1,44 @@
--- A ui component to render a scalar box with a glyph facade
+-- A component for scalar values drawn as a shaded box with a glyph facade
 
 local Glyph = require "glyph"
 
 local BoxScalar = {
   canvas = nil,
-  data = {
-    value = 0
-  },
   style = {
-    size = 48,
-    back = { 1, 1, 1, 0.8 },
-    shade = { 0.9, 0.6, 0, 0.6 },
-    front = { 0.2, 0.2, 0.2, 1 },
+    background = { 1, 1, 1, 0.8 },
+    shade = { 1, 0.6, 0, 0.6 },
+    forecolor = { 0.2, 0.2, 0.2, 1 },
     dim = { 1, 1, 1, 0.4 }
-  },
-  box = nil,
-  shade = nil,
-  glyph = nil,
-  tag = nil,
-  x = 0,
-  y = 0,
-  width = 0,
-  height = 0
+  }
 }
 
-function BoxScalar:new (canvas, value, glyph, size)
+function BoxScalar:new (canvas, value, size, glyph)
   local o = setmetatable ({}, self)
   self.__index = self
 
   o.canvas = canvas
-  o.data.value = value
+  o.value = value
+  o.size = size
 
-  o.style.size = size or o.style.size
+  o.base = Glyph:new (canvas, Glyph.Box, size, o.style.background)
 
-  o.box = Glyph:new (o.canvas, Glyph.Box, o.style.size, o.style.back)
-
-  if o.data.value > 0 then
-    o.shade = Glyph:new (o.canvas, Glyph.Scalars[o.data.value], o.style.size, o.style.shade)
+  if value > 0 then
+    o.scalar = Glyph:new (canvas, Glyph.Scalars[value], size, o.style.shade)
   end
 
-  o.glyph = Glyph:new (o.canvas, glyph, o.style.size, o.style.front)
+  o.glyph = Glyph:new (canvas, glyph, size, o.style.forecolor)
 
-  if o.data.value >= 5 then
-    o.tag = Glyph:new (o.canvas, Glyph.High, o.style.size, o.style.dim)
-  elseif o.data.value <= 1 then
-    o.tag = Glyph:new (o.canvas, Glyph.Low, o.style.size, o.style.dim)
+  if value >= 5 then
+    o.tag = Glyph:new (canvas, Glyph.High, size, o.style.dim)
+  elseif value <= 1 then
+    o.tag = Glyph:new (canvas, Glyph.Low, size, o.style.dim)
   end
 
   o.x = 0
   o.y = 0
 
-  o.width = o.box.width
-  o.height = o.box.height
+  o.width = o.base.width
+  o.height = o.base.height
 
   return o
 end
@@ -62,12 +49,12 @@ function BoxScalar:locate (x, y)
 end
 
 function BoxScalar:render ()
-  self.box:locate (self.x, self.y)
-  self.box:render ()
+  self.base:locate (self.x, self.y)
+  self.base:render ()
 
-  if self.shade then
-    self.shade:locate (self.x, self.y)
-    self.shade:render ()
+  if self.scalar then
+    self.scalar:locate (self.x, self.y)
+    self.scalar:render ()
   end
 
   self.glyph:locate (self.x, self.y)

@@ -1,4 +1,4 @@
--- A ui component to render user's health and stamina metrics
+-- A component to render user's health and stamina metrics
 
 local Metric = require "metric"
 local BlockScalar = require "block-scalar"
@@ -6,12 +6,9 @@ local BarScalar = require "bar-scalar"
 
 local Stamina = {
   canvas = nil,
-  data = nil,
-  score = nil,
-  blocks = nil,
-  bar = nil,
-  x = 0,
-  y = 0
+  style = {
+    color = { 1, 1, 1, 0.8 }
+  }
 }
 
 function Stamina:new (canvas, data)
@@ -21,9 +18,11 @@ function Stamina:new (canvas, data)
   o.canvas = canvas
   o.data = data
 
-  o.score = Metric:new (o.canvas, data.energy, 999, 38 * o.canvas.scale, { 1, 1, 1, 0.8 }, "%03d")
-  o.blocks = BlockScalar:new (o.canvas, data.energy, 999, 240 * o.canvas.scale, 20 * o.canvas.scale)
-  o.bar = BarScalar:new (o.canvas, data.energy, 999, 240 * o.canvas.scale, 6 * o.canvas.scale, { 1, 0.4, 0, 0.8 })
+  local scale = canvas.scale
+
+  o.score = Metric:new (canvas, data.energy, 999, 38 * scale, o.style.color, "%03d")
+  o.blocks = BlockScalar:new (canvas, data.energy, 999, 20, 240 * scale, 20 * scale)
+  o.bar = BarScalar:new (canvas, data.energy, 999, 240 * scale, 6 * scale)
 
   o.x = 0
   o.y = 0

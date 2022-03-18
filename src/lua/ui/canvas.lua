@@ -3,21 +3,9 @@
 local cairo = require "cairo"
 
 local Canvas = {
-  display = nil,
-  drawable = nil,
-  visual = nil,
-  context = nil,
-  surface = nil,
-  extents = nil,
-  dark = false,
-  scale = 1,
-  width = 0,
-  height = 0,
-  margin = 10,
-  left = 0,
-  top = 0,
-  right = 0,
-  bottom = 0
+  style = {
+    margin = 10
+  }
 }
 
 function Canvas:new (window, dark, scale, offsets)
@@ -42,10 +30,11 @@ function Canvas:new (window, dark, scale, offsets)
   tolua.takeownership (o.extents)
 
   -- Set dark mode
-  o.dark = dark or false
+  o.dark = dark
 
-  o.scale = scale or 1
-  o.margin = o.margin * o.scale
+  o.scale = scale
+
+  o.margin = o.style.margin * scale
 
   -- Set the boundary edges of the drawing area
   o.left = o.margin

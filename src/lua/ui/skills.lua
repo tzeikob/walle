@@ -1,4 +1,4 @@
--- A ui component to render metrics for the user input skills
+-- A component to render metrics from the user input
 
 local convert = require "convert"
 local Glyph = require "glyph"
@@ -7,16 +7,10 @@ local BoxScalar = require "box-scalar"
 
 local Skills = {
   canvas = nil,
-  data = nil,
-  score = nil,
-  hand = nil,
-  tags = nil,
-  scrolls = nil,
-  moves = nil,
-  clicks = nil,
-  strokes = nil,
-  x = 0,
-  y = 0
+  style = {
+    color = { 1, 1, 1, 0.8 },
+    dim = { 1, 1, 1, 0.4 }
+  }
 }
 
 function Skills:new (canvas, data)
@@ -26,24 +20,25 @@ function Skills:new (canvas, data)
   o.canvas = canvas
   o.data = data
 
-  o.score = Metric:new (o.canvas, data.total, nil, 32 * o.canvas.scale, { 1, 1, 1, 0.8 }, "%06d")
-  o.hand = Glyph:new (o.canvas, Glyph.Hand, 48 * o.canvas.scale, { 1, 1, 1, 0.8 })
+  local scale = canvas.scale
 
+  o.score = Metric:new (canvas, data.total, nil, 32 * scale, o.style.color, "%06d")
+  o.hand = Glyph:new (canvas, Glyph.Hand, 48 * scale, o.style.color)
   o.tags = {
-    Glyph:new (o.canvas, Glyph.Infinity, 36 * o.canvas.scale, { 1, 1, 1, 0.4 })
+    Glyph:new (canvas, Glyph.Infinity, 36 * scale, o.style.dim)
   }
 
   local scalar = convert.round (data.scrolls_rate, 1) * 10
-  o.scrolls = BoxScalar:new (o.canvas, scalar, Glyph.Scroll, 48 * o.canvas.scale)
+  o.scrolls = BoxScalar:new (canvas, scalar, 48 * scale, Glyph.Scroll)
 
   scalar = convert.round (data.moves_rate, 1) * 10
-  o.moves = BoxScalar:new (o.canvas, scalar, Glyph.Move, 48 * o.canvas.scale)
+  o.moves = BoxScalar:new (canvas, scalar, 48 * scale, Glyph.Move)
 
   scalar = convert.round (data.clicks_rate, 1) * 10
-  o.clicks = BoxScalar:new (o.canvas, scalar, Glyph.Click, 48 * o.canvas.scale)
+  o.clicks = BoxScalar:new (canvas, scalar, 48 * scale, Glyph.Click)
 
   scalar = convert.round (data.strokes_rate, 1) * 10
-  o.strokes = BoxScalar:new (o.canvas, scalar, Glyph.Stroke, 48 * o.canvas.scale)
+  o.strokes = BoxScalar:new (canvas, scalar, 48 * scale, Glyph.Stroke)
 
   o.x = 0
   o.y = 0
@@ -82,12 +77,12 @@ function Skills:render ()
   local x2 = self.hand.x + self.hand.width + (6 * scale)
   local y2 = y1
 
-  self.canvas:draw_line (x1, y1, x2, y2, 1 * scale, { 1, 1, 1, 0.4 } )
+  self.canvas:draw_line (x1, y1, x2, y2, 1 * scale, self.style.dim)
 
   y1 = self.hand.y - self.hand.height - (6 * scale)
   y2 = y1
 
-  self.canvas:draw_line (x1, y1, x2, y2, 1 * scale, { 1, 1, 1, 0.4 })
+  self.canvas:draw_line (x1, y1, x2, y2, 1 * scale, self.style.dim)
 
   self.score:locate (
     self.hand.x + self.hand.width - self.score.width,
@@ -115,7 +110,7 @@ function Skills:render ()
   x2 = x1
   y2 = y1 - self.clicks.height + (4 * scale)
 
-  self.canvas:draw_line (x1, y1, x2, y2, 1 * scale, { 1, 1, 1, 0.4 })
+  self.canvas:draw_line (x1, y1, x2, y2, 1 * scale, self.style.dim)
 
   self.strokes:locate (
     self.clicks.x - self.strokes.width - (30 * scale),

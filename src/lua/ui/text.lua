@@ -1,17 +1,7 @@
--- A ui component to render simple text
+-- A component to render simple text
 
 local Text = {
-  canvas = nil,
-  face = "",
-  value = "",
-  size = 0,
-  slanted = false,
-  bold = false,
-  color = { 1, 1, 1, 1 },
-  x = 0,
-  y = 0,
-  width = 0,
-  height = 0
+  canvas = nil
 }
 
 function Text:new (canvas, face, value, size, slanted, bold, color)
@@ -19,19 +9,18 @@ function Text:new (canvas, face, value, size, slanted, bold, color)
   self.__index = self
 
   o.canvas = canvas
-
-  o.face = face or ""
-  o.value = value or ""
-  o.size = size or 0
-  o.slanted = slanted or false
-  o.bold = bold or false
-  o.color = color or { 1, 1, 1, 1 }
+  o.face = face
+  o.value = value
+  o.size = size
+  o.slanted = slanted
+  o.bold = bold
+  o.color = color
 
   o.x = 0
   o.y = 0
 
-  o.canvas:set_font (o.face, o.size, o.slanted, o.bold)
-  local dims = o.canvas:resolve_text (o.value)
+  canvas:set_font (face, size, slanted, bold)
+  local dims = canvas:resolve_text (value)
 
   o.width = dims.width
   o.height = dims.height

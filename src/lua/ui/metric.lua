@@ -1,20 +1,12 @@
--- A ui component to render a metric value
+-- A component to render a numerical value
 
 local Text = require "text"
 
 local Metric = {
   canvas = nil,
-  face = "Walle Digits",
-  value = 0,
-  size = 0,
-  color = { 1, 1, 1, 1 },
-  format = "",
-  current = nil,
-  max = nil,
-  x = 0,
-  y = 0,
-  width = 0,
-  height = 0
+  style = {
+    face = "Walle Digits"
+  }
 }
 
 function Metric:new (canvas, value, max, size, color, format)
@@ -22,18 +14,17 @@ function Metric:new (canvas, value, max, size, color, format)
   self.__index = self
 
   o.canvas = canvas
+  o.value = value
+  o.size = size
+  o.color = color
+  o.format = format
 
-  o.value = value or 0
-  o.size = size or 0
-  o.color = color or { 1, 1, 1, 1 }
-  o.format = format or "%03d"
-
-  value = string.format (o.format, o.value)
-  o.current = Text:new (o.canvas, o.face, value, o.size, false, false, o.color)
+  value = string.format (format, value)
+  o.current = Text:new (canvas, o.style.face, value, size, false, false, color)
 
   if max and max > 0 then
     max = " / " .. max
-    o.max = Text:new (o.canvas, o.face, max, o.size * 0.6, false, false, o.color)
+    o.max = Text:new (canvas, o.style.face, max, size * 0.6, false, false, color)
   end
 
   o.x = 0
@@ -43,7 +34,7 @@ function Metric:new (canvas, value, max, size, color, format)
   o.height = o.current.height
 
   if o.max then
-    o.width = o.width + (2 * o.canvas.scale) + o.max.width
+    o.width = o.width + (2 * canvas.scale) + o.max.width
   end
 
   return o
@@ -59,7 +50,7 @@ function Metric:render ()
   self.current:render ()
 
   if self.max then
-    local x = self.x + (2 * self.canvas.scale) + self.current.width
+    local x = self.x + self.current.width + (2 * self.canvas.scale)
 
     self.max:locate (x, self.y)
     self.max:render ()
