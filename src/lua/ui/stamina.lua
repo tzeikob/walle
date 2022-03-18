@@ -2,7 +2,7 @@
 
 local Metric = require "metric"
 local BlockScalar = require "block-scalar"
-local Bar = require "bar"
+local BarScalar = require "bar-scalar"
 
 local Stamina = {
   canvas = nil,
@@ -23,7 +23,7 @@ function Stamina:new (canvas, data)
 
   o.score = Metric:new (o.canvas, data.energy, 999, 38 * o.canvas.scale, { 1, 1, 1, 0.8 }, "%03d")
   o.blocks = BlockScalar:new (o.canvas, data.energy, 999, 240 * o.canvas.scale, 20 * o.canvas.scale)
-  o.bar = Bar:new (o.canvas, data.energy, 999, 240 * o.canvas.scale, 6 * o.canvas.scale, { 1, 0.4, 0, 0.8 })
+  o.bar = BarScalar:new (o.canvas, data.energy, 999, 240 * o.canvas.scale, 6 * o.canvas.scale, { 1, 0.4, 0, 0.8 })
 
   o.x = 0
   o.y = 0
