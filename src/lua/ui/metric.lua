@@ -5,6 +5,7 @@ local Text = require "text"
 local Metric = {
   canvas = nil,
   style = {
+    offset = 2,
     face = "Walle Digits"
   }
 }
@@ -35,7 +36,8 @@ function Metric:new (canvas, value, max, format, size, color)
   o.height = o.left.height
 
   if o.right then
-    o.width = o.width + (2 * o.canvas.scale) + o.right.width
+    local offset = o.style.offset * o.canvas.scale
+    o.width = o.width + offset + o.right.width
   end
 
   return o
@@ -51,7 +53,8 @@ function Metric:render ()
   self.left:render ()
 
   if self.right then
-    local x = self.x + self.left.width + (2 * self.canvas.scale)
+    local offset = self.style.offset * self.canvas.scale
+    local x = self.x + self.left.width + offset
 
     self.right:locate (x, self.y)
     self.right:render ()
