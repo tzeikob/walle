@@ -1,6 +1,6 @@
 -- A component for scalar values drawn as a horizontal bar
 
-local BarScalar = {
+local Bar = {
   canvas = nil,
   style = {
     offset = 2,
@@ -9,7 +9,7 @@ local BarScalar = {
   }
 }
 
-function BarScalar:new (canvas, value, max, width, height)
+function Bar:new (canvas, value, max, width, height)
   local o = setmetatable ({}, self)
   self.__index = self
 
@@ -26,12 +26,12 @@ function BarScalar:new (canvas, value, max, width, height)
   return o
 end
 
-function BarScalar:locate (x, y)
+function Bar:locate (x, y)
   self.x = x
   self.y = y
 end
 
-function BarScalar:render ()
+function Bar:render ()
   local offset = self.style.offset * self.canvas.scale
 
   self.canvas:draw_rectangle (
@@ -51,4 +51,4 @@ function BarScalar:render ()
     self.style.forecolor)
 end
 
-return BarScalar
+return Bar

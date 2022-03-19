@@ -2,7 +2,7 @@
 
 local convert = require "convert"
 
-local BlockScalar = {
+local Blocks = {
   canvas = nil,
   style = {
     padding = 2,
@@ -13,7 +13,7 @@ local BlockScalar = {
   }
 }
 
-function BlockScalar:new (canvas, value, max, splits, width, height)
+function Blocks:new (canvas, value, max, splits, width, height)
   local o = setmetatable ({}, self)
   self.__index = self
 
@@ -31,12 +31,12 @@ function BlockScalar:new (canvas, value, max, splits, width, height)
   return o
 end
 
-function BlockScalar:locate (x, y)
+function Blocks:locate (x, y)
   self.x = x
   self.y = y
 end
 
-function BlockScalar:render ()
+function Blocks:render ()
   -- Reduce current value to an integer scalar of split blocks
   local ratio = self.value / self.max
   local scalar = convert.round (ratio * self.splits)
@@ -73,4 +73,4 @@ function BlockScalar:render ()
   end
 end
 
-return BlockScalar
+return Blocks

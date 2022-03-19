@@ -2,7 +2,7 @@
 
 local Glyph = require "glyph"
 
-local BoxScalar = {
+local Box = {
   canvas = nil,
   style = {
     base = { 1, 1, 1, 0.8 },
@@ -12,7 +12,7 @@ local BoxScalar = {
   }
 }
 
-function BoxScalar:new (canvas, value, size, glyph)
+function Box:new (canvas, value, size, glyph)
   local o = setmetatable ({}, self)
   self.__index = self
 
@@ -43,12 +43,12 @@ function BoxScalar:new (canvas, value, size, glyph)
   return o
 end
 
-function BoxScalar:locate (x, y)
+function Box:locate (x, y)
   self.x = x
   self.y = y
 end
 
-function BoxScalar:render ()
+function Box:render ()
   self.base:locate (self.x, self.y)
   self.base:render ()
 
@@ -68,4 +68,4 @@ function BoxScalar:render ()
   end
 end
 
-return BoxScalar
+return Box
