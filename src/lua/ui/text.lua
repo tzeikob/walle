@@ -19,8 +19,8 @@ function Text:new (canvas, value, face, size, slanted, bold, color)
   o.x = 0
   o.y = 0
 
-  canvas:set_font (face, size, slanted, bold)
-  local dims = canvas:resolve_text (value)
+  o.canvas:set_font (o.face, o.size, o.slanted, o.bold)
+  local dims = o.canvas:resolve_text (o.value)
 
   o.width = dims.width
   o.height = dims.height

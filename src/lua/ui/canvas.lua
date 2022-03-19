@@ -33,7 +33,7 @@ function Canvas:new (window, dark, scale, offsets)
 
   o.scale = scale
 
-  o.margin = o.style.margin * scale
+  o.margin = o.style.margin * o.scale
 
   -- Set the boundary edges of the drawing area
   o.left = o.margin

@@ -20,25 +20,25 @@ function Skills:new (canvas, data)
   o.canvas = canvas
   o.data = data
 
-  local scale = canvas.scale
+  local scale = o.canvas.scale
 
-  o.score = Metric:new (canvas, data.total, nil, "%06d", 32 * scale, o.style.color)
-  o.hand = Glyph:new (canvas, Glyph.Hand, 48 * scale, o.style.color)
+  o.score = Metric:new (o.canvas, data.total, nil, "%06d", 32 * scale, o.style.color)
+  o.hand = Glyph:new (o.canvas, Glyph.Hand, 48 * scale, o.style.color)
   o.tags = {
-    Glyph:new (canvas, Glyph.Infinity, 36 * scale, o.style.dim)
+    Glyph:new (o.canvas, Glyph.Infinity, 36 * scale, o.style.dim)
   }
 
   local scalar = convert.round (data.scrolls_rate, 1) * 10
-  o.scrolls = Box:new (canvas, scalar, 48 * scale, Glyph.Scroll)
+  o.scrolls = Box:new (o.canvas, scalar, 48 * scale, Glyph.Scroll)
 
   scalar = convert.round (data.moves_rate, 1) * 10
-  o.moves = Box:new (canvas, scalar, 48 * scale, Glyph.Move)
+  o.moves = Box:new (o.canvas, scalar, 48 * scale, Glyph.Move)
 
   scalar = convert.round (data.clicks_rate, 1) * 10
-  o.clicks = Box:new (canvas, scalar, 48 * scale, Glyph.Click)
+  o.clicks = Box:new (o.canvas, scalar, 48 * scale, Glyph.Click)
 
   scalar = convert.round (data.strokes_rate, 1) * 10
-  o.strokes = Box:new (canvas, scalar, 48 * scale, Glyph.Stroke)
+  o.strokes = Box:new (o.canvas, scalar, 48 * scale, Glyph.Stroke)
 
   o.x = 0
   o.y = 0

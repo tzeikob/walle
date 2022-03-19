@@ -29,8 +29,8 @@ function Glyph:new (canvas, char, size, color)
   o.x = 0
   o.y = 0
 
-  canvas:set_font (o.style.face, size, false, false)
-  local dims = canvas:resolve_text (char)
+  o.canvas:set_font (o.style.face, o.size, false, false)
+  local dims = o.canvas:resolve_text (o.char)
 
   o.width = dims.width
   o.height = dims.height

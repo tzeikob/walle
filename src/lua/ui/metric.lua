@@ -20,12 +20,12 @@ function Metric:new (canvas, value, max, format, size, color)
   o.size = size
   o.color = color
 
-  value = string.format (format, value)
-  o.left = Text:new (canvas, value, o.style.face, size, false, false, color)
+  value = string.format (o.format, value)
+  o.left = Text:new (o.canvas, value, o.style.face, o.size, false, false, o.color)
 
   if max and max > 0 then
     max = " / " .. max
-    o.right = Text:new (canvas, max, o.style.face, size * 0.6, false, false, color)
+    o.right = Text:new (o.canvas, max, o.style.face, o.size * 0.6, false, false, o.color)
   end
 
   o.x = 0
@@ -35,7 +35,7 @@ function Metric:new (canvas, value, max, format, size, color)
   o.height = o.left.height
 
   if o.right then
-    o.width = o.width + (2 * canvas.scale) + o.right.width
+    o.width = o.width + (2 * o.canvas.scale) + o.right.width
   end
 
   return o
