@@ -66,10 +66,7 @@ function conky_draw ()
 
   -- Render ui components for debugging purposes
   if debug_mode then
-    local width = canvas.right - canvas.margin
-    local height = canvas.bottom - canvas.margin
-
-    local grid = Grid:new (canvas, width, height)
+    local grid = Grid:new (canvas, canvas.width, canvas.height)
     grid:locate (canvas.left, canvas.top)
     grid:render ()
   end

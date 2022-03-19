@@ -16,11 +16,11 @@ function Canvas:new (window, dark, scale, offsets)
   o.display = window.display
   o.drawable = window.drawable
   o.visual = window.visual
-  o.width = window.width
-  o.height = window.height
+  o.window_width = window.width
+  o.window_height = window.height
 
   -- Create the surface cairo object
-  o.surface = cairo_xlib_surface_create (o.display, o.drawable, o.visual, o.width, o.height)
+  o.surface = cairo_xlib_surface_create (o.display, o.drawable, o.visual, o.window_width, o.window_height)
 
   -- Create the context object to draw on
   o.context = cairo_create (o.surface)
@@ -33,19 +33,24 @@ function Canvas:new (window, dark, scale, offsets)
 
   o.scale = scale
 
+  -- Apply scaling to the margin
   o.margin = o.style.margin * o.scale
 
   -- Set the boundary edges of the drawing area
   o.left = o.margin
   o.top = o.margin
-  o.right = o.width - o.margin
-  o.bottom = o.height - o.margin
+  o.right = o.window_width - o.margin
+  o.bottom = o.window_height - o.margin
 
   -- Shift boudnary edges with respect to the given offsets
   o.left = o.left + offsets.left
   o.top = o.top + offsets.top
   o.right = o.right + offsets.right
   o.bottom = o.bottom + offsets.bottom
+
+  -- Set the dims of the actual drawing area
+  o.width = o.right - o.left
+  o.height = o.bottom - o.top
 
   return o
 end
