@@ -27,7 +27,6 @@ function Canvas:new (window, dark, scale, offsets)
 
   -- Create a text processor to resolve text size in pixels
   o.extents = cairo_text_extents_t:create ()
-  tolua.takeownership (o.extents)
 
   -- Set dark mode
   o.dark = dark
