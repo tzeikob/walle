@@ -22,7 +22,7 @@ function Skills:new (canvas, data)
 
   local scale = canvas.scale
 
-  o.score = Metric:new (canvas, data.total, nil, 32 * scale, o.style.color, "%06d")
+  o.score = Metric:new (canvas, data.total, nil, "%06d", 32 * scale, o.style.color)
   o.hand = Glyph:new (canvas, Glyph.Hand, 48 * scale, o.style.color)
   o.tags = {
     Glyph:new (canvas, Glyph.Infinity, 36 * scale, o.style.dim)

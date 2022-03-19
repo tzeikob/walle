@@ -5,10 +5,10 @@ local Glyph = require "glyph"
 local BoxScalar = {
   canvas = nil,
   style = {
-    background = { 1, 1, 1, 0.8 },
-    shade = { 1, 0.6, 0, 0.6 },
-    forecolor = { 0.2, 0.2, 0.2, 1 },
-    dim = { 1, 1, 1, 0.4 }
+    base = { 1, 1, 1, 0.8 },
+    scalar = { 1, 0.6, 0, 0.6 },
+    glyph = { 0.2, 0.2, 0.2, 1 },
+    tag = { 1, 1, 1, 0.4 }
   }
 }
 
@@ -20,18 +20,18 @@ function BoxScalar:new (canvas, value, size, glyph)
   o.value = value
   o.size = size
 
-  o.base = Glyph:new (canvas, Glyph.Box, size, o.style.background)
+  o.base = Glyph:new (canvas, Glyph.Box, size, o.style.base)
 
   if value > 0 then
-    o.scalar = Glyph:new (canvas, Glyph.Scalars[value], size, o.style.shade)
+    o.scalar = Glyph:new (canvas, Glyph.Scalars[value], size, o.style.scalar)
   end
 
-  o.glyph = Glyph:new (canvas, glyph, size, o.style.forecolor)
+  o.glyph = Glyph:new (canvas, glyph, size, o.style.glyph)
 
   if value >= 5 then
-    o.tag = Glyph:new (canvas, Glyph.High, size, o.style.dim)
+    o.tag = Glyph:new (canvas, Glyph.High, size, o.style.tag)
   elseif value <= 1 then
-    o.tag = Glyph:new (canvas, Glyph.Low, size, o.style.dim)
+    o.tag = Glyph:new (canvas, Glyph.Low, size, o.style.tag)
   end
 
   o.x = 0

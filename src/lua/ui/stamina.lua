@@ -20,7 +20,7 @@ function Stamina:new (canvas, data)
 
   local scale = canvas.scale
 
-  o.score = Metric:new (canvas, data.energy, 999, 38 * scale, o.style.color, "%03d")
+  o.score = Metric:new (canvas, data.energy, 999, "%03d", 38 * scale, o.style.color)
   o.blocks = BlockScalar:new (canvas, data.energy, 999, 20, 240 * scale, 20 * scale)
   o.bar = BarScalar:new (canvas, data.energy, 999, 240 * scale, 6 * scale)
 

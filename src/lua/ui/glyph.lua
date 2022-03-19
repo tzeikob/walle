@@ -1,4 +1,4 @@
--- A component to render a glyph icon
+-- A component to render icons as font based glyph characters
 
 local Glyph = {
   canvas = nil,

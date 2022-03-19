@@ -9,32 +9,33 @@ local Metric = {
   }
 }
 
-function Metric:new (canvas, value, max, size, color, format)
+function Metric:new (canvas, value, max, format, size, color)
   local o = setmetatable ({}, self)
   self.__index = self
 
   o.canvas = canvas
   o.value = value
+  o.max = max
+  o.format = format
   o.size = size
   o.color = color
-  o.format = format
 
   value = string.format (format, value)
-  o.current = Text:new (canvas, o.style.face, value, size, false, false, color)
+  o.left = Text:new (canvas, value, o.style.face, size, false, false, color)
 
   if max and max > 0 then
     max = " / " .. max
-    o.max = Text:new (canvas, o.style.face, max, size * 0.6, false, false, color)
+    o.right = Text:new (canvas, max, o.style.face, size * 0.6, false, false, color)
   end
 
   o.x = 0
   o.y = 0
 
-  o.width = o.current.width
-  o.height = o.current.height
+  o.width = o.left.width
+  o.height = o.left.height
 
-  if o.max then
-    o.width = o.width + (2 * canvas.scale) + o.max.width
+  if o.right then
+    o.width = o.width + (2 * canvas.scale) + o.right.width
   end
 
   return o
@@ -46,14 +47,14 @@ function Metric:locate (x, y)
 end
 
 function Metric:render ()
-  self.current:locate (self.x, self.y)
-  self.current:render ()
+  self.left:locate (self.x, self.y)
+  self.left:render ()
 
-  if self.max then
-    local x = self.x + self.current.width + (2 * self.canvas.scale)
+  if self.right then
+    local x = self.x + self.left.width + (2 * self.canvas.scale)
 
-    self.max:locate (x, self.y)
-    self.max:render ()
+    self.right:locate (x, self.y)
+    self.right:render ()
   end
 end
 

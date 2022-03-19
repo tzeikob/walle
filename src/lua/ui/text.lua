@@ -4,13 +4,13 @@ local Text = {
   canvas = nil
 }
 
-function Text:new (canvas, face, value, size, slanted, bold, color)
+function Text:new (canvas, value, face, size, slanted, bold, color)
   local o = setmetatable ({}, self)
   self.__index = self
 
   o.canvas = canvas
-  o.face = face
   o.value = value
+  o.face = face
   o.size = size
   o.slanted = slanted
   o.bold = bold
