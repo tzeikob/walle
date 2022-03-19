@@ -6,7 +6,7 @@ local Box = {
   canvas = nil,
   style = {
     base = { 1, 1, 1, 0.8 },
-    scalar = { 1, 0.6, 0, 0.6 },
+    scalar = { 1, 0.6, 0.1, 0.8 },
     glyph = { 0.2, 0.2, 0.2, 1 },
     tag = { 1, 1, 1, 0.4 }
   }
