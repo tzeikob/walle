@@ -107,32 +107,33 @@ end
 
 function Canvas:draw_text (x, y, text)
   cairo_move_to (self.context, x, y)
+
   cairo_text_path (self.context, text)
   cairo_fill (self.context)
 end
 
 function Canvas:draw_line (x1, y1, x2, y2, width, color)
-  self:set_color (color)
+  cairo_move_to (self.context, x1, y1)
+  cairo_line_to (self.context, x2, y2)
 
   cairo_set_line_width (self.context, width)
   cairo_set_line_cap (self.context, CAIRO_LINE_CAP_SQUARE)
 
-  cairo_move_to (self.context, x1, y1)
-  cairo_line_to (self.context, x2, y2)
+  self:set_color (color)
   cairo_stroke (self.context)
 end
 
 function Canvas:draw_rectangle (x, y, width, height, color)
-  self:set_color (color)
-
   cairo_rectangle (self.context, x, y, width, height)
+
+  self:set_color (color)
   cairo_fill (self.context)
 end
 
 function Canvas:draw_dot (x, y, radius, color)
-  self:set_color (color)
-
   cairo_arc (self.context, x, y, radius, 0, 2 * math.pi)
+
+  self:set_color (color)
   cairo_fill (self.context)
 end
 
