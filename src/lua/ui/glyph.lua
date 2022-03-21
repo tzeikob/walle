@@ -23,7 +23,7 @@ function Glyph:new (canvas, char, size, color)
 
   o.canvas = canvas
   o.char = char
-  o.size = size
+  o.size = size * o.canvas.scale
   o.color = color
 
   o.x = 0

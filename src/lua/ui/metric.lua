@@ -18,15 +18,14 @@ function Metric:new (canvas, value, max, format, size, color)
   o.value = value
   o.max = max
   o.format = format
-  o.size = size
   o.color = color
 
   value = string.format (o.format, value)
-  o.left = Text:new (o.canvas, value, o.style.face, o.size, false, false, o.color)
+  o.left = Text:new (o.canvas, value, o.style.face, size, false, false, o.color)
 
   if max and max > 0 then
     max = " / " .. max
-    o.right = Text:new (o.canvas, max, o.style.face, o.size * 0.6, false, false, o.color)
+    o.right = Text:new (o.canvas, max, o.style.face, size * 0.6, false, false, o.color)
   end
 
   o.x = 0

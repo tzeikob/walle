@@ -11,7 +11,7 @@ function Text:new (canvas, value, face, size, slanted, bold, color)
   o.canvas = canvas
   o.value = value
   o.face = face
-  o.size = size
+  o.size = size * o.canvas.scale
   o.slanted = slanted
   o.bold = bold
   o.color = color

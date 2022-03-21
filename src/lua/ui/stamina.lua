@@ -18,11 +18,9 @@ function Stamina:new (canvas, data)
   o.canvas = canvas
   o.data = data
 
-  local scale = o.canvas.scale
-
-  o.score = Metric:new (o.canvas, data.energy, 999, "%03d", 38 * scale, o.style.color)
-  o.blocks = Blocks:new (o.canvas, data.energy, 999, 20, 240 * scale, 20 * scale)
-  o.bar = Bar:new (o.canvas, data.energy, 999, 240 * scale, 6 * scale)
+  o.score = Metric:new (o.canvas, data.energy, 999, "%03d", 38, o.style.color)
+  o.blocks = Blocks:new (o.canvas, data.energy, 999, 20, 240, 20)
+  o.bar = Bar:new (o.canvas, data.energy, 999, 240, 6)
 
   o.x = 0
   o.y = 0

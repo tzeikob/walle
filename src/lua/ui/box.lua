@@ -18,20 +18,19 @@ function Box:new (canvas, value, size, glyph)
 
   o.canvas = canvas
   o.value = value
-  o.size = size
 
-  o.base = Glyph:new (o.canvas, Glyph.Box, o.size, o.style.base)
+  o.base = Glyph:new (o.canvas, Glyph.Box, size, o.style.base)
 
   if o.value > 0 then
-    o.scalar = Glyph:new (o.canvas, Glyph.Scalars[o.value], o.size, o.style.scalar)
+    o.scalar = Glyph:new (o.canvas, Glyph.Scalars[o.value], size, o.style.scalar)
   end
 
-  o.glyph = Glyph:new (o.canvas, glyph, o.size, o.style.glyph)
+  o.glyph = Glyph:new (o.canvas, glyph, size, o.style.glyph)
 
   if o.value >= 5 then
-    o.tag = Glyph:new (o.canvas, Glyph.High, o.size, o.style.tag)
+    o.tag = Glyph:new (o.canvas, Glyph.High, size, o.style.tag)
   elseif value <= 1 then
-    o.tag = Glyph:new (o.canvas, Glyph.Low, o.size, o.style.tag)
+    o.tag = Glyph:new (o.canvas, Glyph.Low, size, o.style.tag)
   end
 
   o.x = 0

@@ -25,8 +25,8 @@ function Blocks:new (canvas, value, max, splits, width, height)
   o.x = 0
   o.y = 0
 
-  o.width = width
-  o.height = height
+  o.width = width * o.canvas.scale
+  o.height = height * o.canvas.scale
 
   return o
 end
@@ -37,14 +37,15 @@ function Blocks:locate (x, y)
 end
 
 function Blocks:render ()
+  local padding = self.style.padding * self.canvas.scale
+
+  -- Calculate the width each split block should occupate
+  local padding_space = (self.splits - 1) * padding
+  local block_width = (self.width - padding_space) / self.splits
+
   -- Reduce current value to an integer scalar of split blocks
   local ratio = self.value / self.max
   local scalar = convert.round (ratio * self.splits)
-
-  -- Calculate the width each split block should occupate
-  local padding = self.style.padding * self.canvas.scale
-  local padding_space = (self.splits - 1) * padding
-  local block_width = (self.width - padding_space) / self.splits
 
   for block = 1, self.splits, 1 do
     local color = self.style.dim

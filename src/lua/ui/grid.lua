@@ -22,8 +22,8 @@ function Grid:new (canvas, width, height)
   o.x = 0
   o.y = 0
 
-  o.width = width
-  o.height = height
+  o.width = width * o.canvas.scale
+  o.height = height * o.canvas.scale
 
   return o
 end

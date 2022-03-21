@@ -66,7 +66,11 @@ function conky_draw ()
 
   -- Render ui components for debugging purposes
   if debug_mode then
-    local grid = Grid:new (canvas, canvas.width, canvas.height)
+    -- Exclude grid area size from scaling
+    local width = canvas.width / canvas.scale
+    local height = canvas.height / canvas.scale
+
+    local grid = Grid:new (canvas, width, height)
     grid:locate (canvas.left, canvas.top)
     grid:render ()
   end
