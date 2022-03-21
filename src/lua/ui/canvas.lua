@@ -72,7 +72,7 @@ function Canvas:set_font (face, size, slanted, bold)
   end
 
   cairo_select_font_face (self.context, face, slant, weight)
-  cairo_set_font_size (self.context, size)
+  self:set_font_size (size)
 end
 
 function Canvas:set_font_size (size)
@@ -112,7 +112,7 @@ function Canvas:draw_text (x, y, text)
 end
 
 function Canvas:draw_line (x1, y1, x2, y2, width, color)
-  cairo_set_source_rgba (self.context, unpack (color))
+  self:set_color (color)
 
   cairo_set_line_width (self.context, width)
   cairo_set_line_cap (self.context, CAIRO_LINE_CAP_SQUARE)
@@ -123,14 +123,14 @@ function Canvas:draw_line (x1, y1, x2, y2, width, color)
 end
 
 function Canvas:draw_rectangle (x, y, width, height, color)
-  cairo_set_source_rgba (self.context, unpack (color))
+  self:set_color (color)
 
   cairo_rectangle (self.context, x, y, width, height)
   cairo_fill (self.context)
 end
 
 function Canvas:draw_dot (x, y, radius, color)
-  cairo_set_source_rgba (self.context, unpack (color))
+  self:set_color (color)
 
   cairo_arc (self.context, x, y, radius, 0, 2 * math.pi)
   cairo_fill (self.context)
