@@ -2,11 +2,7 @@
 
 local cairo = require "cairo"
 
-local Canvas = {
-  style = {
-    margin = 10
-  }
-}
+local Canvas = {}
 
 function Canvas:new (window, dark, scale, offsets)
   local o = setmetatable ({}, self)
@@ -33,14 +29,11 @@ function Canvas:new (window, dark, scale, offsets)
 
   o.scale = scale
 
-  -- Apply scaling to the margin
-  o.margin = o.style.margin * o.scale
-
   -- Set the boundary edges of the drawing area
-  o.left = o.margin
-  o.top = o.margin
-  o.right = o.window_width - o.margin
-  o.bottom = o.window_height - o.margin
+  o.left = 0
+  o.top = 0
+  o.right = o.window_width
+  o.bottom = o.window_height
 
   -- Shift boudnary edges with respect to the given offsets
   o.left = o.left + offsets.left
