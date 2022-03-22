@@ -5,7 +5,8 @@ local Text = require "text"
 local Label = {
   canvas = nil,
   style = {
-    margin = 6
+    margin = 6,
+    roundness = 2
   }
 }
 
@@ -42,11 +43,12 @@ end
 function Label:render ()
   local scale = self.canvas.scale
   local margin = self.style.margin * scale
+  local roundness = self.style.roundness * scale
 
   local x = self.x
   local y = self.y - self.height
 
-  self.canvas:draw_rectangle (x, y, self.width, self.height, self.background)
+  self.canvas:draw_round_rectangle (x, y, self.width, self.height, roundness, self.background)
 
   x = self.x + (self.width / 2) - (self.text.width / 2)
 

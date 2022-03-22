@@ -130,6 +130,22 @@ function Canvas:draw_rectangle (x, y, width, height, color)
   cairo_fill (self.context)
 end
 
+function Canvas:draw_round_rectangle (x, y, width, height, radius, color)
+  local deg = math.pi / 180.0
+
+  cairo_new_sub_path (self.context)
+
+  cairo_arc (self.context, x + width - radius, y + radius, radius, -90 * deg, 0 * deg)
+  cairo_arc (self.context, x + width - radius, y + height - radius, radius, 0 * deg, 90 * deg)
+  cairo_arc (self.context, x + radius, y + height - radius, radius, 90 * deg, 180 * deg)
+  cairo_arc (self.context, x + radius, y + radius, radius, 180 * deg, 270 * deg)
+
+  cairo_close_path (self.context)
+
+  self:set_color(color)
+  cairo_fill (self.context)
+end
+
 function Canvas:draw_dot (x, y, radius, color)
   cairo_arc (self.context, x, y, radius, 0, 2 * math.pi)
 
