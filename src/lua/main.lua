@@ -15,6 +15,7 @@ package.path = package.path .. ";" .. BASE_DIR .. "/ui/?.lua"
 
 local util = require "util"
 local logging = require "logging"
+local format = require "format"
 
 local Canvas = require "canvas"
 local Grid = require "grid"
@@ -76,7 +77,9 @@ function conky_draw ()
   end
 
   -- Render the user's status component
-  local status = Status:new (canvas, { energy = 999 })
+  local status = Status:new (canvas, {
+    energy = 999,
+    username = format.upper (data.static.login.user .. " AT " .. data.static.login.host) })
   status:locate (canvas.left, canvas.bottom)
   status:render ()
 
