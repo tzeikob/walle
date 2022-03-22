@@ -1,10 +1,10 @@
--- A component to render user's health and stamina metrics
+-- A component to render user's health and status metrics
 
 local Metric = require "metric"
 local Blocks = require "blocks"
 local Bar = require "bar"
 
-local Stamina = {
+local Status = {
   canvas = nil,
   style = {
     margin_left = 50,
@@ -14,7 +14,7 @@ local Stamina = {
   }
 }
 
-function Stamina:new (canvas, data)
+function Status:new (canvas, data)
   local o = setmetatable ({}, self)
   self.__index = self
 
@@ -31,12 +31,12 @@ function Stamina:new (canvas, data)
   return o
 end
 
-function Stamina:locate (x, y)
+function Status:locate (x, y)
   self.x = x
   self.y = y
 end
 
-function Stamina:render ()
+function Status:render ()
   local scale = self.canvas.scale
 
   local margin_left = self.style.margin_left * scale
@@ -60,4 +60,4 @@ function Stamina:render ()
   self.canvas:restore_transform ()
 end
 
-return Stamina
+return Status

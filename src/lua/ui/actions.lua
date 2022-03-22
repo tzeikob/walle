@@ -5,7 +5,7 @@ local Glyph = require "glyph"
 local Metric = require "metric"
 local Box = require "box"
 
-local Skills = {
+local Actions = {
   canvas = nil,
   style = {
     margin_right = 50,
@@ -15,7 +15,7 @@ local Skills = {
   }
 }
 
-function Skills:new (canvas, data)
+function Actions:new (canvas, data)
   local o = setmetatable ({}, self)
   self.__index = self
 
@@ -46,12 +46,12 @@ function Skills:new (canvas, data)
   return o
 end
 
-function Skills:locate (x, y)
+function Actions:locate (x, y)
   self.x = x
   self.y = y
 end
 
-function Skills:render ()
+function Actions:render ()
   local scale = self.canvas.scale
 
   local margin_right = self.style.margin_right * scale
@@ -126,4 +126,4 @@ function Skills:render ()
   self.canvas:restore_transform ()
 end
 
-return Skills
+return Actions

@@ -18,8 +18,8 @@ local logging = require "logging"
 
 local Canvas = require "canvas"
 local Grid = require "grid"
-local Stamina = require "stamina"
-local Skills = require "skills"
+local Status = require "status"
+local Actions = require "actions"
 
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
@@ -75,15 +75,15 @@ function conky_draw ()
     grid:render ()
   end
 
-  -- Render the stamina component
-  local stamina = Stamina:new (canvas, { energy = 999 })
-  stamina:locate (canvas.left, canvas.bottom)
-  stamina:render ()
+  -- Render the user's status component
+  local status = Status:new (canvas, { energy = 999 })
+  status:locate (canvas.left, canvas.bottom)
+  status:render ()
 
-  -- Render the skills component
-  local skills = Skills:new (canvas, data.actions)
-  skills:locate (canvas.right, canvas.bottom)
-  skills:render ()
+  -- Render the user's actions component
+  local actions = Actions:new (canvas, data.actions)
+  actions:locate (canvas.right, canvas.bottom)
+  actions:render ()
 
   -- Destroy the ui context
   canvas:dispose ()
