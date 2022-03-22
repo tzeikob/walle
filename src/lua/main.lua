@@ -76,19 +76,13 @@ function conky_draw ()
   end
 
   -- Render the stamina component
-  local x = canvas.left + (50 * canvas.scale)
-  local y = canvas.bottom - (80 * canvas.scale)
-
   local stamina = Stamina:new (canvas, { energy = 999 })
-  stamina:locate (x, y)
+  stamina:locate (canvas.left, canvas.bottom)
   stamina:render ()
 
   -- Render the skills component
-  x = canvas.right - (50 * canvas.scale)
-  y = canvas.bottom - (80 * canvas.scale)
-
   local skills = Skills:new (canvas, data.actions)
-  skills:locate (x, y)
+  skills:locate (canvas.right, canvas.bottom)
   skills:render ()
 
   -- Destroy the ui context

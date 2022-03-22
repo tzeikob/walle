@@ -8,6 +8,8 @@ local Box = require "box"
 local Skills = {
   canvas = nil,
   style = {
+    margin_right = 50,
+    margin_bottom = 80,
     color = { 1, 1, 1, 0.8 },
     dim = { 1, 1, 1, 0.4 }
   }
@@ -51,6 +53,12 @@ end
 
 function Skills:render ()
   local scale = self.canvas.scale
+
+  local margin_right = self.style.margin_right * scale
+  local margin_bottom = self.style.margin_bottom * scale
+
+  self.x = self.x - margin_right
+  self.y = self.y - margin_bottom
 
   self.canvas:apply_transform (1.0, 0.1, -0.2, 1.0, 0.2 * self.y, -0.1 * self.x)
 

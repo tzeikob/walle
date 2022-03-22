@@ -7,6 +7,9 @@ local Bar = require "bar"
 local Stamina = {
   canvas = nil,
   style = {
+    margin_left = 50,
+    margin_bottom = 80,
+    padding = 8,
     color = { 1, 1, 1, 0.8 }
   }
 }
@@ -36,15 +39,22 @@ end
 function Stamina:render ()
   local scale = self.canvas.scale
 
+  local margin_left = self.style.margin_left * scale
+  local margin_bottom = self.style.margin_bottom * scale
+  local padding = self.style.padding * scale
+
+  self.x = self.x + margin_left
+  self.y = self.y - margin_bottom
+
   self.canvas:apply_transform (1.0, -0.06, -0.2, 1.0, 0.2 * self.y, 0.06 * self.x)
 
   self.bar:locate (self.x, self.y - self.bar.height)
   self.bar:render ()
 
-  self.blocks:locate (self.bar.x, self.bar.y - self.blocks.height - (8 * scale))
+  self.blocks:locate (self.bar.x, self.bar.y - self.blocks.height - padding)
   self.blocks:render ()
 
-  self.score:locate (self.blocks.x, self.blocks.y - (8 * scale))
+  self.score:locate (self.blocks.x, self.blocks.y - padding)
   self.score:render ()
 
   self.canvas:restore_transform ()
