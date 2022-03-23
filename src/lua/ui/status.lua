@@ -9,10 +9,8 @@ local Image = require "image"
 local Status = {
   canvas = nil,
   style = {
-    skew = {
-      yx = -0.06,
-      xy = -0.2
-    },
+    skew_yx = -0.06,
+    skew_xy = -0.2,
     margin_left = 50,
     margin_bottom = 80,
     padding = 8,
@@ -53,8 +51,9 @@ function Status:locate (x, y)
 end
 
 function Status:render ()
-  local skew = self.style.skew
   local scale = self.canvas.scale
+  local skew_yx = self.style.skew_yx
+  local skew_xy = self.style.skew_xy
 
   local margin_left = self.style.margin_left * scale
   local margin_bottom = self.style.margin_bottom * scale
@@ -63,13 +62,13 @@ function Status:render ()
   local x = self.x + margin_left
   local y = self.y - margin_bottom
 
-  local dx = -1 * skew.xy * y
-  local dy = -1 * skew.yx * x
+  local dx = -1 * skew_xy * y
+  local dy = -1 * skew_yx * x
 
   self.avatar:locate (x, y - dy * 2)
   self.avatar:render ()
 
-  self.canvas:apply_transform (1.0, skew.yx, skew.xy, 1.0, dx, dy)
+  self.canvas:apply_transform (1.0, skew_yx, skew_xy, 1.0, dx, dy)
 
   self.label:locate (x + self.avatar.width + padding, y)
   self.label:render ()

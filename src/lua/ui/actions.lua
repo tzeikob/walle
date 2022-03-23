@@ -8,6 +8,8 @@ local Box = require "box"
 local Actions = {
   canvas = nil,
   style = {
+    skew_yx = 0.1,
+    skew_xy = -0.2,
     margin_right = 50,
     margin_bottom = 80,
     color = { 1, 1, 1, 0.8 },
@@ -53,16 +55,21 @@ end
 
 function Actions:render ()
   local scale = self.canvas.scale
+  local skew_yx = self.style.skew_yx
+  local skew_xy = self.style.skew_xy
 
   local margin_right = self.style.margin_right * scale
   local margin_bottom = self.style.margin_bottom * scale
 
-  self.x = self.x - margin_right
-  self.y = self.y - margin_bottom
+  local x = self.x - margin_right
+  local y = self.y - margin_bottom
 
-  self.canvas:apply_transform (1.0, 0.1, -0.2, 1.0, 0.2 * self.y, -0.1 * self.x)
+  local dx = -1 * skew_xy * y
+  local dy = -1 * skew_yx * x
 
-  self.hand:locate (self.x - self.hand.width, self.y)
+  self.canvas:apply_transform (1, skew_yx, skew_xy, 1, dx, dy)
+
+  self.hand:locate (x - self.hand.width, y)
   self.hand:render ()
 
   for i = 1, table.getn (self.tags) do
