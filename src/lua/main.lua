@@ -3,6 +3,7 @@
 local PKG_NAME = "#PKG_NAME"
 local BASE_DIR = "/usr/share/" .. PKG_NAME .. "/lua"
 local CONFIG_DIR = "/home/#USER/.config/" .. PKG_NAME
+local ASSETS_DIR = CONFIG_DIR .. "/assets"
 
 local CONFIG_FILE_PATH = CONFIG_DIR .. "/config.yml"
 local LOG_FILE_PATH = CONFIG_DIR .. "/all.log"
@@ -78,6 +79,7 @@ function conky_draw ()
 
   -- Render the user's status component
   local status = Status:new (canvas, {
+    avatar = ASSETS_DIR .. '/avatar.png',
     energy = 999,
     username = format.upper (data.static.login.user .. " AT " .. data.static.login.host) })
   status:locate (canvas.left, canvas.bottom)

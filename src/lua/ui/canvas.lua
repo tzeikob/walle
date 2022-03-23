@@ -153,4 +153,20 @@ function Canvas:draw_dot (x, y, radius, color)
   cairo_fill (self.context)
 end
 
+function Canvas:create_image (file_path)
+  local glob = {}
+
+  glob.image = cairo_image_surface_create_from_png (file_path)
+  glob.width = cairo_image_surface_get_width (glob.image)
+  glob.height = cairo_image_surface_get_height (glob.image)
+
+  return glob
+end
+
+function Canvas:paint_image (x, y, image)
+  cairo_set_source_surface (self.context, image, x, y)
+
+  cairo_paint (self.context)
+end
+
 return Canvas

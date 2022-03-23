@@ -39,6 +39,7 @@ INSTALL_DIR = BUILD_DIR + '/usr/share/' + pkg['name']
 BIN_DIR = INSTALL_DIR + '/bin'
 LUA_DIR = INSTALL_DIR + '/lua'
 FONTS_DIR = INSTALL_DIR + '/fonts'
+ASSETS_DIR = INSTALL_DIR + '/assets'
 
 print(f"Debian build process started for '{pkg['name']} v{pkg['version']}'")
 
@@ -102,6 +103,13 @@ shutil.copy2('../fonts/digits.ttf', FONTS_DIR)
 
 print('Font files have been added')
 
+# Copy asset files
+os.makedirs(ASSETS_DIR)
+
+shutil.copy2('../assets/avatar.png', ASSETS_DIR)
+
+print('Assets files have been added')
+
 # Set file size to zero bytes
 pkg['size'] = 0
 
@@ -114,7 +122,7 @@ for path, dirs, files in os.walk(BUILD_DIR):
     pkg['size'] += os.path.getsize(file_path)
 
     # Do not apply package props injection to binary files
-    if file_path.endswith('ttf'):
+    if file_path.endswith('ttf') or file_path.endswith('png'):
       continue
 
     # Read file contents

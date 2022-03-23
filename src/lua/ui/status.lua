@@ -4,10 +4,15 @@ local Metric = require "metric"
 local Blocks = require "blocks"
 local Bar = require "bar"
 local Label = require "label"
+local Image = require "image"
 
 local Status = {
   canvas = nil,
   style = {
+    skew = {
+      yx = -0.06,
+      xy = -0.2
+    },
     margin_left = 50,
     margin_bottom = 80,
     padding = 8,
@@ -27,6 +32,15 @@ function Status:new (canvas, data)
   o.bar = Bar:new (o.canvas, data.energy, 999, 240, 6)
   o.label = Label:new (o.canvas, data.username, "UbuntuCondensed", 16, false, false, { 0.1, 0.1, 0.1, 0.8 }, 0, { 1, 1, 1, 0.8 }, 0)
 
+  -- Calculate the avatar size equal to the total height
+  local scale = o.canvas.scale
+  local padding = o.style.padding * scale
+
+  local size = o.label.height + o.bar.height + o.blocks.height + o.score.height
+  size = size + (3 * padding)
+
+  o.avatar = Image:new (o.canvas, data.avatar, size / scale)
+
   o.x = 0
   o.y = 0
 
@@ -39,18 +53,25 @@ function Status:locate (x, y)
 end
 
 function Status:render ()
+  local skew = self.style.skew
   local scale = self.canvas.scale
 
   local margin_left = self.style.margin_left * scale
   local margin_bottom = self.style.margin_bottom * scale
   local padding = self.style.padding * scale
 
-  self.x = self.x + margin_left
-  self.y = self.y - margin_bottom
+  local x = self.x + margin_left
+  local y = self.y - margin_bottom
 
-  self.canvas:apply_transform (1.0, -0.06, -0.2, 1.0, 0.2 * self.y, 0.06 * self.x)
+  local dx = -1 * skew.xy * y
+  local dy = -1 * skew.yx * x
 
-  self.label:locate (self.x, self.y)
+  self.avatar:locate (x, y - dy * 2)
+  self.avatar:render ()
+
+  self.canvas:apply_transform (1.0, skew.yx, skew.xy, 1.0, dx, dy)
+
+  self.label:locate (x + self.avatar.width + padding, y)
   self.label:render ()
 
   self.bar:locate (self.label.x, self.label.y - self.label.height - self.bar.height - padding)
