@@ -81,7 +81,8 @@ function conky_draw ()
   local status = Status:new (canvas, {
     avatar = ASSETS_DIR .. '/avatar.png',
     energy = 999,
-    username = format.upper (data.static.login.user .. " AT " .. data.static.login.host) })
+    username = format.upper (data.static.login.user),
+    connected = data.network.conn })
   status:locate (canvas.left, canvas.bottom)
   status:render ()
 
