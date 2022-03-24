@@ -3,7 +3,7 @@
 local Metric = require "metric"
 local Blocks = require "blocks"
 local Bar = require "bar"
-local Label = require "label"
+local Login = require "login"
 local Image = require "image"
 
 local Status = {
@@ -28,13 +28,13 @@ function Status:new (canvas, data)
   o.score = Metric:new (o.canvas, data.energy, 999, "%03d", 38, o.style.color)
   o.blocks = Blocks:new (o.canvas, data.energy, 999, 20, 240, 20)
   o.bar = Bar:new (o.canvas, data.energy, 999, 240, 6)
-  o.label = Label:new (o.canvas, data.username, data.connected, 0, 0)
+  o.login = Login:new (o.canvas, data.username, data.connected, 0, 0)
 
   -- Calculate the avatar size equal to the total height
   local scale = o.canvas.scale
   local padding = o.style.padding * scale
 
-  local size = o.label.height + o.bar.height + o.blocks.height + o.score.height
+  local size = o.login.height + o.bar.height + o.blocks.height + o.score.height
   size = size + (3 * padding)
 
   o.avatar = Image:new (o.canvas, data.avatar, size / scale)
@@ -70,10 +70,10 @@ function Status:render ()
 
   self.canvas:apply_transform (1.0, skew_yx, skew_xy, 1.0, dx, dy)
 
-  self.label:locate (x + self.avatar.width + padding, y)
-  self.label:render ()
+  self.login:locate (x + self.avatar.width + padding, y)
+  self.login:render ()
 
-  self.bar:locate (self.label.x, self.label.y - self.label.height - self.bar.height - padding)
+  self.bar:locate (self.login.x, self.login.y - self.login.height - self.bar.height - padding)
   self.bar:render ()
 
   self.blocks:locate (self.bar.x, self.bar.y - self.blocks.height - padding)

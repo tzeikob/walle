@@ -1,8 +1,8 @@
--- A component to render a label of text
+-- A component to render user's login data
 
 local Text = require "text"
 
-local Label = {
+local Login = {
   canvas = nil,
   style = {
     margin = 6,
@@ -20,7 +20,7 @@ local Label = {
   }
 }
 
-function Label:new (canvas, value, connected, width, align)
+function Login:new (canvas, value, connected, width, align)
   local o = setmetatable ({}, self)
   self.__index = self
 
@@ -56,12 +56,12 @@ function Label:new (canvas, value, connected, width, align)
   return o
 end
 
-function Label:locate (x, y)
+function Login:locate (x, y)
   self.x = x
   self.y = y
 end
 
-function Label:render ()
+function Login:render ()
   local scale = self.canvas.scale
 
   local margin = self.style.margin * scale
@@ -100,4 +100,4 @@ function Label:render ()
   self.canvas:draw_rectangle (x, y, dot_size, dot_size, color)
 end
 
-return Label
+return Login
