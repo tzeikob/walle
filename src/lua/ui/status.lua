@@ -14,7 +14,8 @@ local Status = {
     margin_left = 50,
     margin_bottom = 80,
     padding = 8,
-    color = { 1, 1, 1, 0.8 }
+    color = { 1, 1, 1, 0.8 },
+    dark = { 0.1, 0.1, 0.1, 0.8 }
   }
 }
 
@@ -28,7 +29,7 @@ function Status:new (canvas, data)
   o.score = Metric:new (o.canvas, data.energy, 999, "%03d", 38, o.style.color)
   o.blocks = Blocks:new (o.canvas, data.energy, 999, 20, 240, 20)
   o.bar = Bar:new (o.canvas, data.energy, 999, 240, 6)
-  o.label = Label:new (o.canvas, data.username, "UbuntuCondensed", 16, false, false, { 0.1, 0.1, 0.1, 0.8 }, 0, { 1, 1, 1, 0.8 }, 0)
+  o.label = Label:new (o.canvas, data.username, "UbuntuCondensed", 16, false, false, o.style.dark, 0, o.style.color, 0)
 
   -- Calculate the avatar size equal to the total height
   local scale = o.canvas.scale
