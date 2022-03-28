@@ -45,6 +45,10 @@ function Canvas:new (window, dark, scale, offsets)
   o.width = o.right - o.left
   o.height = o.bottom - o.top
 
+  -- Set the horizontal and vertical middle lines
+  o.center_x = o.left + (o.width / 2)
+  o.center_y = o.top + (o.height / 2)
+
   return o
 end
 

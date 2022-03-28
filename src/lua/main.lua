@@ -22,6 +22,7 @@ local Canvas = require "canvas"
 local Grid = require "grid"
 local Status = require "status"
 local Actions = require "actions"
+local Timings = require "timings"
 
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
@@ -90,6 +91,11 @@ function conky_draw ()
   local actions = Actions:new (canvas, data.actions)
   actions:locate (canvas.right, canvas.bottom)
   actions:render ()
+
+  -- Render the timings component
+  local timings = Timings:new (canvas, { uptime = data.uptime })
+  timings:locate (canvas.center_x, canvas.top)
+  timings:render ()
 
   -- Destroy the ui context
   canvas:dispose ()
