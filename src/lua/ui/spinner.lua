@@ -145,7 +145,6 @@ function Spinner:render ()
 
     x = x + self.extents[i].width + (padding / 2)
   end
-
 end
 
 return Spinner
