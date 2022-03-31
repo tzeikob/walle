@@ -150,6 +150,31 @@ function Canvas:draw_round_rectangle (x, y, width, height, radius, color)
   cairo_fill (self.context)
 end
 
+function Canvas:draw_trapezoid (x, y, width, height, extrude, orientation, symmetry, color)
+  cairo_new_sub_path (self.context)
+
+  cairo_line_to (self.context, x, y)
+  cairo_line_to (self.context, x + width, y)
+
+  y = y + height
+
+  if symmetry == 0 then
+    cairo_line_to (self.context, x + width + (orientation * extrude), y)
+    cairo_line_to (self.context, x - (orientation * extrude), y)
+  elseif symmetry == 1 then
+    cairo_line_to (self.context, x + width + (orientation * extrude), y)
+    cairo_line_to (self.context, x, y)
+  elseif symmetry == -1 then
+    cairo_line_to (self.context, x + width, y)
+    cairo_line_to (self.context, x - (orientation * extrude), y)
+  end
+
+  cairo_close_path (self.context)
+
+  self:set_color(color)
+  cairo_fill (self.context)
+end
+
 function Canvas:draw_dot (x, y, radius, color)
   cairo_arc (self.context, x, y, radius, 0, 2 * math.pi)
 

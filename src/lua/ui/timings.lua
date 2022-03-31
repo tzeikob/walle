@@ -1,11 +1,13 @@
 -- A component to render timings metrics and status
 
 local Spinner = require "spinner"
+local Ticker = require "ticker"
 
 local Timings = {
   canvas = nil,
   style = {
-    margin_top = 50
+    margin_top = 50,
+    padding = 10
   }
 }
 
@@ -17,6 +19,7 @@ function Timings:new (canvas, data)
   o.data = data
 
   o.hours = Spinner:new (o.canvas, o.data.uptime.hours, 24, 32)
+  o.mins = Ticker:new (o.canvas, o.data.uptime.mins, 60, 12, o.hours.width * 0.95, 5)
 
   o.x = 0
   o.y = 0
@@ -31,13 +34,21 @@ end
 
 function Timings:render ()
   local scale = self.canvas.scale
+
   local margin_top = self.style.margin_top * scale
+  local padding = self.style.padding * scale
 
   local x = self.x - (self.hours.width / 2)
   local y = self.y + margin_top
 
   self.hours:locate (x, y)
   self.hours:render ()
+
+  x = self.hours.x + ((self.hours.width - self.mins.width) / 2)
+  y = self.hours.y + padding
+
+  self.mins:locate (x, y)
+  self.mins:render ()
 end
 
 return Timings
