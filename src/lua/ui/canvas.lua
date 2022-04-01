@@ -150,23 +150,51 @@ function Canvas:draw_round_rectangle (x, y, width, height, radius, color)
   cairo_fill (self.context)
 end
 
-function Canvas:draw_trapezoid (x, y, width, height, extrude, orientation, symmetry, color)
+function Canvas:draw_left_trapezoid (x, y, width, height, theta, portion, color)
+  local tan = math.atan (theta)
+  local adjacent = height / tan
+  local fill_width = width * portion
+
+  cairo_new_sub_path (self.context)
+  cairo_line_to (self.context, x, y)
+
+  if fill_width > adjacent then
+    cairo_line_to (self.context, x + fill_width, y)
+    cairo_line_to (self.context, x + fill_width, y + height)
+    cairo_line_to (self.context, x + adjacent, y + height)
+  else
+    local opposite = fill_width * tan
+
+    cairo_line_to (self.context, x + fill_width, y)
+    cairo_line_to (self.context, x + fill_width, y + opposite)
+  end
+
+  cairo_close_path (self.context)
+
+  self:set_color(color)
+  cairo_fill (self.context)
+end
+
+function Canvas:draw_right_trapezoid (x, y, width, height, theta, portion, color)
+  local tan = math.atan (theta)
+  local adjacent = height / tan
+  local fill_width = width * portion
+
   cairo_new_sub_path (self.context)
 
   cairo_line_to (self.context, x, y)
-  cairo_line_to (self.context, x + width, y)
 
-  y = y + height
+  if fill_width > width - adjacent then
+    local opposite = (width - fill_width) * tan
 
-  if symmetry == 0 then
-    cairo_line_to (self.context, x + width + (orientation * extrude), y)
-    cairo_line_to (self.context, x - (orientation * extrude), y)
-  elseif symmetry == 1 then
-    cairo_line_to (self.context, x + width + (orientation * extrude), y)
-    cairo_line_to (self.context, x, y)
-  elseif symmetry == -1 then
-    cairo_line_to (self.context, x + width, y)
-    cairo_line_to (self.context, x - (orientation * extrude), y)
+    cairo_line_to (self.context, x + fill_width, y)
+    cairo_line_to (self.context, x + fill_width, y + opposite)
+    cairo_line_to (self.context, x + (width - adjacent), y + height)
+    cairo_line_to (self.context, x, y + height)
+  else
+    cairo_line_to (self.context, x + fill_width, y)
+    cairo_line_to (self.context, x + fill_width, y + height)
+    cairo_line_to (self.context, x, y + height)
   end
 
   cairo_close_path (self.context)

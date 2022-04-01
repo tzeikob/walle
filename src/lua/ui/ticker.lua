@@ -4,7 +4,7 @@ local Ticker = {
   canvas = nil,
   style = {
     padding = 2,
-    skew = 0.06,
+    theta = 1.4,
     color = { 1, 0.8, 0, 0.8 },
     dim = { 1, 1, 1, 0.2 }
   }
@@ -37,46 +37,54 @@ function Ticker:render ()
   local scale = self.canvas.scale
 
   local padding = self.style.padding * scale
-  local skew = self.style.skew
+  local theta = self.style.theta
 
-  local shared_width = self.width - ((self.splits - 1) * padding)
-  local share = shared_width / self.splits
-
-  local rate = self.value / (self.max - 1)
-  local current = math.floor (rate * self.splits)
-
-  local color = self.style.color
-
-  if current < 1 then
-    color = self.style.dim
-  end
+  local width = self.width - ((self.splits - 1) * padding)
+  local share = width / self.splits
 
   local x = self.x
   local y = self.y
 
-  self.canvas:draw_trapezoid (x, y, share, self.height, share * skew, -1, -1, color)
-
-  for i = 2, self.splits - 1, 1 do
-    color = self.style.color
-
-    if current < i then
-      color = self.style.dim
+  for i = 1, self.splits, 1 do
+    if i == 1 then
+      self.canvas:draw_left_trapezoid (x, y, share, self.height, theta, 1, self.style.dim)
+    elseif i == self.splits then
+      self.canvas:draw_right_trapezoid (x, y, share, self.height, theta, 1, self.style.dim)
+    elseif i > 1 and i < self.splits then
+      self.canvas:draw_rectangle (x, y, share, self.height, self.style.dim)
     end
 
     x = x + share + padding
-
-    self.canvas:draw_rectangle (x, y, share, self.height, color)
   end
 
-  color = self.style.color
+  local rate = self.value / (self.max - 1)
+  local filled = math.floor (rate * self.splits)
 
-  if current < self.splits then
-    color = self.style.dim
+  x = self.x
+
+  for i = 1, filled, 1 do
+    if i == 1 then
+      self.canvas:draw_left_trapezoid (x, y, share, self.height, theta, 1, self.style.color)
+    elseif i == self.splits then
+      self.canvas:draw_right_trapezoid (x, y, share, self.height, theta, 1, self.style.color)
+    elseif i > 1 and i < self.splits then
+      self.canvas:draw_rectangle (x, y, share, self.height, self.style.color)
+    end
+
+    x = x + share + padding
   end
 
-  x = x + share + padding
+  local split_size = self.max / self.splits
+  local remain = self.value - (filled * split_size)
+  local portion = remain / split_size
 
-  self.canvas:draw_trapezoid (x, y, share, self.height, share * skew, -1, 1, color)
+  if filled == 0 then
+    self.canvas:draw_left_trapezoid (x, y, share, self.height, theta, portion, self.style.color)
+  elseif filled == self.splits - 1 then
+    self.canvas:draw_right_trapezoid (x, y, share, self.height, theta, portion, self.style.color)
+  elseif filled > 0 and filled < self.splits then
+    self.canvas:draw_rectangle (x, y, share * portion, self.height, self.style.color)
+  end
 end
 
 return Ticker

@@ -21,7 +21,8 @@ function Timings:new (canvas, data)
   o.hours = Spinner:new (o.canvas, o.data.uptime.hours, 24, 32)
 
   local width = math.floor ((o.hours.width / o.canvas.scale) * 0.95)
-  o.mins = Ticker:new (o.canvas, o.data.uptime.mins, 60, 12, width, 5)
+  local value = o.data.uptime.secs + (60 * o.data.uptime.mins)
+  o.mins = Ticker:new (o.canvas, value, 60 * 60, 12, width, 5)
 
   o.x = 0
   o.y = 0
