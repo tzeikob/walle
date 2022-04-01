@@ -1,7 +1,5 @@
 -- A component for timing values drawn as a horizontal bar
 
-local convert = require "convert"
-
 local Ticker = {
   canvas = nil,
   style = {
