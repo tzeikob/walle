@@ -23,6 +23,7 @@ local Grid = require "grid"
 local Status = require "status"
 local Actions = require "actions"
 local Timings = require "timings"
+local Monitor = require "monitor"
 
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
@@ -96,6 +97,16 @@ function conky_draw ()
   local timings = Timings:new (canvas, { uptime = data.uptime })
   timings:locate (canvas.center_x, canvas.top)
   timings:render ()
+
+  -- Render the monitor component
+  local monitor = Monitor:new (canvas, {
+    cpu = data.monitor.cpu,
+    gpu = data.monitor.gpu,
+    mem = data.monitor.memory,
+    disk = data.monitor.disk
+  })
+  monitor:locate (canvas.right, canvas.top)
+  monitor:render ()
 
   -- Destroy the ui context
   canvas:dispose ()
