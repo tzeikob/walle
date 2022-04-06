@@ -6,9 +6,11 @@ local Text = require "text"
 local Message = {
   canvas = nil,
   style = {
-    padding = 6,
+    padding_top = 8,
+    padding_bottom = 8,
+    padding_left = 25,
+    padding_right = 25,
     space = 5,
-    roundness = 1,
     face = "UbuntuCondensend",
     slanted = true,
     bold = false,
@@ -44,10 +46,13 @@ function Message:new (canvas, text, size)
   o.y = 0
 
   local scale = o.canvas.scale
-  local padding = o.style.padding * scale
+  local padding_top = o.style.padding_top * scale
+  local padding_bottom = o.style.padding_bottom * scale
+  local padding_left = o.style.padding_left * scale
+  local padding_right = o.style.padding_right * scale
   local space = o.style.space * scale
 
-  o.width = padding
+  o.width = padding_left
 
   for i = 1, table.getn (o.words), 1 do
     if i > 1 then
@@ -57,8 +62,8 @@ function Message:new (canvas, text, size)
     o.width = o.width + o.words[i].width
   end
 
-  o.width = o.width + padding
-  o.height = o.words[1].height + (padding * 2)
+  o.width = o.width + padding_right
+  o.height = padding_top + o.words[1].height + padding_bottom
 
   return o
 end
@@ -71,17 +76,19 @@ end
 function Message:render ()
   local scale = self.canvas.scale
 
-  local padding = self.style.padding * scale
+  local padding_top = self.style.padding_top * scale
+  local padding_bottom = self.style.padding_bottom * scale
+  local padding_left = self.style.padding_left * scale
+  local padding_right = self.style.padding_right * scale
   local space = self.style.space * scale
-  local roundness = self.style.roundness * scale
 
   local x = self.x
   local y = self.y - self.height
 
-  self.canvas:draw_round_rectangle (x, y, self.width, self.height, roundness, self.style.background)
+  self.canvas:draw_gradient (x, y, self.width, self.height, self.style.background)
 
-  x = self.x + padding
-  y = y + self.height - padding
+  x = self.x + padding_left
+  y = y + self.height - padding_bottom
 
   for i = 1, table.getn (self.words), 1 do
     if i > 1 then

@@ -150,6 +150,23 @@ function Canvas:draw_round_rectangle (x, y, width, height, radius, color)
   cairo_fill (self.context)
 end
 
+function Canvas:draw_gradient (x, y, width, height, color)
+  local context = self.context
+
+  local pattern = cairo_pattern_create_linear (x, y, x + width, y)
+
+  cairo_pattern_add_color_stop_rgba (pattern, 0, color[1], color[2], color[3], 0)
+  cairo_pattern_add_color_stop_rgba (pattern, 0.25, unpack (color))
+  cairo_pattern_add_color_stop_rgba (pattern, 0.75, unpack (color))
+  cairo_pattern_add_color_stop_rgba (pattern, 1, color[1], color[2], color[3], 0)
+
+  cairo_rectangle (context, x, y, width, height)
+  cairo_set_source (context, pattern)
+  cairo_fill (context)
+
+  cairo_pattern_destroy (pattern)
+end
+
 function Canvas:draw_left_trapezoid (x, y, width, height, theta, portion, color)
   local tan = math.atan (theta)
   local adjacent = height / tan
