@@ -24,6 +24,7 @@ local Status = require "status"
 local Actions = require "actions"
 local Timings = require "timings"
 local Monitor = require "monitor"
+local Notifier = require "notifier"
 
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
@@ -107,6 +108,13 @@ function conky_draw ()
   })
   monitor:locate (canvas.right, canvas.top)
   monitor:render ()
+
+  -- Render the notifier component
+  local notifier = Notifier:new (canvas, {
+    "CODE IS SO h{SEXY} TRY IT!"
+  })
+  notifier:locate (canvas.center_x, canvas.top)
+  notifier:render ()
 
   -- Destroy the ui context
   canvas:dispose ()
