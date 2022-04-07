@@ -25,10 +25,10 @@ function Status:new (canvas, data)
   o.canvas = canvas
   o.data = data
 
-  o.score = Metric:new (o.canvas, data.energy, 999, "%03d", 38, o.style.color)
-  o.blocks = Blocks:new (o.canvas, data.energy, 999, 20, 240, 20)
-  o.bar = Bar:new (o.canvas, data.energy, 999, 240, 6)
-  o.login = Login:new (o.canvas, data.username, data.connected, 0, 0)
+  o.score = Metric:new (o.canvas, o.data.energy, 999, "%03d", 38, o.style.color)
+  o.blocks = Blocks:new (o.canvas, o.data.energy, 999, 20, 240, 20)
+  o.bar = Bar:new (o.canvas, o.data.energy, 999, 240, 6)
+  o.login = Login:new (o.canvas, o.data.username, o.data.connected, 0, 0)
 
   -- Calculate the avatar size equal to the total height
   local scale = o.canvas.scale
@@ -37,7 +37,7 @@ function Status:new (canvas, data)
   local size = o.login.height + o.bar.height + o.blocks.height + o.score.height
   size = size + (3 * padding)
 
-  o.avatar = Image:new (o.canvas, data.avatar, size / scale)
+  o.avatar = Image:new (o.canvas, o.data.avatar, size / scale)
 
   o.x = 0
   o.y = 0

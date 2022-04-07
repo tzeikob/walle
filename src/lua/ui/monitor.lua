@@ -21,10 +21,10 @@ function Monitor:new (canvas, data)
   o.canvas = canvas
   o.data = data
 
-  o.core = Load:new (o.canvas, "CORE", data.cpu.util, "%02d", data.cpu.temp, 90)
-  o.disp = Load:new (o.canvas, "FLOAT", data.gpu.util, "%02d", data.gpu.temp, 90)
-  o.stack = Load:new (o.canvas, "STACK", data.mem.util, "%02d", nil, o.disp.width / o.canvas.scale)
-  o.store = Load:new (o.canvas, "STORE", data.disk.util, "%02d", nil, o.stack.width / o.canvas.scale)
+  o.core = Load:new (o.canvas, "CORE", o.data.cpu.util, "%02d", o.data.cpu.temp, 90)
+  o.disp = Load:new (o.canvas, "FLOAT", o.data.gpu.util, "%02d", o.data.gpu.temp, 90)
+  o.stack = Load:new (o.canvas, "STACK", o.data.mem.util, "%02d", nil, o.disp.width / o.canvas.scale)
+  o.store = Load:new (o.canvas, "STORE", o.data.disk.util, "%02d", nil, o.stack.width / o.canvas.scale)
 
   o.x = 0
   o.y = 0

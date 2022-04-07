@@ -19,8 +19,8 @@ function Notifier:new (canvas, messages)
 
   o.stack = {}
 
-  for i = 1, table.getn (messages), 1 do
-    table.insert (o.stack, Message:new (o.canvas, messages[i], 22))
+  for i = 1, table.getn (o.messages), 1 do
+    table.insert (o.stack, Message:new (o.canvas, o.messages[i], 22))
   end
 
   o.x = 0

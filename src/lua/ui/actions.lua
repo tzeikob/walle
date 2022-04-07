@@ -24,22 +24,22 @@ function Actions:new (canvas, data)
   o.canvas = canvas
   o.data = data
 
-  o.score = Metric:new (o.canvas, data.total, nil, "%06d", 32, o.style.color)
+  o.score = Metric:new (o.canvas, o.data.total, nil, "%06d", 32, o.style.color)
   o.hand = Glyph:new (o.canvas, Glyph.Hand, 48, o.style.color)
   o.tags = {
     Glyph:new (o.canvas, Glyph.Infinity, 36, o.style.dim)
   }
 
-  local scalar = convert.round (data.scrolls_rate, 1) * 10
+  local scalar = convert.round (o.data.scrolls_rate, 1) * 10
   o.scrolls = Box:new (o.canvas, scalar, 48, Glyph.Scroll)
 
-  scalar = convert.round (data.moves_rate, 1) * 10
+  scalar = convert.round (o.data.moves_rate, 1) * 10
   o.moves = Box:new (o.canvas, scalar, 48, Glyph.Move)
 
-  scalar = convert.round (data.clicks_rate, 1) * 10
+  scalar = convert.round (o.data.clicks_rate, 1) * 10
   o.clicks = Box:new (o.canvas, scalar, 48, Glyph.Click)
 
-  scalar = convert.round (data.strokes_rate, 1) * 10
+  scalar = convert.round (o.data.strokes_rate, 1) * 10
   o.strokes = Box:new (o.canvas, scalar, 48, Glyph.Stroke)
 
   o.x = 0
