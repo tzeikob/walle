@@ -6,8 +6,10 @@ local Box = {
   canvas = nil,
   style = {
     roundness = 2,
+    offset = 3,
     space = 20,
     background = { 1, 1, 1, 0.8 },
+    dim = { 1, 1, 1, 0.1 },
     shade = { 1, 0.6, 0.1, 0.8 },
     color = { 0.2, 0.2, 0.2, 1 },
     tag = { 1, 1, 1, 0.4 }
@@ -47,11 +49,13 @@ function Box:render ()
   local scale = self.canvas.scale
 
   local roundness = self.style.roundness * scale
+  local offset = self.style.offset * scale
   local space = self.style.space * scale
 
   local x = self.x
   local y = self.y - self.height
 
+  self.canvas:draw_round_rectangle (x + offset, y + offset, self.width, self.height, roundness, self.style.dim, 1)
   self.canvas:draw_round_rectangle (x, y, self.width, self.height, roundness, self.style.background)
 
   if self.value > 0.05 then
