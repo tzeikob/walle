@@ -72,7 +72,7 @@ function Box:render ()
   self.glyph:render ()
 
   if self.tag then
-    y = self.y + (space * self.canvas.scale) + self.tag.height
+    y = self.y + space + self.tag.height
 
     self.tag:locate (x, y)
     self.tag:render ()
