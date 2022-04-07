@@ -25,6 +25,7 @@ local Actions = require "actions"
 local Timings = require "timings"
 local Monitor = require "monitor"
 local Notifier = require "notifier"
+local Scope = require "scope"
 
 local config = util.yaml.load (CONFIG_FILE_PATH)
 
@@ -115,6 +116,11 @@ function conky_draw ()
   })
   notifier:locate (canvas.center_x, canvas.top)
   notifier:render ()
+
+  -- Render the scope component
+  local scope = Scope:new (canvas, 20)
+  scope:locate (canvas.center_x, canvas.center_y)
+  scope:render ()
 
   -- Destroy the ui context
   canvas:dispose ()
