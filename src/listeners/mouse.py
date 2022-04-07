@@ -5,12 +5,9 @@ from pynput import mouse
 state = {
   'up': False,
   'data': {
-    'left': 0,
-    'right': 0,
-    'middle': 0,
-    'scroll_x': 0,
-    'scroll_y': 0,
-    'move': 0
+    'clicks': 0,
+    'scrolls': 0,
+    'moves': 0
   }
 }
 
@@ -19,21 +16,16 @@ def on_click (x, y, button, pressed):
   if not pressed:
     return
 
-  if button == mouse.Button.left:
-    state['data']['left'] += 1
-  elif button == mouse.Button.right:
-    state['data']['right'] += 1
-  elif button == mouse.Button.middle:
-    state['data']['middle'] += 1
+  state['data']['clicks'] += 1
 
 # Counts up vertical and horizontal scroll events
 def on_scroll (x, y, dx, dy):
-  state['data']['scroll_x'] += abs(dx)
-  state['data']['scroll_y'] += abs(dy)
+  state['data']['scrolls'] += abs(dx)
+  state['data']['scrolls'] += abs(dy)
 
 # Counts up move events
 def on_move (x, y):
-  state['data']['move'] += 1
+  state['data']['moves'] += 1
 
 # Stops the listener thread
 def stop ():

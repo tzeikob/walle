@@ -8,6 +8,7 @@ INSTALLATION_DIR=/usr/share/$PKG_NAME
 HOME_DIR=/home/$SUDO_USER
 CONFIG_DIR=$HOME_DIR/.config/$PKG_NAME
 AUTOSTART_DIR=$HOME_DIR/.config/autostart
+FONTS_DIR=/usr/local/share/fonts/$PKG_NAME
 
 echo -e "Startig post installation script"
 
@@ -28,10 +29,19 @@ mkdir -p $CONFIG_DIR
 cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml
 cp $INSTALLATION_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
+# Copy asset files into the config folder
+cp -r $INSTALLATION_DIR/assets $CONFIG_DIR
+
 # Change permissions to sudo user
 chown -R $SUDO_USER:$SUDO_USER $CONFIG_DIR
 
 echo -e "Config folder and files have been created"
+
+# Install glyph and alphanumeric fonts
+mkdir -p $FONTS_DIR
+cp $INSTALLATION_DIR/fonts/*.ttf $FONTS_DIR
+
+echo -e "Fonts have been installed successfully"
 
 # Create the autostart gnome desktop file
 mkdir -p $AUTOSTART_DIR

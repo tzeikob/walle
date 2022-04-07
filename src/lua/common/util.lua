@@ -1,11 +1,11 @@
--- A lua module for various util functions
+-- A module to export various generic utility methods
 
 local yaml = require "yaml"
 local json = require "cjson"
 local format = require "format"
 
 -- Executes a native system command given as string
-function exec (command)
+local function exec (command)
   local file = io.popen (command)
   local output = file:read ("*a")
   file:close ()
@@ -14,7 +14,7 @@ function exec (command)
 end
 
 -- Reads the given file
-function read (path)
+local function read (path)
   local file = io.open (path, "r")
   local data = file:read ("*a")
   file:close ()
@@ -23,7 +23,7 @@ function read (path)
 end
 
 -- Loads the given yaml file into a dictionary object
-function load_yaml (path)
+local function load_yaml (path)
   local file = io.open (path, "r")
   local dict = yaml.load (file:read ("*a"))
   file:close ()
@@ -32,7 +32,7 @@ function load_yaml (path)
 end
 
 -- Loads the given json file into a dictionary object
-function load_json (path)
+local function load_json (path)
   local file = io.open (path, "r")
   local dict = json.decode (file:read ("*a"))
   file:close ()
@@ -41,22 +41,22 @@ function load_json (path)
 end
 
 -- Encodes the given dictionary into a string json
-function stringify (dict)
+local function stringify (dict)
   return json.encode (dict)
 end
 
--- Check if the given value is nil or empty
-function is_empty (value)
+-- Checks if the given value is nil or empty
+local function is_empty (value)
   return value == nil or value == ""
 end
 
--- Check if the given value is not nil and not empty
-function is_not_empty (value)
+-- Checks if the given value is not nil and not empty
+local function is_not_empty (value)
   return not is_empty (value)
 end
 
 -- Returns the given value if not empty, otherwise the default
-function default_to (value, default)
+local function default_to (value, default)
   if is_empty (value) then
     return default
   end
@@ -64,13 +64,13 @@ function default_to (value, default)
   return value
 end
 
--- Return if the given value is not nullish not empty
-function given (value)
-  return is_not_empty(value) and value ~= json.null
+-- Returns if the given value is not nullish not empty
+local function given (value)
+  return is_not_empty (value) and value ~= json.null
 end
 
 -- Returns the value itself unless it is nullish or empty
-function opt (value, default)
+local function opt (value, default)
   if not given (value) then
     return default or "n/a"
   end
@@ -79,7 +79,7 @@ function opt (value, default)
 end
 
 -- Converts the given value to boolean
-function to_boolean (value)
+local function to_boolean (value)
   return value == "true"
 end
 
