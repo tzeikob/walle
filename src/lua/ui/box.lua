@@ -5,9 +5,11 @@ local Glyph = require "glyph"
 local Box = {
   canvas = nil,
   style = {
-    base = { 1, 1, 1, 0.8 },
-    scalar = { 1, 0.6, 0.1, 0.8 },
-    glyph = { 0.2, 0.2, 0.2, 1 },
+    roundness = 2,
+    space = 20,
+    background = { 1, 1, 1, 0.8 },
+    shade = { 1, 0.6, 0.1, 0.8 },
+    color = { 0.2, 0.2, 0.2, 1 },
     tag = { 1, 1, 1, 0.4 }
   }
 }
@@ -19,25 +21,19 @@ function Box:new (canvas, value, size, glyph)
   o.canvas = canvas
   o.value = value
 
-  o.base = Glyph:new (o.canvas, Glyph.Box, size, o.style.base)
+  o.glyph = Glyph:new (o.canvas, glyph, size, o.style.color)
 
-  if o.value > 0 then
-    o.scalar = Glyph:new (o.canvas, Glyph.Scalars[o.value], size, o.style.scalar)
-  end
-
-  o.glyph = Glyph:new (o.canvas, glyph, size, o.style.glyph)
-
-  if o.value >= 5 then
+  if o.value >= 0.9 then
     o.tag = Glyph:new (o.canvas, Glyph.High, size, o.style.tag)
-  elseif value <= 1 then
+  elseif value <= 0.1 then
     o.tag = Glyph:new (o.canvas, Glyph.Low, size, o.style.tag)
   end
 
   o.x = 0
   o.y = 0
 
-  o.width = o.base.width
-  o.height = o.base.height
+  o.width = size * 0.8 * o.canvas.scale
+  o.height = o.width
 
   return o
 end
@@ -48,21 +44,33 @@ function Box:locate (x, y)
 end
 
 function Box:render ()
-  self.base:locate (self.x, self.y)
-  self.base:render ()
+  local scale = self.canvas.scale
 
-  if self.scalar then
-    self.scalar:locate (self.x, self.y)
-    self.scalar:render ()
+  local roundness = self.style.roundness * scale
+  local space = self.style.space * scale
+
+  local x = self.x
+  local y = self.y - self.height
+
+  self.canvas:draw_round_rectangle (x, y, self.width, self.height, roundness, self.style.background)
+
+  if self.value > 0.05 then
+    local shade_height = self.value * self.height
+    y = self.y - shade_height
+
+    self.canvas:draw_round_rectangle (x, y, self.width, shade_height, roundness, self.style.shade)
   end
 
-  self.glyph:locate (self.x, self.y)
+  x = self.x
+  y = self.y
+
+  self.glyph:locate (x, y)
   self.glyph:render ()
 
   if self.tag then
-    local y = self.y + (20 * self.canvas.scale) + self.tag.height
+    y = self.y + (space * self.canvas.scale) + self.tag.height
 
-    self.tag:locate (self.x, y)
+    self.tag:locate (x, y)
     self.tag:render ()
   end
 end
