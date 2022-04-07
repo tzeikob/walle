@@ -134,7 +134,7 @@ function Canvas:draw_rectangle (x, y, width, height, color)
   cairo_fill (self.context)
 end
 
-function Canvas:draw_round_rectangle (x, y, width, height, radius, color)
+function Canvas:draw_round_rectangle (x, y, width, height, radius, color, thickness)
   local deg = math.pi / 180.0
 
   cairo_new_sub_path (self.context)
@@ -147,7 +147,13 @@ function Canvas:draw_round_rectangle (x, y, width, height, radius, color)
   cairo_close_path (self.context)
 
   self:set_color(color)
-  cairo_fill (self.context)
+
+  if thickness and thickness > 0 then
+    cairo_set_line_width (self.context, thickness)
+    cairo_stroke (self.context)
+  else
+    cairo_fill (self.context)
+  end
 end
 
 function Canvas:draw_gradient (x, y, width, height, color)

@@ -30,17 +30,17 @@ function Actions:new (canvas, data)
     Glyph:new (o.canvas, Glyph.Infinity, 36, o.style.dim)
   }
 
-  local scalar = convert.round (o.data.scrolls_rate, 1) * 10
-  o.scrolls = Box:new (o.canvas, scalar, 48, Glyph.Scroll)
+  local scalar = convert.round (o.data.scrolls_rate, 2)
+  o.scrolls = Box:new (o.canvas, scalar, 52, Glyph.Scroll)
 
-  scalar = convert.round (o.data.moves_rate, 1) * 10
-  o.moves = Box:new (o.canvas, scalar, 48, Glyph.Move)
+  scalar = convert.round (o.data.moves_rate, 2)
+  o.moves = Box:new (o.canvas, scalar, 52, Glyph.Move)
 
-  scalar = convert.round (o.data.clicks_rate, 1) * 10
-  o.clicks = Box:new (o.canvas, scalar, 48, Glyph.Click)
+  scalar = convert.round (o.data.clicks_rate, 2)
+  o.clicks = Box:new (o.canvas, scalar, 52, Glyph.Click)
 
-  scalar = convert.round (o.data.strokes_rate, 1) * 10
-  o.strokes = Box:new (o.canvas, scalar, 48, Glyph.Stroke)
+  scalar = convert.round (o.data.strokes_rate, 2)
+  o.strokes = Box:new (o.canvas, scalar, 52, Glyph.Stroke)
 
   o.x = 0
   o.y = 0
