@@ -245,8 +245,9 @@ end
 
 function Canvas:paint_image (x, y, image)
   cairo_set_source_surface (self.context, image, x, y)
-
   cairo_paint (self.context)
+
+  cairo_surface_destroy (image)
 end
 
 return Canvas
