@@ -11,18 +11,6 @@ def any_int (value):
 
   return number
 
-# Asserts if the given value is a zero positive integer
-def zero_pos_int (value):
-  try:
-    number = int(value)
-  except ValueError:
-    raise argparse.ArgumentTypeError("'%s' is not an integer value" % value)
-  
-  if number < 0:
-    raise argparse.ArgumentTypeError("'%s' is not a zero positive integer value" % value)
-
-  return number
-
 # Asserts if the given value is a positive integer
 def pos_int (value):
   try:
@@ -116,12 +104,6 @@ def parse (name, version):
     type=any_int,
     metavar='pixels',
     help="the offset the viewport's right edge should be shifted by")
-
-  configParser.add_argument(
-    '--monitor',
-    type=zero_pos_int,
-    metavar='index',
-    help='the monitor index the widget should render on (experimental)')
 
   presetParser = subparsers.add_parser('preset', help='save and load %(prog)s preset files')
   presetGroup = presetParser.add_mutually_exclusive_group()

@@ -12,13 +12,8 @@ FONTS_DIR=/usr/local/share/fonts/$PKG_NAME
 
 echo -e "Startig post installation script"
 
-# Set the current sudo user to files need user's name
-sed -i "s/#USER/$SUDO_USER/g" $INSTALLATION_DIR/lua/main.lua
-
-echo -e "User placeholder values have been injected"
-
 # Create the executable's symbolic link file
-ln -s $INSTALLATION_DIR/bin/$PKG_NAME.py /usr/bin/$PKG_NAME
+ln -s $INSTALLATION_DIR/bin.py /usr/bin/$PKG_NAME
 
 echo -e "Binary symlink file has been created"
 
@@ -27,7 +22,6 @@ mkdir -p $CONFIG_DIR
 
 # Copy config files to config folder
 cp $INSTALLATION_DIR/config.yml $CONFIG_DIR/config.yml
-cp $INSTALLATION_DIR/.conkyrc $CONFIG_DIR/.conkyrc
 
 # Copy asset files into the config folder
 cp -r $INSTALLATION_DIR/assets $CONFIG_DIR

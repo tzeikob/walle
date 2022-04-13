@@ -9,89 +9,45 @@ if getpass.getuser() == 'root':
   print("[Errno 13] Don't run as root user")
   sys.exit(1)
 
-import os
 import time
 from common import globals
 from common import args
 from common import config
-from common import conky
 from util import system
 from util.logger import Router
 
-# Starts the resolver process
-def start_resolver (debug=False):
-  pid = system.read(globals.RESOLVER_PID_FILE_PATH)
+def start (debug=False):
+  pid = system.read(globals.PID_FILE_PATH)
 
   if not system.isUp(pid):
-    cmd = globals.RESOLVER_FILE_PATH + (' --debug' if debug else '')
+    cmd = globals.INSTALL_DIR + '/app.py' + (' --debug' if debug else '')
 
     # Spawn resolver process
     pid = system.spawn(cmd, globals.LOG_FILE_PATH)
 
     # Save the pid to the disk
-    system.write(pid, globals.RESOLVER_PID_FILE_PATH)
+    system.write(pid, globals.PID_FILE_PATH)
 
-  logger.disk.info(f"resolver process is up with pid '{pid}'")
+  logger.disk.info(f"process is up with pid '{pid}'")
 
-# Stops the resolver process
-def stop_resolver ():
-  pid = system.read(globals.RESOLVER_PID_FILE_PATH)
-
-  if system.kill(pid, globals.LOG_FILE_PATH):
-    system.remove(globals.RESOLVER_PID_FILE_PATH)
-
-  logger.disk.info('resolver process is down')
-
-# Starts the conky process
-def start_conky (debug=False):
-  pid = system.read(globals.CONKY_PID_FILE_PATH)
-
-  if not system.isUp(pid):
-    # Initialize conky for the current system setup
-    conky.init()
-
-    cmd = 'conky -b -p 1 -c ' + globals.CONKYRC_FILE_PATH + (' --debug' if debug else '')
-
-    # Define env variable to set debug mode or not
-    debug_env = os.environ.copy()
-    debug_env['DEBUG_MODE'] = str(debug).lower()
-
-    # Spawn the conky process
-    pid = system.spawn(cmd, globals.LOG_FILE_PATH, debug_env)
-
-    # Save pid to the disk
-    system.write(pid, globals.CONKY_PID_FILE_PATH)
-
-  logger.disk.info(f"conky process is up with pid '{pid}'")
-
-# Stops the conky process
-def stop_conky ():
-  pid = system.read(globals.CONKY_PID_FILE_PATH)
+def stop ():
+  pid = system.read(globals.PID_FILE_PATH)
 
   if system.kill(pid, globals.LOG_FILE_PATH):
-    system.remove(globals.CONKY_PID_FILE_PATH)
+    system.remove(globals.PID_FILE_PATH)
 
-  logger.disk.info('conky process is down')
+  logger.disk.info('process is down')
 
-# Restarts the resolver and conky processes
 def restart():
-  stop_conky()
+  stop()
   time.sleep(1)
-  stop_resolver()
+  start()
 
-  time.sleep(1)
-
-  start_resolver()
-  time.sleep(1)
-  start_conky()
-
-# Returns if should restart processes when any process is down
 def should_restart ():
-  resolver_pid = system.read(globals.RESOLVER_PID_FILE_PATH)
-  conky_pid = system.read(globals.CONKY_PID_FILE_PATH)
+  pid = system.read(globals.PID_FILE_PATH)
 
-  # Restart only if both up or one of them is down
-  if not system.isUp(resolver_pid) and not system.isUp(conky_pid):
+  # Restart only if the process is up
+  if not system.isUp(pid):
     return False
 
   return True
@@ -111,17 +67,13 @@ try:
       logger.set_level('DEBUG')
       logger.disk.debug('debug mode has been enabled')
 
-    start_resolver(opts.debug)
-    time.sleep(1)
-    start_conky(opts.debug)
+    start(opts.debug)
 
   # Stop processes
   if opts.command == 'stop':
     logger.disk.info('stopping processes...')
 
-    stop_conky()
-    time.sleep(1)
-    stop_resolver()
+    stop()
 
   # Restart processes
   if opts.command == 'restart':
@@ -134,7 +86,6 @@ try:
     logger.disk.info('resetting configuration...')
 
     config.reset()
-    conky.reset()
 
     logger.disk.info('configuration has been set to default settings')
 
@@ -146,11 +97,6 @@ try:
     logger.disk.info('updating configuration settings...')
 
     config.update(opts)
-
-    # Update the conky config instantly
-    if opts.monitor != None:
-      conky.switch(opts.monitor)
-      logger.stdout.info('Warning: monitor switch is an experimental operation')
 
     logger.disk.info('configuration settings have been updated')
 

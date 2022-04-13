@@ -36,8 +36,6 @@ DEB_FILE = DIST_DIR + '/' + pkg['name'] + '-' + pkg['version'] + '.deb'
 
 META_DIR = BUILD_DIR + '/DEBIAN'
 INSTALL_DIR = BUILD_DIR + '/usr/share/' + pkg['name']
-BIN_DIR = INSTALL_DIR + '/bin'
-LUA_DIR = INSTALL_DIR + '/lua'
 FONTS_DIR = INSTALL_DIR + '/fonts'
 ASSETS_DIR = INSTALL_DIR + '/assets'
 
@@ -61,36 +59,33 @@ shutil.copy2('./hooks/prerm', META_DIR)
 print('Debian meta files have been added')
 
 # Copy binary files
-os.makedirs(BIN_DIR)
-
-shutil.copy2('../src/bin.py', BIN_DIR + '/' + pkg['name'] + '.py')
-shutil.copy2('../src/resolver.py', BIN_DIR)
+shutil.copy2('../src/bin.py', INSTALL_DIR)
+shutil.copy2('../src/app.py', INSTALL_DIR)
 
 print('Binary files have been added')
 
 # Copy common and utility files
-shutil.copytree('../src/common', BIN_DIR + '/common')
-shutil.copytree('../src/util', BIN_DIR + '/util')
+shutil.copytree('../src/common', INSTALL_DIR + '/common')
+shutil.copytree('../src/util', INSTALL_DIR + '/util')
 
 print('Common and utility modules have been added')
 
 # Copy resolve module files
-shutil.copytree('../src/resolvers', BIN_DIR + '/resolvers')
+shutil.copytree('../src/resolvers', INSTALL_DIR + '/resolvers')
 
 print('Resolver modules have been added')
 
 # Copy listener module files
-shutil.copytree('../src/listeners', BIN_DIR + '/listeners')
+shutil.copytree('../src/listeners', INSTALL_DIR + '/listeners')
 
 print('Listener modules have been added')
 
-# Copy lua files
-shutil.copytree('../src/lua', LUA_DIR)
+# Copy rendering module files
+shutil.copytree('../src/render', INSTALL_DIR + '/render')
 
-print('Lua files have been added')
+print('Rendering modules have been added')
 
 # Copy the resources files
-shutil.copy2('../resources/.conkyrc', INSTALL_DIR)
 shutil.copy2('../resources/config.yml', INSTALL_DIR)
 
 print('Resources files have been added')
@@ -152,11 +147,6 @@ for path, dirs, files in os.walk(BUILD_DIR):
       deps = ' '.join([x for x in deps])
 
       contents = contents.replace('#PKG_PYTHON_DEPS', deps)
-
-      deps = pkg['dependencies']['lua']
-      deps = '\n'.join(['luarocks install ' + x for x in deps])
-
-      contents = contents.replace('#PKG_LUA_DEPS', deps)
 
     # Overwrite file contents
     with open(file_path, 'wt') as f:

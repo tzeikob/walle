@@ -7,19 +7,17 @@ dependencies:
   system:
     - 'python3'
     - 'python3-pip'
-    - 'luarocks'
-    - 'conky'
-    - 'conky-all'
+    - 'python3-dev'
     - 'iproute2'
+    - 'libcairo2-dev'
+    - 'pkg-config'
   python:
     - 'ruamel.yaml'
     - 'psutil'
     - 'gputil'
     - 'screeninfo'
     - 'pynput'
-  lua:
-    - 'yaml'
-    - 'lua-cjson'
+    - 'pycairo'
 builds:
   debian:
     arch: 'all'
