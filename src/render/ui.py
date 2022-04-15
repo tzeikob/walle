@@ -11,10 +11,11 @@ except ImportError:
   print('No Gtk v3.0 or pycairo integration')
 
 from gi.repository import Gtk, Gdk, GLib
+from common import globals
 
 class Window (Gtk.Window):
   def __init__ (self, canvas):
-    Gtk.Window.__init__(self)
+    Gtk.Window.__init__(self, name="main")
 
     self.set_skip_pager_hint(True)
     self.set_skip_taskbar_hint(True)
@@ -34,10 +35,16 @@ class Window (Gtk.Window):
 
     self.set_size_request(width, height)
 
+    css = Gtk.CssProvider()
+    css.load_from_path(globals.STYLE_FILE_PATH)
+
+    default_screen = Gdk.Screen.get_default()
+    style = Gtk.StyleContext
+    style.add_provider_for_screen(default_screen, css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
     screen = self.get_screen()
-    rgba = screen.get_rgba_visual()
-    self.set_visual(rgba)
-    self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+    visual = screen.get_rgba_visual()
+    self.set_visual(visual)
 
     drawingarea = Gtk.DrawingArea()
     self.add(drawingarea)

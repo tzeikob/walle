@@ -87,6 +87,7 @@ print('Rendering modules have been added')
 
 # Copy the resources files
 shutil.copy2('../resources/config.yml', INSTALL_DIR)
+shutil.copy2('../resources/style.css', INSTALL_DIR)
 
 print('Resources files have been added')
 
