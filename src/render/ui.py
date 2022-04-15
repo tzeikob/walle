@@ -47,9 +47,9 @@ class Window (Gtk.Window):
     self.set_visual(visual)
 
     drawingarea = Gtk.DrawingArea()
+    drawingarea.connect('draw', canvas.draw)
     self.add(drawingarea)
 
-    drawingarea.connect('draw', canvas.draw)
     self.connect('destroy', Gtk.main_quit)
 
     self.move(0, 0)
