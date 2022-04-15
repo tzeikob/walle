@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# An executable script to orchestrate conky and resolver processes
 
 import sys
 import getpass
