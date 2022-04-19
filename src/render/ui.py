@@ -17,6 +17,7 @@ class Window (Gtk.Window):
   def __init__ (self, canvas):
     Gtk.Window.__init__(self, name="main")
 
+    self.set_wmclass("deskget", "deskget")
     self.set_skip_pager_hint(True)
     self.set_skip_taskbar_hint(True)
     self.set_type_hint(Gdk.WindowTypeHint.DESKTOP)

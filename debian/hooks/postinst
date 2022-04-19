@@ -46,6 +46,7 @@ echo "Type=Application" >> $DESKTOP_FILE
 echo "Exec=$PKG_NAME start" >> $DESKTOP_FILE
 echo "Hidden=false" >> $DESKTOP_FILE
 echo "NoDisplay=false" >> $DESKTOP_FILE
+echo "StartupWMClass=deskget" >> $DESKTOP_FILE
 echo "Name[en_US]=$PKG_NAME" >> $DESKTOP_FILE
 echo "Name=$PKG_NAME" >> $DESKTOP_FILE
 echo "Comment[en_US]=$PKG_NAME Start Up" >> $DESKTOP_FILE
