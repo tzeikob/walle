@@ -55,6 +55,7 @@ class Window (Gtk.Window):
 
     self.move(0, 0)
     self.show_all()
+    self.stick()
 
   def launch (self):
     GLib.timeout_add_seconds(1, self.refresh)
